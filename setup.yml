@@ -455,7 +455,6 @@
         mode: '0755'  # Set the permissions (optional)
 
     - name: Install WP-CLI
-      hosts: localhost  # You can change this to the target host where you want to install WP-CLI
       become: yes  # Use sudo to perform tasks as the root user
 
       tasks:
