@@ -454,24 +454,18 @@
         state: directory
         mode: '0755'  # Set the permissions (optional)
 
-    - name: Install WP-CLI
-      become: yes  # Use sudo to perform tasks as the root user
 
-      tasks:
-        - name: Download WP-CLI
-          community.general.shell: |
-            curl -o /usr/local/bin/wp https://raw.githubusercontent.com/wp-cli/builds/gh-pages/phar/wp-cli.phar
-            chmod +x /usr/local/bin/wp
-          become_user: root
+    - name: Download WP-CLI
+      command: "curl -o /usr/local/bin/wp https://raw.githubusercontent.com/wp-cli/builds/gh-pages/phar/wp-cli.phar"
+    - name: Make WP-CLI Executable
+      command: "chmod +x /usr/local/bin/wp"
+    - name: Check WP-CLI Version
+      command: "wp --version --allow-root"
+      register: wp_cli_version
+    - name: Show WP-CLI Version
+      debug:
+        var: wp_cli_version.stdout_lines
 
-        - name: Check WP-CLI version
-          community.general.shell: |
-            wp --version
-          become_user: root
-          register: wpcli_version
-
-        - debug:
-            var: wpcli_version.stdout
 
     # Check if WordPress is installed
     - name: Check if WordPress is installed
