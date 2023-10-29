@@ -1,0 +1,1011 @@
+
+- hosts: localhost
+  become: yes
+  vars:
+    web_root: "/var/www"
+    domain_name: ansible.codecodac.com
+    domain_title: Ansible Demo
+    wp_version: 6.3.1
+    certbot_admin_email: noreply@cerbu.tech
+    php_version: 8.1
+    ssh_key_path: "/var/ansible/keys/git_key.pub"  # Replace with your SSH key path
+    wordpress_plugins_path: "/var/www/{{ domain_name }}/wp-content/plugins"
+    wp_email: mariutamihaidan@gmail.com
+    wp_user: administrator
+    wp_password: CerbuTechUbuntu!
+
+    # Customer data
+    customer_name: "Shop la cheie SRL"
+    customer_cui: "12345677899"
+    customer_j: "J23/23/1999"
+    customer_support_email: "support@mysite.ro"
+    customer_support_phone: "0745123456"
+    customer_support_address: "Strada Mihai Viteazul, Numărul 37, Cârcea, Dolj"
+
+    # Defaults
+    replace_content: true  #uneused yet
+
+    # DB
+    db_name: wordpress
+    db_user: shop
+    db_password: CerbuTechUbuntu!
+    db_host: ansible-mysql.mysql.database.azure.com
+
+    # Smartbill
+    smartbill_options:
+      username: 111111111
+      password: 22222222
+      vat_code: 3333333333
+      token: 44444444444444
+
+    # Github updater
+    github_updater_token: 5ba9d4b3833ccf3d2b106f6fef31e385ec201576
+    github_updater_api_key: 7770243b2ace4c927094e7ff1be31e0c
+
+    # WP_CONFIG.PHP
+    wp_debug: false
+    wp_debug_display: false
+    wp_debug_log: false
+
+    # NOD CONNECTOR API credentials
+    nod_api_url: http://api.b2b-sbx.nod.ro
+    nod_api_user: 57d620670fed93307cc3cde577f18162
+    nod_api_key: 8f3d70f0b7e1e81198b21775083b87d1
+
+    # Azure cloud storage
+    azure_storage_use_for_default_upload: 1
+    microsoft_azure_account_name: nodcdn
+    microsoft_azure_account_key: MepgF3FaTJU8NxKuatMpZdx+N2DXkfCi6SIU8W+tA19cGvPa3BqA6Y6ibn1rFmnPQJHYmrWezWwjr3bSvCjEoQ==
+    microsoft_azure_container: octombrie
+    azure_storage_account_name: r156
+    azure_storage_account_primary_access_key: tjtW/F99XPPKB0D6I1UsygOrYORF/qcWZz+0obf9CFzSJT+rSwx44kkQ+PGc6iYie/UE+LnS5fVL+AStYh/knA==
+    default_azure_storage_account_container_name: saas
+    azure_browse_cache_results: 15
+    azure_cache_control: 600
+
+    # Electro options
+    electro_options:
+      redux-section: "11"
+      last_tab: "8"
+      dark_enabled: 0
+      mode_switcher_enabled: 0
+      scrollup: "1"
+      reg_image_size: "0"
+      sidebar_margin_top: "268"
+      load_child_theme: "0"
+      catalog_mode: "0"
+      compare_page_id: ""
+      product_archive_enabled_views:
+        enabled:
+          placebo: "placebo"
+          grid: "Grid"
+          grid-extended: "Grid Extended"
+          list-view: "List"
+          list-view-small: "List View Small"
+        disabled:
+          placebo: "placebo"
+      shop_layout: "left-sidebar"
+      subcategory_columns: "3"
+      product_columns: "3"
+      product_columns_wide: "5"
+      products_per_page: "15"
+      wc_template_loop_sale: "0"
+      single_product_layout: "left-sidebar"
+      single_product_style: "normal"
+      enable_single_product_sidebar: "0"
+      enable_related_products: "1"
+      single_product_timer: "0"
+      product_gallery_carousel: "0"
+      sticky_add_to_cart_mobile: "0"
+      myaccount_before_login_text: ""
+      myaccount_before_register_text: ""
+      myaccount_register_benefits_title: "Sign up today and you will be able to :"
+      myaccount_register_benefits:
+        - "Speed your way through checkout"
+        - "Track your orders easily"
+        - "Keep a record of all your purchases"
+      dokan_store_list_version: ""
+      dokan_store_list_sidebar: "1"
+      dokan_electro_store_style: "0"
+      dokan_store_version: "store-v1"
+      dokan_store_sidebar: "0"
+      dokan_store_owner_info: "1"
+      header_top_bar_show: "1"
+      header_top_bar_show_mobile: "0"
+      header_enable_topbar_additional_links: 1
+      header_topbar_additional_links_title: "Two Shops<br>One Shipment"
+      header_topbar_additional_link_1_text: "Electronics"
+      header_topbar_additional_link_1_url: "#"
+      header_topbar_additional_link_1_image:
+        url: ""
+        id: ""
+        height: ""
+        width: ""
+        thumbnail: ""
+      header_topbar_additional_link_2_text: "Power Tools"
+      header_topbar_additional_link_2_url: "#"
+      header_topbar_additional_link_2_image:
+        url: ""
+        id: ""
+        height: ""
+        width: ""
+        thumbnail: ""
+      header_show_tooltip: "1"
+      header_icon_tooltip_position: "bottom"
+      header_style: "v1"
+      sticky_header: "0"
+      site_header_logo:
+        url: ""
+        id: ""
+        height: ""
+        width: ""
+        thumbnail: ""
+      off_canvas_nav_in_desktop: "1"
+      header_vertical_menu_title: "Categorii Produse"
+      header_vertical_menu_icon: "fa fa-list-ul"
+      header_departments_menu_title: "Shop By Department"
+      header_v5_departments_menu_title: "Categorii Produse"
+      header_v6_departments_menu_title: "Categorii"
+      header_navbar_search_placeholder: "Cautati produse"
+      enable_header_navbar_search_dropdown: "1"
+      header_navbar_search_dropdown_categories: "show_only_top_level"
+      header_navbar_search_dropdown_text: "Toate categoriile"
+      header_live_search: "1"
+      header_support_block_show: "1"
+      header_support_number: "<strong>Suport</strong> {{customer_support_phone}}"
+      header_support_email: ""
+      header_cart_icon: "ec ec-shopping-bag"
+      header_cart_dropdown_disable: "0"
+      off_canvas_cart: "0"
+      header_user_account_enable: "0"
+      header_user_account_icon: "ec ec-user"
+      header_user_account_logged_in_menu: "0"
+      show_footer_brands_slider: "0"
+      footer_enable_touch_slider: "0"
+      footer_footer_brands_slider_number: "12"
+      show_footer_widgets: "1"
+      footer_widgets_columns: "4"
+      show_footer_newsletter: "0"
+      footer_newsletter_title: "Sign up to Newsletter"
+      footer_newsletter_marketing_text: "...and receive <strong>$20 coupon for first shopping</strong>"
+      footer_newsletter_signup_form: ""
+      show_footer_contact_block: "1"
+      show_footer_logo: "0"
+      site_footer_logo:
+        url: ""
+        id: ""
+        height: ""
+        width: ""
+        thumbnail: ""
+      show_footer_call_us: "1"
+      footer_call_us_text: "Telefon"
+      footer_call_us_icon: "ec ec-support"
+      footer_call_us_number: "{{customer_support_phone}}"
+      show_footer_address: "1"
+      footer_address_title: "Adresă"
+      footer_address: "{{customer_support_address}}"
+      show_footer_social_icons: "0"
+      show_footer_bottom_widgets: "1"
+      footer_bottom_widgets_columns: "3"
+      footer_credit_block_enable: "1"
+      footer_credit: "&copy; <a href=\"https://{{domain_name}}/\">WordPress</a> - All Rights Reserved"
+      footer_credit_icons: ""
+      enable_mobile_frontpage: "0"
+      mobile_frontpage_id: ""
+      handheld_header_logo:
+        url: ""
+        id: ""
+        height: ""
+        width: ""
+        thumbnail: ""
+      handheld_header_style: "handheld-v2"
+      handheld_header_v2_light_bg: "0"
+      sticky_handheld_header: "0"
+      enable_add_to_cart_mobile: "0"
+      handheld_footer_bar_home_icon: "si si-home"
+      handheld_footer_bar_cart_icon: "ec ec-shopping-bag"
+      handheld_footer_bar_user_icon: "si si-user"
+
+    public_plugins:
+      - name: advanced-cron-manager
+        version: 2.5.2
+        activate: true
+      - name: one-click-demo-import
+        version: 3.1.2
+        activate: true
+      - name: mainwp-child
+        version: 4.5.2
+        activate: true
+      - name: windows-azure-storage
+        version: 4.4.0
+        activate: true
+      - name: redux-framework
+        version: 4.4.9
+        activate: true
+      - name: autoptimize
+        version: 3.1.9
+        activate: true
+      - name: mas-woocommerce-brands
+        version: 1.0.7
+        activate: true
+      - name: mas-static-content
+        version: 1.0.5
+        activate: false
+      - name: one-click-demo-import
+        version: 3.1.2
+        activate: false
+      - name: wordpress-importer
+        version: 0.8.1
+        activate: true
+      - name: advanced-nocaptcha-recaptcha
+        version: 7.3.1
+        activate: true
+      - name: netopia-payments-payment-gateway
+        version: 1.3
+        activate: true
+      - name: wpforms-lite
+        version: 1.8.4
+        activate: false
+      - name: yith-woocommerce-compare
+        version: 2.32.0
+        activate: false
+      - name: yith-woocommerce-wishlist
+        version: 3.26.0
+        activate: false
+      - name: premmerce-woocommerce-product-filter
+        version: 3.7.2
+        activate: true
+      - name: regenerate-thumbnails
+        version: 3.1.6
+        activate: true
+      - name: user-role-editor
+        version: 4.64.1
+        activate: true
+    plugins:
+      - name: github-updater
+        repo: "git@github.com:afragen/git-updater.git"
+        version: 8.7.0
+        activate: false
+      - name: nod-wordpress-module
+        repo: "git@github.com:nod-ro/nod-wordpress-module.git"
+        version: 1.5.7
+        activate: true
+      - name: nod-wordpress-marketplace-emag
+        repo: "git@github.com:nod-ro/nod-wordpress-marketplace-emag.git"
+        version: release-2.0.4
+        activate: false
+      - name: nod-connector-b2b
+        repo: "git@github.com:nod-ro/nod-connector-b2b.git"
+        version: 1.0.4
+        activate: false
+      - name: nod-shop-saas
+        repo: "git@github.com:nod-ro/nod-shop-saas.git"
+        version: 1.0.7
+        activate: false
+      - name: nod-smartbill
+        repo: "git@github.com:nod-ro/nod-smartbill.git"
+        version: 2.2.6.2-shops
+        activate: true
+    external_plugins:
+      - name: "Electro Extensions"
+        slug: "electro-extensions"
+        url: "https://transvelo.github.io/electro/assets/plugins/electro-extensions.zip"
+        version: "3.3.13"
+      - name: "Envato Market"
+        slug: "envato-market"
+        url: "https://envato.github.io/wp-envato-market/dist/envato-market.zip"
+        version: "2.0.6"
+      - name: "Revolution Slider"
+        slug: "revolution-slider"
+        url: "https://transvelo.github.io/included-plugins/revslider.zip"
+        version: "6.3.3"
+      - name: "WPBakery Page Builder"
+        slug: "wpbakery-page-builder"
+        url: "https://transvelo.github.io/included-plugins/js_composer.zip"
+        version: "6.5.0"
+    themes:
+      - name: nod-electro-theme
+        repo: "git@github.com:nod-ro/nod-electro-theme.git"
+        version: 3.0.1
+      - name: nod-electro-theme-child
+        repo: "git@github.com:nod-ro/nod-electro-theme-child.git"
+        version: release-1.0.7
+    pages:
+      - slug: home
+        title: Prima pagina
+      - slug: contact
+        title: Contact
+      - slug: termeni-si-conditii
+        title: Termeni si conditii
+      - slug: retur
+        title: Retur
+      - slug: livrare
+        title: Livrare
+
+    menu_top_bar_right_slugs:
+      - contul-meu
+      - contact
+      - termeni-si-conditii
+      - retur
+      - livrare
+
+  tasks:
+    - name: Update and Upgrade System
+      apt:
+        update_cache: yes
+        upgrade: 'yes'
+
+    - name: Install NGINX
+      apt:
+        name: nginx
+        state: latest
+
+    - name: Start and Enable NGINX
+      service:
+        name: nginx
+        state: started
+        enabled: true
+
+    - name: Install Certbot and its Nginx plugin
+      apt:
+        name:
+          - certbot
+          - python3-certbot-nginx
+        state: present
+    - name: Generate and/or install certificate
+      shell: >
+        certbot certonly --nginx
+        -d {{ domain_name }}
+        --non-interactive --agree-tos
+        --email {{ certbot_admin_email }}
+        --dry-run
+      register: certbot_output
+      ignore_errors: yes
+
+    - name: Log Certbot output
+      debug:
+        var: certbot_output.stdout_lines
+
+    - name: Install PHP 8.1 and its dependencies
+      apt:
+        name:
+          - php{{ php_version }}-fpm
+          - php{{ php_version }}-cli
+        state: latest
+    - name: Ensure necessary PHP extensions are installed
+      apt:
+        name:
+          - php{{ php_version }}-pdo-mysql
+          - php{{ php_version }}-curl
+          - php{{ php_version }}-xml
+          - php{{ php_version }}-mysqli
+          - php{{ php_version }}-zip
+          - php{{ php_version }}-soap
+          - php{{ php_version }}-mbstring
+          - php{{ php_version }}-exif
+          - php{{ php_version }}-bcmath
+          - php{{ php_version }}-opcache
+        state: present
+
+    - name: Generate NGINX Site Configuration
+      template:
+        src: nginx_config.j2
+        dest: "/etc/nginx/sites-available/{{ domain_name }}"
+      notify:
+        - Reload NGINX
+
+    - name: Enable NGINX Site
+      file:
+        src: "/etc/nginx/sites-available/{{ domain_name }}"
+        dest: "/etc/nginx/sites-enabled/{{ domain_name }}"
+        state: link
+      notify:
+        - Reload NGINX
+
+    - name: Increase pm.max_children in PHP-FPM pool configuration
+      lineinfile:
+        path: "/etc/php/{{ php_version }}/fpm/pool.d/www.conf"
+        regexp: "^pm.max_children ="
+        line: "pm.max_children = 100"
+        state: present
+
+    - name: Update PHP settings
+      lineinfile:
+        path: /etc/php/8.1/fpm/php.ini  # Actualizează calea conform configurării tale
+        regexp: "^{{ item.key }}"
+        line: "{{ item.key }} = {{ item.value }}"
+      loop:
+        - { key: "memory_limit", value: "2048M" }
+        - { key: "upload_max_filesize", value: "128M" }
+        - { key: "post_max_size", value: "64M" }
+        - { key: "max_input_vars", value: "20000" }
+        - { key: "max_input_time", value: "1200" }
+        - { key: "default_socket_timeout", value: "1200" }
+        - { key: "max_file_uploads", value: "500" }
+      notify: Restart php-fpm
+
+    - name: Restart PHP-FPM
+      service:
+        name: php8.1-fpm
+        state: restarted
+
+    - name: Deploy Nginx site configuration
+      template:
+        src: nginx_config.j2
+        dest: /etc/nginx/sites-available/{{ domain_name }}
+      notify: Reload Nginx
+
+    - name: Ensure Nginx configuration is enabled
+      file:
+        src: /etc/nginx/sites-available/{{ domain_name }}
+        dest: /etc/nginx/sites-enabled/{{ domain_name }}
+        state: link
+
+    - name: Install phpMyAdmin and necessary PHP extensions
+      apt:
+        name:
+          - phpmyadmin
+          - php8.1-mbstring
+        state: present
+
+    # Check if WordPress is installed
+    - name: Check if WordPress is installed
+      command: wp core is-installed --path=/var/www/ansible.codecodac.com --allow-root
+      register: wp_is_installed
+      ignore_errors: true
+
+    # Download Romanian WordPress core if not installed
+    - name: Download Romanian WordPress core
+      command: wp core download --locale=ro_RO --path=/var/www/ansible.codecodac.com --allow-root
+      when: wp_is_installed.rc != 0  # Only run when wp core is-installed command fails
+      ignore_errors: true
+
+    # Forcefully remove existing wp-config.php if WordPress is not already installed
+    - name: Forcefully remove existing wp-config.php
+      file:
+        path: "/var/www/{{ domain_name }}/wp-config.php"
+        state: absent
+      when: wp_is_installed.rc != 0
+
+    # Copy WordPress Config if WordPress is not already installed
+    - name: Copy WordPress Config
+      template:
+        src: wp-config.php.j2
+        dest: "/var/www/{{ domain_name }}/wp-config.php"
+      when: wp_is_installed.rc != 0
+
+    # Install WordPress core if not already installed
+    - name: Install WordPress core
+      command: wp core install --url={{ domain_name }} --title="{{ domain_title }}" --admin_user={{ wp_user }} --admin_password={{ wp_password }} --admin_email={{ wp_email }} --allow-root --path={{ web_root }}/{{ domain_name }}
+      when: wp_is_installed.rc != 0
+      ignore_errors: true
+
+    - name: Set WordPress and WooCommerce Language to Romanian
+      command: wp site switch-language ro_RO --path={{ web_root }}/{{ domain_name }}
+      become: yes
+      become_user: www-data  # Replace with your web server user
+
+
+    - name: Update WordPress permalink structure to use post names
+      command: wp option update permalink_structure '/%postname%/'
+      become: yes
+      become_user: www-data
+      args:
+        chdir: "{{ web_root }}/{{ domain_name }}"
+
+    - name: Flush rewrite rules
+      command: wp rewrite flush
+      become: yes
+      become_user: www-data
+      args:
+        chdir: "{{ web_root }}/{{ domain_name }}"
+
+    - name: Install WooCommerce Romanian Language Pack
+      command: wp language core install woocommerce ro_RO --path={{ web_root }}/{{ domain_name }}
+      become: yes
+      become_user: www-data  # Replace with your web server user
+
+    - name: Set WooCommerce Language to Romanian
+      command: wp option update woocommerce_admin_locales 'a:1:{i:0;s:5:"ro_RO";}' --path={{ web_root }}/{{ domain_name }}
+      become: yes
+      become_user: www-data  # Replace with your web server user
+
+    - name: Install and activate WooCommerce
+      command: wp language plugin install woocommerce ro_RO --path={{ web_root }}/{{ domain_name }}  --allow-root
+
+    - name: Install and activate WooCommerce
+      command: wp plugin install woocommerce --version=8.2.1 --activate --path={{ web_root }}/{{ domain_name }} --allow-root --force
+
+    - name: Install and activate WooCommerce public plugins
+      command: wp plugin install {{ item.name }} --version={{ item.version }} --path={{ web_root }}/{{ domain_name }} {{ '--activate' if item.activate else '' }} --allow-root --force
+      with_items: "{{ public_plugins }}"
+
+    - name: Ensure wp-content permissions are set correctly
+      file:
+        path: /var/www/{{ domain_name }}/wp-content
+        state: directory
+        mode: '0755'
+
+    - name: Ensure wp-content/upgrade permissions are set correctly
+      file:
+        path: /var/www/{{ domain_name }}/wp-content/upgrade
+        state: directory
+        mode: '0755'
+
+    - name: Ensure wp-content ownership is correct
+      file:
+        path: /var/www/{{ domain_name }}/wp-content
+        state: directory
+        owner: www-data
+        group: www-data
+        recurse: yes
+
+    - name: Ensure /var/ansible/keys directory exists
+      file:
+        path: "/var/ansible/keys"
+        state: directory
+        mode: '0700'
+
+    - name: Check if SSH key named 'ansible' already exists in /var/ansible/keys
+      stat:
+        path: "/var/ansible/keys/ansible"
+      register: ssh_key
+
+    - name: Generate SSH key named 'ansible' if it doesn't exist in /var/ansible/keys
+      command: ssh-keygen -t rsa -b 4096 -f /var/ansible/keys/ansible -N ""
+      when: not ssh_key.stat.exists
+
+    - name: Get the content of the generated SSH public key named 'ansible'
+      command: cat /var/ansible/keys/ansible.pub
+      register: ssh_public_key
+      changed_when: false
+
+    - name: Display the public SSH key
+      debug:
+        msg: "{{ ssh_public_key.stdout }}"
+
+    - name: Start ssh-agent
+      shell: ssh-agent
+      register: ssh_agent_info
+      changed_when: false
+
+    - name: Set environment variables for ssh-agent
+      set_fact:
+        ssh_agent_socket: "{{ ssh_agent_info.stdout_lines[0].split(';')[0].split('=')[1] }}"
+        ssh_agent_pid: "{{ ssh_agent_info.stdout_lines[1].split(';')[0].split('=')[1] }}"
+
+    - name: Add SSH key to ssh-agent
+      shell: ssh-add /var/ansible/keys/ansible
+      environment:
+        SSH_AUTH_SOCK: "{{ ssh_agent_socket }}"
+        SSH_AGENT_PID: "{{ ssh_agent_pid }}"
+      ignore_errors: true
+
+    - name: Test SSH connection to GitHub
+      command: ssh -T git@github.com
+      register: github_connection
+      ignore_errors: true
+      environment:
+        SSH_AUTH_SOCK: "{{ ssh_agent_socket }}"
+        SSH_AGENT_PID: "{{ ssh_agent_pid }}"
+      failed_when: github_connection.rc != 1  # expecting an exit code of 1 for successful authentication
+
+    - name: Display SSH connection result
+      debug:
+        var: github_connection
+
+    - name: Download WP-CLI
+      get_url:
+        url: "https://raw.githubusercontent.com/wp-cli/builds/gh-pages/phar/wp-cli.phar"
+        dest: "/tmp/wp-cli.phar"
+        mode: '0755'
+
+    - name: Move WP-CLI to global path
+      copy:
+        src: "/tmp/wp-cli.phar"
+        dest: "/usr/local/bin/wp"
+        mode: '0755'
+
+    - name: Ensure WP-CLI is executable
+      file:
+        path: "/usr/local/bin/wp"
+        mode: '0755'
+
+    - name: Ensure Destination Directory Exists as /var/www/<domain_name>
+      file:
+        path: "/var/www/{{ domain_name }}"
+        state: directory
+        owner: www-data  # adjust the owner as per your setup
+        group: www-data  # adjust the group as per your setup
+        mode: '0755'     # adjust the permissions as per your setup
+
+    #    - name: Extract WordPress Directly to Domain Root
+    #      unarchive:
+    #        src: "/tmp/wordpress.tar.gz"
+    #        dest: "/var/www/{{ domain_name }}"
+    #        remote_src: yes
+    #        extra_opts: [--strip-components=1]  # Exclude the wordpress/ directory in archive
+    #        creates: "/var/www/{{ domain_name }}/wp-config-sample.php"  # Identify WordPress extraction by a specific file
+
+    - name: Ensure git is installed
+      apt:
+        name: git
+        state: present
+
+    - name: Ensure plugins directory exists with correct permissions
+      file:
+        path: "{{ web_root }}/{{ domain_name }}/wp-content/plugins/{{ item.name }}"
+        state: directory
+        owner: root  # Replace with your web user, possibly www-data
+        group: root  # Replace with your web group, possibly www-data
+        mode: '0755'
+      loop: "{{ plugins }}"
+      become: yes  # Use sudo to ensure permissions
+
+    - name: Install specific version of WooCommerce
+      command: wp plugin install woocommerce --version=5.5.1 --allow-root --activate
+      args:
+        chdir: "{{ web_root }}/{{ domain_name }}"
+
+    - name: Check if plugin directories are not empty
+      find:
+        paths: "{{ web_root }}/{{ domain_name }}/wp-content/plugins/{{ item.name }}"
+        file_type: any
+      register: plugin_directory_contents
+      loop: "{{ plugins }}"
+
+    - name: Clone the plugin repositories from private repos only if directory is empty
+      git:
+        repo: "{{ item.item.repo }}"
+        dest: "{{ web_root }}/{{ domain_name }}/wp-content/plugins/{{ item.item.name }}"
+        force: yes
+        version: "{{ item.item.version }}"
+        accept_hostkey: yes
+      when: item.files | length == 0
+      loop: "{{ plugin_directory_contents.results }}"
+      become: yes
+      become_user: root
+      ignore_errors: yes
+      environment:
+        SSH_AUTH_SOCK: "{{ ssh_agent_socket }}"
+        SSH_AGENT_PID: "{{ ssh_agent_pid }}"
+
+    - name: Activate plugins where "activate" property is true
+      command: wp plugin activate {{ item.name }} --allow-root
+      args:
+        chdir: "{{ web_root }}/{{ domain_name }}"
+      when: item.activate
+      loop: "{{ plugins }}"
+      become: yes
+      become_user: root
+
+    - name: Check if plugin directory exists and is empty
+      find:
+        paths: "/var/www/ansible.codecodac.com/wp-content/plugins/{{ item.slug }}"
+        file_type: directory
+      register: plugin_directory
+      with_items: "{{ external_plugins }}"
+
+    - name: Install and activate external theme's plugins only if directory is empty
+      command: "wp plugin install {{ item.url }} --version={{ item.version }} --activate --path=/var/www/ansible.codecodac.com --allow-root"
+      when:
+        - "plugin_directory.results[0]['matched'] == 0 or plugin_directory.results[0]['files'] | length == 0"
+      with_items: "{{ external_plugins }}"
+
+    - name: Check if theme directories exist
+      stat:
+        path: "{{ web_root }}/{{ domain_name }}/wp-content/themes/{{ item.name }}"
+      register: theme_directory_checks
+      loop: "{{ themes }}"
+
+    - name: Clone the themes repositories from private repos only if directory doesn't exist
+      git:
+        repo: "{{ item.item.repo }}"
+        dest: "{{ web_root }}/{{ domain_name }}/wp-content/themes/{{ item.item.name }}"
+        force: yes
+        version: "{{ item.item.version }}"
+        accept_hostkey: yes
+      when: not item.stat.exists
+      loop: "{{ theme_directory_checks.results }}"
+      become: yes
+      become_user: root
+      ignore_errors: yes
+      environment:
+        SSH_AUTH_SOCK: "{{ ssh_agent_socket }}"
+        SSH_AGENT_PID: "{{ ssh_agent_pid }}"
+
+    - name: Switch to 'nod-electro-theme-child' theme
+      command: wp theme activate nod-electro-theme-child --path={{ web_root }}/{{ domain_name }} --allow-root
+      become: yes
+      become_user: root
+
+    - name: Ensure user mysql exists
+      user:
+        name: mysql
+        system: yes
+
+    - name: Ensure OpenSSL is installed
+      apt:
+        name: openssl
+        state: present
+
+    - name: Creating logs directory
+      file:
+        path: "{{ web_root }}/{{ domain_name }}/wp-content/logs"
+        state: directory
+
+    - name: Creates NOD Connector logs directory
+      file:
+        path: "{{ web_root }}/{{ domain_name }}/wp-content/logs/nod-connector"
+        state: directory
+
+    - name: Creates lockers directory
+      file:
+        path: "{{ web_root }}/{{ domain_name }}/wp-content/logs/lockers"
+        state: directory
+
+    - name: Creates NOD Connector logs orders directory
+      file:
+        path: "{{ web_root }}/{{ domain_name }}/wp-content/logs/nod-connector/orders"
+        state: directory
+
+    - name: Creates NOD Connector logs orders directory
+      file:
+        path: "{{ web_root }}/{{ domain_name }}/wp-content/logs/nod-connector/orders/send_to_nod"
+        state: directory
+
+    - name: Ensure wget is installed
+      ansible.builtin.package:
+        name: wget
+        state: present
+
+    - name: Ensure WordPress wp-cron is triggered regularly
+      ansible.builtin.cron:
+        name: "Trigger WordPress wp-cron"
+        minute: "*"
+        user: "root"
+        job: "wget -qO- http://{{ domain_name }}/wp-cron.php &> /dev/null"
+
+    - name: Change ownership of web directory
+      become: yes  # to become superuser
+      no_log: true
+      ansible.builtin.file:
+        path: "/var/www/{{ domain_name }}"
+        owner: www-data
+        group: www-data
+        recurse: yes  # to operate recursively
+
+    - name: Set directory permissions
+      become: yes
+      shell: "find /var/www/{{ domain_name }}/ -type d -exec chmod 755 {} \\;"
+
+    - name: Set file permissions
+      become: yes
+      shell: "find /var/www/{{ domain_name }}/ -type f -exec chmod 644 {} \\;"
+
+    - name: Change owner of files
+      become: yes
+      shell: "chown -R www-data:www-data /var/www/{{ domain_name }}"
+
+    - name: Ensure UFW is installed
+      apt:
+        name: ufw
+        state: present
+
+    - name: Ensure UFW is enabled
+      ufw:
+        state: enabled
+
+    - name: Allow HTTP traffic
+      ufw:
+        rule: allow
+        port: "80"
+        proto: tcp
+
+    - name: Allow HTTPS traffic
+      ufw:
+        rule: allow
+        port: "443"
+        proto: tcp
+
+    - name: Allow Nginx Full
+      ufw:
+        rule: allow
+        name: 'Nginx Full'
+
+    - name: Allow SSH traffic
+      ufw:
+        rule: allow
+        port: "22"
+        proto: tcp
+
+    - name: Ensure pip is installed
+      apt:
+        name: python3-pip
+        state: present
+
+    - name: Ensure pip is installed
+      apt:
+        name: python3-pip
+        state: present
+
+    - name: Ensure pymysql is installed
+      pip:
+        name: pymysql
+        state: present
+
+    - name: Update admin password in database
+      mysql_query:
+        login_host: "{{ db_host }}"
+        login_user: "{{ db_user }}"
+        login_password: "{{ db_password }}"
+        login_db: "{{ db_name }}"
+        query: "UPDATE wp_users SET user_pass = MD5('{{ wp_password }}') WHERE user_login = 'admin';"
+    #      no_log: true
+
+    - name: Get Home Page ID
+      command: "wp post list --post_type=page --name=home --field=ID --format=ids --allow-root --path={{ web_root }}/{{ domain_name }} "
+      register: home_page_id_result
+
+    - name: Set Home Page ID as a variable for later use
+      set_fact:
+        home_page_id: "{{ home_page_id_result.stdout }}"
+
+    - name: Update WordPress Options
+      command: wp option update "{{ item.option }}" "{{ item.value }}" --allow-root
+      args:
+        chdir: "{{ web_root }}/{{ domain_name }}"
+      with_items:
+        # Sync NOC CONNECTOR API
+        - { option: "nod_api_url", value: "{{ nod_api_url }}" }
+        - { option: "nod_api_user", value: "{{ nod_api_user }}" }
+        - { option: "nod_api_key", value: "{{ nod_api_key }}" }
+
+        # Sync azure variables
+        - { option: "azure_storage_use_for_default_upload", value: "{{ azure_storage_use_for_default_upload }}" }
+        - { option: "microsoft_azure_account_name", value: "{{ microsoft_azure_account_name }}" }
+        - { option: "microsoft_azure_account_key", value: "{{ microsoft_azure_account_key }}" }
+        - { option: "microsoft_azure_container", value: "{{ microsoft_azure_container }}" }
+        - { option: "azure_storage_account_name", value: "{{ azure_storage_account_name }}" }
+        - { option: "azure_storage_account_primary_access_key", value: "{{ azure_storage_account_primary_access_key }}" }
+        - { option: "default_azure_storage_account_container_name", value: "{{ default_azure_storage_account_container_name }}" }
+        - { option: "azure_browse_cache_results", value: "{{ azure_browse_cache_results }}" }
+        - { option: "azure_cache_control", value: "{{ azure_cache_control }}" }
+        - { option: "github_updater", value: 'a:17:{s:10:"db_version";s:4:"8312";s:13:"branch_switch";s:1:"1";s:19:"github_access_token";s:40:"{{github_updater_token}}";s:30:"nod-wordpress-marketplace-emag";s:40:"{{github_updater_token}}";s:45:"current_branch_nod-wordpress-marketplace-emag";s:13:"release-2.0.4";s:20:"nod-wordpress-module";s:40:"{{github_updater_token}}";s:35:"current_branch_nod-wordpress-module";s:13:"release-1.5.8";s:17:"nod-connector-b2b";s:40:"{{github_updater_token}}";s:32:"current_branch_nod-connector-b2b";s:6:"master";s:41:"current_branch_smartbill-wordpress-plugin";s:6:"master";s:32:"current_branch_nod-electro-theme";s:13:"release-3.0.1";s:29:"current_branch_github-updater";s:6:"master";s:38:"current_branch_nod-electro-theme-child";s:6:"master";s:13:"nod-shop-saas";s:40:"{{github_updater_token}}";s:28:"current_branch_nod-shop-saas";s:13:"release-1.0.8";s:35:"current_branch_nod-chained-products";s:6:"master";s:7:"electro";s:40:"{{github_updater_token}}";}' }
+        - { option: "github_updater_api_key", value: "{{ github_updater_api_key }}" }
+        - { option: "show_on_front", value: "page" }
+        - { option: "page_on_front", value: "{{ home_page_id }}" }
+
+    ### GENERATING STATIC PAGES BASED ON THE DEFINED "pages" variable
+    - name: Check if page with slug exists
+      command: sudo -u www-data wp post list --post_type=page --field=post_name --path="{{ web_root }}/{{ domain_name }}"
+      register: existing_pages
+      changed_when: false  # This command just checks for existing pages, it doesn't change anything
+
+    - name: Render page content from template
+      template:
+        src: "pages/{{ item.slug }}.j2"
+        dest: "/tmp/{{ item.slug }}.txt"
+      become: yes
+      become_method: sudo
+      become_user: www-data
+      loop: "{{ pages }}"
+      when: "item.slug not in existing_pages.stdout_lines"
+
+    - name: Create a page in WordPress from rendered content
+      command: sudo -u www-data wp post create --post_type=page --post_status=publish --post_title='{{ item.title }}' --post_name='{{ item.slug }}' --path="{{ web_root }}/{{ domain_name }}" /tmp/{{ item.slug }}.txt
+      args:
+        chdir: "{{ web_root }}/{{ domain_name }}"
+      loop: "{{ pages }}"
+      when: "item.slug not in existing_pages.stdout_lines"
+
+    - name: Cleanup temporary content file
+      file:
+        path: "/tmp/{{ item.slug }}.txt"
+        state: absent
+      become: yes
+      become_method: sudo
+      become_user: www-data
+      loop: "{{ pages }}"
+      when: "item.slug not in existing_pages.stdout_lines"
+
+    ## Handling Electro options
+    - name: Setting the serialised electro_option string
+      template:
+        src: templates/serialize_electro_options.php.j2  # Modify this path if needed
+        dest: "/var/ansible/utils/serialize_electro_options.php"
+
+
+    - name: Convert JSON to PHP serialized string and update WP option electro_options
+      command: php /var/ansible/utils/serialize_electro_options.php
+      args:
+        chdir: "{{ web_root }}/{{ domain_name }}"
+
+    - name: Cleanup - Remove the temporary PHP script
+      file:
+        path: "/var/ansible/utils/serialize_electro_options.php"
+        state: absent
+
+    ## Handling Smartbill options
+    - name: Setting the serialised electro_option string
+      template:
+        src: templates/serialize_smartbill_options.php.j2  # Modify this path if needed
+        dest: "/var/ansible/utils/serialize_smartbill_options.php"
+
+
+    - name: Convert JSON to PHP serialized string and update WP option electro_options
+      command: php /var/ansible/utils/serialize_smartbill_options.php
+      args:
+        chdir: "{{ web_root }}/{{ domain_name }}"
+
+    - name: Cleanup - Remove the temporary PHP script
+      file:
+        path: "/var/ansible/utils/serialize_smartbill_options.php"
+        state: absent
+
+    ### HANDLING MENUS
+    - name: Get list of existing menus
+      command: wp menu list --fields=name --format=csv
+      register: menu_list
+      become: yes
+      become_user: www-data
+      args:
+        chdir: "{{ web_root }}/{{ domain_name }}"
+
+    - name: Check if 'Meniu Sus Dreapta' menu exists
+      set_fact:
+        menu_exists: "{{ 'Meniu Sus Dreapta' in menu_list.stdout }}"
+      when: menu_list.stdout is defined
+
+    - name: Create menu if it doesn't exist
+      command: wp menu create "Meniu Sus Dreapta"
+      when: not menu_exists
+      become: yes
+      become_user: www-data
+      args:
+        chdir: "{{ web_root }}/{{ domain_name }}"
+
+    - name: Assign the menu to the location "topbar-right"
+      command: wp menu location assign "Meniu Sus Dreapta" topbar-right --allow-root
+      become: yes
+      become_user: www-data
+      args:
+        chdir: "{{ web_root }}/{{ domain_name }}"
+
+    # Get current menu items for "Meniu Sus Dreapta"
+    - name: Get current menu items
+      command: wp menu item list "Meniu Sus Dreapta" --fields=ID --format=csv
+      register: current_menu_items
+      become: yes
+      become_user: www-data
+      args:
+        chdir: "{{ web_root }}/{{ domain_name }}"
+      when: menu_exists
+
+    # Fetch the post IDs of the pages based on their slugs
+    - name: Get post IDs for menu pages
+      command: "wp post list --post_type=page --field=ID --name={{ item }}"
+      register: post_ids_results
+      loop: "{{ menu_top_bar_right_slugs }}"
+      become: yes
+      become_user: www-data
+      args:
+        chdir: "{{ web_root }}/{{ domain_name }}"
+
+    # Add pages to the menu "Meniu Sus Dreapta"
+    - name: Add pages to the menu "Meniu Sus Dreapta"
+      command: "wp menu item add-post 'Meniu Sus Dreapta' {{ item.stdout }}"
+      loop: "{{ post_ids_results.results }}"
+      when:
+        - item.stdout | length > 0  # Ensure there's a valid post ID
+        - (not menu_exists)  # Add items if the menu doesn't exist
+      become: yes
+      become_user: www-data
+      args:
+        chdir: "{{ web_root }}/{{ domain_name }}"
+
+  handlers:
+    - name: Reload NGINX
+      service:
+        name: nginx
+        state: reloaded
