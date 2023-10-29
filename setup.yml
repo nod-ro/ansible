@@ -454,6 +454,26 @@
         state: directory
         mode: '0755'  # Set the permissions (optional)
 
+    - name: Install WP-CLI
+      hosts: localhost  # You can change this to the target host where you want to install WP-CLI
+      become: yes  # Use sudo to perform tasks as the root user
+
+      tasks:
+        - name: Download WP-CLI
+          community.general.shell: |
+            curl -o /usr/local/bin/wp https://raw.githubusercontent.com/wp-cli/builds/gh-pages/phar/wp-cli.phar
+            chmod +x /usr/local/bin/wp
+          become_user: root
+
+        - name: Check WP-CLI version
+          community.general.shell: |
+            wp --version
+          become_user: root
+          register: wpcli_version
+
+        - debug:
+            var: wpcli_version.stdout
+
     # Check if WordPress is installed
     - name: Check if WordPress is installed
       command: wp core is-installed --path=/var/www/{{domain_name}} --allow-root
