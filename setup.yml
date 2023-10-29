@@ -448,15 +448,21 @@
           - php8.1-mbstring
         state: present
 
+    - name: Ensure main website directory exists
+      ansible.builtin.file:
+        path: /var/www/{{ domain_name }}
+        state: directory
+        mode: '0755'  # Set the permissions (optional)
+
     # Check if WordPress is installed
     - name: Check if WordPress is installed
-      command: wp core is-installed --path=/var/www/ansible.codecodac.com --allow-root
+      command: wp core is-installed --path=/var/www/{{domain_name}} --allow-root
       register: wp_is_installed
       ignore_errors: true
 
     # Download Romanian WordPress core if not installed
     - name: Download Romanian WordPress core
-      command: wp core download --locale=ro_RO --path=/var/www/ansible.codecodac.com --allow-root
+      command: wp core download --locale=ro_RO --path=/var/www/{{domain_name}} --allow-root
       when: wp_is_installed.rc != 0  # Only run when wp core is-installed command fails
       ignore_errors: true
 
@@ -681,13 +687,13 @@
 
     - name: Check if plugin directory exists and is empty
       find:
-        paths: "/var/www/ansible.codecodac.com/wp-content/plugins/{{ item.slug }}"
+        paths: "/var/www/{{domain_name}}/wp-content/plugins/{{ item.slug }}"
         file_type: directory
       register: plugin_directory
       with_items: "{{ external_plugins }}"
 
     - name: Install and activate external theme's plugins only if directory is empty
-      command: "wp plugin install {{ item.url }} --version={{ item.version }} --activate --path=/var/www/ansible.codecodac.com --allow-root"
+      command: "wp plugin install {{ item.url }} --version={{ item.version }} --activate --path=/var/www/{{domain_name}} --allow-root"
       when:
         - "plugin_directory.results[0]['matched'] == 0 or plugin_directory.results[0]['files'] | length == 0"
       with_items: "{{ external_plugins }}"
