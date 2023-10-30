@@ -901,6 +901,23 @@
         # Update smartbill_password shown in NC & NE
         - { option: "smartbill_password", value: "{{ smartbill_options.smartbill_password }}" }
 
+        # NOD CONNECTOR SHOP SETTINGS
+        - { option: "nod_default_product_status", value: "publish" }
+        - { option: "nod_image_update_strategy", value: "nod_images_first_set_only" }
+        - { option: "nod_deleted_product_status", value: "delete" }
+        - { option: "nod_import_sync_time", value: "4:00:00" }
+        - { option: "nod_prices_update_time", value: "5:00:00" }
+        - { option: "nod_prices_update_time_2", value: "15:00:00" }
+        - { option: "nod_round_final_prices", value: "yes" }
+        - { option: "nod_import_special_prices", value: "yes" }
+        - { option: "nod_adaos_general", value: "10" }
+        - { option: "nod_order_sending_mode_bacs", value: "manual" }
+        - { option: "nod_order_sending_mode_cheque", value: "manual" }
+        - { option: "nod_order_sending_mode_cod", value: "manual" }
+        - { option: "nod_order_sending_mode_netopiapayments", value: "manual" }
+        - { option: "nod_settings_debug_level", value: "200" }
+
+
     ### GENERATING STATIC PAGES BASED ON THE DEFINED "pages" variable
     - name: Check if page with slug exists
       command: sudo -u www-data wp post list --post_type=page --field=post_name --path="{{ web_root }}/{{ domain_name }}"
