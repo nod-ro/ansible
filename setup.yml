@@ -21,6 +21,8 @@
     customer_support_email: "support@mysite.ro"
     customer_support_phone: "0745123456"
     customer_support_address: "Strada Mihai Viteazul, Numărul 37, Cârcea, Dolj"
+    customer_bank: "Banca Transilvania"
+    customer_iban: "IBAN123456"
 
     # Defaults
     replace_content: true  #uneused yet
