@@ -352,6 +352,13 @@
           - certbot
           - python3-certbot-nginx
         state: present
+
+    - name: Deploy Nginx config (HTTP)
+      template:
+        src: nginx_config_non_https.j2
+        dest: /etc/nginx/sites-available/{{ domain_name }}
+      notify: Reload NGINX
+
     - name: Generate and/or install certificate
       shell: >
         certbot certonly --nginx
@@ -433,7 +440,7 @@
       template:
         src: nginx_config.j2
         dest: /etc/nginx/sites-available/{{ domain_name }}
-      notify: Reload Nginx
+      notify: Reload NGINX
 
     - name: Ensure Nginx configuration is enabled
       file:
@@ -466,6 +473,15 @@
       debug:
         var: wp_cli_version.stdout_lines
 
+    - name: Ensure pip is installed
+      apt:
+        name: python3-pip
+        state: present
+
+    - name: Ensure pymysql is installed
+      pip:
+        name: pymysql
+        executable: pip3
 
     # Check if WordPress is installed
     - name: Check if WordPress is installed
@@ -529,8 +545,8 @@
       become: yes
       become_user: www-data  # Replace with your web server user
 
-    - name: Install and activate WooCommerce
-      command: wp language plugin install woocommerce ro_RO --path={{ web_root }}/{{ domain_name }}  --allow-root
+#    - name: Install and activate WooCommerce
+#      command: wp language plugin install woocommerce ro_RO --path={{ web_root }}/{{ domain_name }}  --allow-root
 
     - name: Install and activate WooCommerce
       command: wp plugin install woocommerce --version=8.2.1 --activate --path={{ web_root }}/{{ domain_name }} --allow-root --force
@@ -738,11 +754,6 @@
       become: yes
       become_user: root
 
-    - name: Ensure user mysql exists
-      user:
-        name: mysql
-        system: yes
-
     - name: Ensure OpenSSL is installed
       apt:
         name: openssl
@@ -837,21 +848,6 @@
         rule: allow
         port: "22"
         proto: tcp
-
-    - name: Ensure pip is installed
-      apt:
-        name: python3-pip
-        state: present
-
-    - name: Ensure pip is installed
-      apt:
-        name: python3-pip
-        state: present
-
-    - name: Ensure pymysql is installed
-      pip:
-        name: pymysql
-        state: present
 
     - name: Update admin password in database
       mysql_query:
