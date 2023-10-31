@@ -560,36 +560,22 @@
       args:
         chdir: "{{ web_root }}/{{ domain_name }}"
 
-
-
     - name: Set WooCommerce Language to Romanian
       command: wp option update woocommerce_admin_locales 'a:1:{i:0;s:5:"ro_RO";}' --path={{ web_root }}/{{ domain_name }}
       become: yes
       become_user: www-data  # Replace with your web server user
 
-    - name: Ensure proper permissions and ownership
-      become: yes
-      file:
-        path: "{{ item.path }}"
-        owner: www-data
-        group: www-data
-        mode: "{{ item.mode }}"
-      loop:
-        - { path: '{{ web_root }}', mode: '0755' }
-        - { path: "{{ web_root }}/{{ domain_name }}", mode: '0755' }
-        - { path: "{{ web_root }}/{{ domain_name }}/wp-content", mode: '0755' }
-
     - name: Install and configure WooCommerce in Romanian
       become: yes
-      become_user: www-data
+      become_user: root
       command:
         cmd: "{{ item }}"
         chdir: "{{ web_root }}/{{ domain_name }}"
+        executable: /bin/bash
       loop:
-        - "wp plugin install woocommerce --activate --allow-root --force"
+        - "wp plugin install woocommerce --version=8.2.1 --activate --allow-root --force"
         - "wp language plugin install woocommerce ro_RO --allow-root"
         - "wp language core install ro_RO --allow-root"
-
 
 
     - name: Install and activate WooCommerce public plugins
