@@ -335,23 +335,6 @@
       - livrare
 
   tasks:
-    - name: Ensure main website directory exists
-      ansible.builtin.file:
-        path: /var/www/{{ domain_name }}
-        state: directory
-        mode: '0755'  # Set the permissions (optional)
-
-    - name: Ensure main website directory exists
-      ansible.builtin.file:
-        path: /var/ansible/tmp
-        state: directory
-        mode: '0755'  # Set the permissions (optional)
-
-    - name: Create PHP script for updating WordPress option
-      template:
-        src: "templates/update_option.php.j2"
-        dest: "/var/ansible/tmp/update_option.php"
-
     - name: Update and Upgrade System
       apt:
         update_cache: yes
@@ -476,6 +459,18 @@
           - phpmyadmin
           - php8.1-mbstring
         state: present
+
+    - name: Ensure main website directory exists
+      ansible.builtin.file:
+        path: /var/www/{{ domain_name }}
+        state: directory
+        mode: '0755'  # Set the permissions (optional)
+
+    - name: Ensure main website directory exists
+      ansible.builtin.file:
+        path: /var/ansible/tmp
+        state: directory
+        mode: '0755'  # Set the permissions (optional)
 
     - name: Download WP-CLI
       command: "curl -o /usr/local/bin/wp https://raw.githubusercontent.com/wp-cli/builds/gh-pages/phar/wp-cli.phar"
@@ -880,6 +875,11 @@
     - name: Set Home Page ID as a variable for later use
       set_fact:
         home_page_id: "{{ home_page_id_result.stdout }}"
+
+    - name: Create PHP script for updating WordPress option
+      template:
+        src: "templates/update_option.php.j2"
+        dest: "/var/ansible/tmp/update_option.php"
 
     - name: Update WordPress Options
       command:
