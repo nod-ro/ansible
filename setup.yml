@@ -352,18 +352,6 @@
         src: "templates/update_option.php.j2"
         dest: "/var/ansible/tmp/update_option.php"
 
-    - name: Update WordPress Options
-      command:
-        argv:
-          - php
-          - "/var/ansible/tmp/update_option.php"
-          - "{{ item.option }}"
-          - "{{ item.value }}"
-      loop:
-        - { option: 'woocommerce_specific_allowed_countries', value: 'a:1:{i:0;s:2:"RO";}' }
-      become: yes
-      become_user: www-data
-
     - name: Update and Upgrade System
       apt:
         update_cache: yes
@@ -894,10 +882,13 @@
         home_page_id: "{{ home_page_id_result.stdout }}"
 
     - name: Update WordPress Options
-      command: wp option update "{{ item.option }}" "{{ item.value }}" --allow-root
-      args:
-        chdir: "{{ web_root }}/{{ domain_name }}"
-      with_items:
+      command:
+        argv:
+          - php
+          - "/var/ansible/tmp/update_option.php"
+          - "{{ item.option }}"
+          - "{{ item.value }}"
+      loop:
         # Sync NOC CONNECTOR API
         - { option: "nod_api_url", value: "{{ nod_api_url }}" }
         - { option: "nod_api_user", value: "{{ nod_api_user }}" }
@@ -950,6 +941,8 @@
         - { option: "woocommerce_price_thousand_sep", value: "." }
         - { option: "woocommerce_price_decimal_sep", value: "," }
         - { option: "woocommerce_price_num_decimals", value: "2" }
+      become: yes
+      become_user: www-data
 
     ### GENERATING STATIC PAGES BASED ON THE DEFINED "pages" variable
     - name: Check if page with slug exists
