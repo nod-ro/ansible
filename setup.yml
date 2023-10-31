@@ -337,7 +337,7 @@
   tasks:
     - name: Create PHP script for updating WordPress option
       template:
-        src: update_option.php.j2
+        src: "templates/update_option.php.j2"
         dest: "/var/ansible/tmp/update_option.php"
 
     - name: Update WordPress Options
