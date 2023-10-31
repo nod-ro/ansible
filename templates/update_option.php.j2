@@ -8,7 +8,7 @@ function maybe_json_decode($string) {
     if (json_last_error() === JSON_ERROR_NONE) {
         return $decoded;
     }
-    return $string;
+    return maybe_unserialize($string);
 }
 
 $option_name = $argv[1];
