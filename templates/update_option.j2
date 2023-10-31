@@ -1,0 +1,10 @@
+<?php
+// Load WordPress
+require_once('{{ wordpress_path }}/wp-load.php');
+
+// Get the option name and value from the command line arguments
+$option_name = $argv[1];
+$option_value = unserialize($argv[2]);
+
+// Update the option
+update_option($option_name, $option_value);
