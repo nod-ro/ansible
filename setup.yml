@@ -578,7 +578,6 @@
         - { path: '{{ web_root }}', mode: '0755' }
         - { path: "{{ web_root }}/{{ domain_name }}", mode: '0755' }
         - { path: "{{ web_root }}/{{ domain_name }}/wp-content", mode: '0755' }
-        - { path: "{{ web_root }}/{{ domain_name }}/wp-content/upgrade", mode: '0755', state: 'directory' }
 
     - name: Install and configure WooCommerce in Romanian
       become: yes
