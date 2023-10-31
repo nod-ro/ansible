@@ -401,7 +401,7 @@
 
     - name: Generate NGINX Site Configuration
       template:
-        src: "templates/nginx_config.j2"
+        src: nginx_config.j2
         dest: "/etc/nginx/sites-available/{{ domain_name }}"
       notify:
         - Reload NGINX
@@ -515,7 +515,7 @@
     # Copy WordPress Config if WordPress is not already installed
     - name: Copy WordPress Config
       template:
-        src: "templates/wp-config.php.j2"
+        src: wp-config.php.j2
         dest: "/var/www/{{ domain_name }}/wp-config.php"
       when: wp_is_installed.rc != 0
 
@@ -878,7 +878,7 @@
 
     - name: Create PHP script for updating WordPress option
       template:
-        src: "templates/update_option.php.j2"
+        src: update_option.php.j2
         dest: "/var/ansible/tmp/update_option.php"
 
     - name: Update WordPress Options
@@ -980,7 +980,7 @@
     ## Handling Electro options
     - name: Setting the serialised electro_option string
       template:
-        src: "templates/serialize_electro_options.php.j2"  # Modify this path if needed
+        src: serialize_electro_options.php.j2  # Modify this path if needed
         dest: "/var/ansible/tmp/serialize_electro_options.php"
 
 
@@ -997,7 +997,7 @@
     ## Handling Smartbill options
     - name: Setting the serialised electro_option string
       template:
-        src: "templates/serialize_smartbill_options.php.j2"  # Modify this path if needed
+        src: serialize_smartbill_options.php.j2  # Modify this path if needed
         dest: "/var/ansible/tmp/serialize_smartbill_options.php"
 
 
