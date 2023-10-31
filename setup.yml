@@ -16,6 +16,8 @@
 
     # Customer data
     customer_name: "Shop la cheie SRL"
+    customer_city: "Craiova"
+    customer_zip: "617410000"
     customer_cui: "12345677899"
     customer_j: "J23/23/1999"
     customer_support_email: "support@mysite.ro"
@@ -870,7 +872,7 @@
         home_page_id: "{{ home_page_id_result.stdout }}"
 
     - name: Update WordPress Options
-      command: wp option update "{{ item.option }}" "{{ item.value }}" --allow-root
+      command: wp option update '{{ item.option }}' '{{ item.value }}' --allow-root
       args:
         chdir: "{{ web_root }}/{{ domain_name }}"
       with_items:
@@ -889,10 +891,6 @@
         - { option: "default_azure_storage_account_container_name", value: "{{ default_azure_storage_account_container_name }}" }
         - { option: "azure_browse_cache_results", value: "{{ azure_browse_cache_results }}" }
         - { option: "azure_cache_control", value: "{{ azure_cache_control }}" }
-
-        # Sync github updater
-        - { option: "github_updater", value: 'a:17:{s:10:"db_version";s:4:"8312";s:13:"branch_switch";s:1:"1";s:19:"github_access_token";s:40:"{{github_updater_token}}";s:30:"nod-wordpress-marketplace-emag";s:40:"{{github_updater_token}}";s:45:"current_branch_nod-wordpress-marketplace-emag";s:13:"release-2.0.4";s:20:"nod-wordpress-module";s:40:"{{github_updater_token}}";s:35:"current_branch_nod-wordpress-module";s:13:"release-1.5.8";s:17:"nod-connector-b2b";s:40:"{{github_updater_token}}";s:32:"current_branch_nod-connector-b2b";s:6:"master";s:41:"current_branch_smartbill-wordpress-plugin";s:6:"master";s:32:"current_branch_nod-electro-theme";s:13:"release-3.0.1";s:29:"current_branch_github-updater";s:6:"master";s:38:"current_branch_nod-electro-theme-child";s:6:"master";s:13:"nod-shop-saas";s:40:"{{github_updater_token}}";s:28:"current_branch_nod-shop-saas";s:13:"release-1.0.8";s:35:"current_branch_nod-chained-products";s:6:"master";s:7:"electro";s:40:"{{github_updater_token}}";}' }
-        - { option: "github_updater_api_key", value: "{{ github_updater_api_key }}" }
 
         # Set homepage
         - { option: "show_on_front", value: "page" }
@@ -917,6 +915,19 @@
         - { option: "nod_order_sending_mode_netopiapayments", value: "manual" }
         - { option: "nod_settings_debug_level", value: "200" }
 
+        # Woocommerce default settings
+        - { option: "woocommerce_store_address", value: "{{customer_support_address}}" }
+        - { option: "woocommerce_store_city", value: "{{customer_city}}" }
+        - { option: "woocommerce_store_postcode", value: "{{customer_zip}}" }
+        - { option: "woocommerce_allowed_countries", value: "specific" }
+        - { option: "woocommerce_specific_allowed_countries", value: '["RO"]' }
+        - { option: "woocommerce_specific_ship_to_countries", value: '["RO"]' }
+        - { option: "woocommerce_ship_to_countries", value: "specific" }
+        - { option: "woocommerce_currency", value: "RON" }
+        - { option: "woocommerce_currency_pos", value: "right" }
+        - { option: "woocommerce_price_thousand_sep", value: "." }
+        - { option: "woocommerce_price_decimal_sep", value: "," }
+        - { option: "woocommerce_price_num_decimals", value: "2" }
 
     ### GENERATING STATIC PAGES BASED ON THE DEFINED "pages" variable
     - name: Check if page with slug exists
