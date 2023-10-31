@@ -401,7 +401,7 @@
 
     - name: Generate NGINX Site Configuration
       template:
-        src: nginx_config.j2
+        src: "templates/nginx_config.j2"
         dest: "/etc/nginx/sites-available/{{ domain_name }}"
       notify:
         - Reload NGINX
@@ -980,7 +980,7 @@
     ## Handling Electro options
     - name: Setting the serialised electro_option string
       template:
-        src: templates/serialize_electro_options.php.j2  # Modify this path if needed
+        src: "templates/serialize_electro_options.php.j2"  # Modify this path if needed
         dest: "/var/ansible/tmp/serialize_electro_options.php"
 
 
@@ -997,7 +997,7 @@
     ## Handling Smartbill options
     - name: Setting the serialised electro_option string
       template:
-        src: templates/serialize_smartbill_options.php.j2  # Modify this path if needed
+        src: "templates/serialize_smartbill_options.php.j2"  # Modify this path if needed
         dest: "/var/ansible/tmp/serialize_smartbill_options.php"
 
 
