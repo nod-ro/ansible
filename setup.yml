@@ -515,7 +515,7 @@
     # Copy WordPress Config if WordPress is not already installed
     - name: Copy WordPress Config
       template:
-        src: wp-config.php.j2
+        src: "templates/wp-config.php.j2"
         dest: "/var/www/{{ domain_name }}/wp-config.php"
       when: wp_is_installed.rc != 0
 
