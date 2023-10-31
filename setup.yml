@@ -972,8 +972,8 @@
         - { option: "woocommerce_store_city", value: "{{customer_city}}" }
         - { option: "woocommerce_store_postcode", value: "{{customer_zip}}" }
         - { option: "woocommerce_allowed_countries", value: "specific" }
-        - { option: "woocommerce_specific_allowed_countries", value: '["RO"]' }
-        - { option: "woocommerce_specific_ship_to_countries", value: '["RO"]' }
+        - { option: "woocommerce_specific_allowed_countries", value: 'a:1:{i:0;s:2:"RO";}' }
+        - { option: "woocommerce_specific_ship_to_countries", value: 'a:1:{i:0;s:2:"RO";}' }
         - { option: "woocommerce_ship_to_countries", value: "specific" }
         - { option: "woocommerce_currency", value: "RON" }
         - { option: "woocommerce_currency_pos", value: "right" }
