@@ -478,6 +478,15 @@
         state: directory
         mode: '0755'  # Set the permissions (optional)
 
+    - name: Change ownership of web directory
+      become: yes  # to become superuser
+      no_log: true
+      ansible.builtin.file:
+        path: "/var/www/{{ domain_name }}"
+        owner: www-data
+        group: www-data
+        recurse: yes  # to operate recursively
+
     - name: Download WP-CLI
       command: "curl -o /usr/local/bin/wp https://raw.githubusercontent.com/wp-cli/builds/gh-pages/phar/wp-cli.phar"
     - name: Make WP-CLI Executable
