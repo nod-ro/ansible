@@ -3,7 +3,7 @@
   become: yes
   vars:
     web_root: "/var/www"
-    domain_name: ansible.codecodac.com
+    domain_name: ansible2.codecodac.com
     domain_title: Ansible Demo
     wp_version: 6.3.1
     certbot_admin_email: noreply@cerbu.tech
