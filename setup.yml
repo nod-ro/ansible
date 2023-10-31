@@ -335,6 +335,23 @@
       - livrare
 
   tasks:
+    - name: Create PHP script for updating WordPress option
+      template:
+        src: update_option.php.j2
+        dest: "/var/ansible/tmp/update_option.php"
+
+    - name: Update WordPress Options
+      command:
+        argv:
+          - php
+          - "/var/ansible/tmp/update_option.php"
+          - "{{ item.option }}"
+          - "{{ item.value }}"
+      loop:
+        - { option: 'woocommerce_specific_allowed_countries', value: 'a:1:{i:0;s:2:"RO";}' }
+      become: yes
+      become_user: www-data
+
     - name: Update and Upgrade System
       apt:
         update_cache: yes
@@ -466,6 +483,11 @@
         state: directory
         mode: '0755'  # Set the permissions (optional)
 
+    - name: Ensure main website directory exists
+      ansible.builtin.file:
+        path: /var/ansible/tmp
+        state: directory
+        mode: '0755'  # Set the permissions (optional)
 
     - name: Download WP-CLI
       command: "curl -o /usr/local/bin/wp https://raw.githubusercontent.com/wp-cli/builds/gh-pages/phar/wp-cli.phar"
@@ -872,7 +894,7 @@
         home_page_id: "{{ home_page_id_result.stdout }}"
 
     - name: Update WordPress Options
-      command: wp option update '{{ item.option }}' '{{ item.value }}' --allow-root
+      command: wp option update "{{ item.option }}" "{{ item.value }}" --allow-root
       args:
         chdir: "{{ web_root }}/{{ domain_name }}"
       with_items:
@@ -920,8 +942,8 @@
         - { option: "woocommerce_store_city", value: "{{customer_city}}" }
         - { option: "woocommerce_store_postcode", value: "{{customer_zip}}" }
         - { option: "woocommerce_allowed_countries", value: "specific" }
-        - { option: "woocommerce_specific_allowed_countries", value: '["RO"]' }
-        - { option: "woocommerce_specific_ship_to_countries", value: '["RO"]' }
+        - { option: "woocommerce_specific_allowed_countries", value: 'a:1:{i:0;s:2:"RO";}' }
+        - { option: "woocommerce_specific_ship_to_countries", value: 'a:1:{i:0;s:2:"RO";}' }
         - { option: "woocommerce_ship_to_countries", value: "specific" }
         - { option: "woocommerce_currency", value: "RON" }
         - { option: "woocommerce_currency_pos", value: "right" }
@@ -966,34 +988,34 @@
     - name: Setting the serialised electro_option string
       template:
         src: templates/serialize_electro_options.php.j2  # Modify this path if needed
-        dest: "/var/ansible/utils/serialize_electro_options.php"
+        dest: "/var/ansible/tmp/serialize_electro_options.php"
 
 
     - name: Convert JSON to PHP serialized string and update WP option electro_options
-      command: php /var/ansible/utils/serialize_electro_options.php
+      command: php /var/ansible/tmp/serialize_electro_options.php
       args:
         chdir: "{{ web_root }}/{{ domain_name }}"
 
     - name: Cleanup - Remove the temporary PHP script
       file:
-        path: "/var/ansible/utils/serialize_electro_options.php"
+        path: "/var/ansible/tmp/serialize_electro_options.php"
         state: absent
 
     ## Handling Smartbill options
     - name: Setting the serialised electro_option string
       template:
         src: templates/serialize_smartbill_options.php.j2  # Modify this path if needed
-        dest: "/var/ansible/utils/serialize_smartbill_options.php"
+        dest: "/var/ansible/tmp/serialize_smartbill_options.php"
 
 
     - name: Convert JSON to PHP serialized string and update WP option electro_options
-      command: php /var/ansible/utils/serialize_smartbill_options.php
+      command: php /var/ansible/tmp/serialize_smartbill_options.php
       args:
         chdir: "{{ web_root }}/{{ domain_name }}"
 
     - name: Cleanup - Remove the temporary PHP script
       file:
-        path: "/var/ansible/utils/serialize_smartbill_options.php"
+        path: "/var/ansible/tmp/serialize_smartbill_options.php"
         state: absent
 
     ### HANDLING MENUS
