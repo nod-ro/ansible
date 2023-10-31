@@ -1,0 +1,13 @@
+<?php
+require_once('{{ web_root }}/{{ domain_name }}/wp-load.php');  // Load WordPress Core for direct interactions
+
+$json_data = '{{ smartbill_options | to_json }}';
+$array_data = json_decode($json_data, true);
+//var_dump($array_data);
+//$serialized_data = serialize($array_data);
+
+// Update the WordPress option directly
+update_option('smartbill_plugin_options', $array_data);
+
+echo "Option updated.";
+
