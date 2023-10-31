@@ -555,11 +555,8 @@
       become: yes
       become_user: www-data  # Replace with your web server user
 
-#    - name: Install and activate WooCommerce
-#      command: wp language plugin install woocommerce ro_RO --path={{ web_root }}/{{ domain_name }}  --allow-root
-
-    - name: Install and activate WooCommerce
-      command: wp plugin install woocommerce --version=8.2.1 --activate --path={{ web_root }}/{{ domain_name }} --allow-root --force
+    - name: Install and activate WooCommerce in romanian
+      command: wp plugin install woocommerce --version=8.2.1 --activate --path={{ web_root }}/{{ domain_name }} --allow-root --force && wp language plugin install woocommerce ro_RO --path={{ web_root }}/{{ domain_name }}  --allow-root
 
     - name: Install and activate WooCommerce public plugins
       command: wp plugin install {{ item.name }} --version={{ item.version }} --path={{ web_root }}/{{ domain_name }} {{ '--activate' if item.activate else '' }} --allow-root --force
