@@ -3,16 +3,22 @@
 require_once('{{ web_root }}/{{ domain_name }}/wp-load.php');  // Load WordPress Core for direct interactions
 
 // Get the option name and value from the command line arguments
-function maybe_json_decode($string) {
-    $decoded = json_decode($string, true);
-    if (json_last_error() === JSON_ERROR_NONE) {
-        return $decoded;
-    }
-    return maybe_unserialize($string);
-}
-
 $option_name = $argv[1];
-$option_value = maybe_json_decode($argv[2]);
+$option_value = $argv[2];
+
+// Try to decode JSON to array
+$decoded_json = json_decode($option_value, true);
+if (json_last_error() === JSON_ERROR_NONE) {
+    $option_value = $decoded_json;
+} elseif (@unserialize($option_value) !== false || $option_value === 'b:0;') {
+    // If the option value isn't JSON, check if it's serialized data
+    $option_value = unserialize($option_value);
+}
 
 // Update the option
 update_option($option_name, $option_value);
+
+// Output for debugging
+//echo "Option '{$option_name}' updated to ";
+//print_r($option_value);
+//echo "\n";
