@@ -466,9 +466,15 @@
         state: directory
         mode: '0755'  # Set the permissions (optional)
 
-    - name: Ensure main website directory exists
+    - name: Ensure main tmp directory exists
       ansible.builtin.file:
         path: /var/ansible/tmp
+        state: directory
+        mode: '0755'  # Set the permissions (optional)
+
+    - name: Ensure main utils directory exists
+      ansible.builtin.file:
+        path: /var/ansible/utils
         state: directory
         mode: '0755'  # Set the permissions (optional)
 
@@ -978,34 +984,34 @@
     - name: Setting the serialised electro_option string
       template:
         src: serialize_electro_options.php.j2  # Modify this path if needed
-        dest: "/var/ansible/tmp/serialize_electro_options.php"
+        dest: "/var/ansible/utils/serialize_electro_options.php"
 
 
     - name: Convert JSON to PHP serialized string and update WP option electro_options
-      command: php /var/ansible/tmp/serialize_electro_options.php
+      command: php /var/ansible/utils/serialize_electro_options.php
       args:
         chdir: "{{ web_root }}/{{ domain_name }}"
 
     - name: Cleanup - Remove the temporary PHP script
       file:
-        path: "/var/ansible/tmp/serialize_electro_options.php"
+        path: "/var/ansible/utils/serialize_electro_options.php"
         state: absent
 
     ## Handling Smartbill options
     - name: Setting the serialised electro_option string
       template:
         src: serialize_smartbill_options.php.j2  # Modify this path if needed
-        dest: "/var/ansible/tmp/serialize_smartbill_options.php"
+        dest: "/var/ansible/utils/serialize_smartbill_options.php"
 
 
     - name: Convert JSON to PHP serialized string and update WP option electro_options
-      command: php /var/ansible/tmp/serialize_smartbill_options.php
+      command: php /var/ansible/utils/serialize_smartbill_options.php
       args:
         chdir: "{{ web_root }}/{{ domain_name }}"
 
     - name: Cleanup - Remove the temporary PHP script
       file:
-        path: "/var/ansible/tmp/serialize_smartbill_options.php"
+        path: "/var/ansible/utils/serialize_smartbill_options.php"
         state: absent
 
     ### HANDLING MENUS
