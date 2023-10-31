@@ -560,11 +560,16 @@
 
     - name: Install and configure WooCommerce in Romanian
       become: yes
-      become_user: www-data  # Replace with your web server user
-      shell: |
-        wp plugin install woocommerce --version=8.2.1 --activate --path={{ web_root }}/{{ domain_name }} --allow-root --force &&
-        wp language plugin install woocommerce ro_RO --path={{ web_root }}/{{ domain_name }} --allow-root &&
-        wp language core install ro_RO --path={{ web_root }}/{{ domain_name }} --allow-root
+      become_user: www-data
+      command:
+        cmd: "{{ item }}"
+        chdir: "{{ web_root }}/{{ domain_name }}"
+        executable: /bin/bash
+      loop:
+        - "wp plugin install woocommerce --version=8.2.1 --activate --allow-root --force"
+        - "wp language plugin install woocommerce ro_RO --allow-root"
+        - "wp language core install ro_RO --allow-root"
+
 
 
     - name: Install and activate WooCommerce public plugins
