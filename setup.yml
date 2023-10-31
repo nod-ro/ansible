@@ -137,7 +137,7 @@
         thumbnail: ""
       header_show_tooltip: "1"
       header_icon_tooltip_position: "bottom"
-      header_style: "v1"
+      header_style: "v2"
       sticky_header: "0"
       site_header_logo:
         url: ""
@@ -286,7 +286,7 @@
       - name: nod-shop-saas
         repo: "git@github.com:nod-ro/nod-shop-saas.git"
         version: 1.0.7
-        activate: false
+        activate: true
       - name: nod-smartbill
         repo: "git@github.com:nod-ro/nod-smartbill.git"
         version: 2.2.6.2-shops
@@ -328,11 +328,11 @@
         title: Livrare
 
     menu_top_bar_right_slugs:
-      - contul-meu
-      - contact
-      - termeni-si-conditii
+      - my-account
       - retur
       - livrare
+      - contact
+      - termeni-si-conditii
 
   tasks:
     - name: Update and Upgrade System
@@ -980,6 +980,9 @@
         - { option: "woocommerce_price_thousand_sep", value: "." }
         - { option: "woocommerce_price_decimal_sep", value: "," }
         - { option: "woocommerce_price_num_decimals", value: "2" }
+
+        # Random
+        - { option: "nod_saas_mentenance_status", value: "disabled" }
       become: yes
       become_user: www-data
 
