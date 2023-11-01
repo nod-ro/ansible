@@ -233,17 +233,25 @@
       command: wp language core install woocommerce ro_RO --path={{ web_root }}/{{ domain_name }}
       become: yes
       become_user: www-data  # Replace with your web server user
+      tags:
+        - woocommerce
 
     - name: Set WooCommerce Language to Romanian
       command: wp option update woocommerce_admin_locales 'a:1:{i:0;s:5:"ro_RO";}' --path={{ web_root }}/{{ domain_name }}
       become: yes
       become_user: www-data  # Replace with your web server user
+      tags:
+        - woocommerce
 
-    #    - name: Install and activate WooCommerce
-    #      command: wp language plugin install woocommerce ro_RO --path={{ web_root }}/{{ domain_name }}  --allow-root
+    - name: Install and activate WooCommerce
+      command: wp language plugin install woocommerce ro_RO --path={{ web_root }}/{{ domain_name }}  --allow-root
+      tags:
+        - woocommerce
 
     - name: Install and activate WooCommerce
       command: wp plugin install woocommerce --version=8.2.1 --activate --path={{ web_root }}/{{ domain_name }} --allow-root --force
+      tags:
+        - woocommerce
 
 
 #    - name: Set WooCommerce Language to Romanian
