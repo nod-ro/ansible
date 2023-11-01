@@ -37,12 +37,11 @@ sudo chown -R $USER:$USER /var/ansible
 EOF
 
 # Upload environment.yml from the local machine to the remote VM
-sshpass -p "$REMOTE_PASSWORD" scp -o StrictHostKeyChecking=no "$SCRIPT_DIR/environment.yml" "$REMOTE_USER@$REMOTE_HOST:/var/ansible/"
+#sshpass -p "$REMOTE_PASSWORD" scp -o StrictHostKeyChecking=no "$SCRIPT_DIR/environment.yml" "$REMOTE_USER@$REMOTE_HOST:/var/ansible/"
 
 # Connect to the VM and run multiple commands
 sshpass -p "$REMOTE_PASSWORD" ssh -o StrictHostKeyChecking=no "$REMOTE_USER@$REMOTE_HOST" bash -s << 'EOF'
 
-#ansible-playbook setup.yml
 cd /var/ansible
 ls -la
 sudo su -
@@ -56,5 +55,5 @@ export LC_ALL=en_US.UTF-8
 export LANG=en_US.UTF-8
 export LANGUAGE=en_US.UTF-8
 ls -la /var/ansible
-ansible-playbook /var/ansible/setup.yml
+#ansible-playbook /var/ansible/setup.yml
 EOF
