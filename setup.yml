@@ -271,16 +271,16 @@
         group: www-data
         recurse: yes
 
-    - name: Ensure /var/ansible/keys directory exists
-      file:
-        path: "/var/ansible/keys"
-        state: directory
-        mode: '0700'
+#    - name: Ensure /var/ansible/keys directory exists
+#      file:
+#        path: "/var/ansible/keys"
+#        state: directory
+#        mode: '0700'
 
-    - name: Check if SSH key named 'ansible' already exists in /var/ansible/keys
-      stat:
-        path: "/var/ansible/keys/ansible"
-      register: ssh_key
+#    - name: Check if SSH key named 'ansible' already exists in /var/ansible/keys
+#      stat:
+#        path: "/var/ansible/keys/ansible"
+#      register: ssh_key
 
 #    - name: Generate SSH key named 'ansible' if it doesn't exist in /var/ansible/keys
 #      command: ssh-keygen -t rsa -b 4096 -f /var/ansible/keys/ansible -N ""

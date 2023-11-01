@@ -1,5 +1,8 @@
 web_root: "/var/www"
 domain_name: ansible2.codecodac.com
+vm_ip: 98.67.160.132
+vm_user: "ubuntu"
+vm_password: "CerbuTechUbuntu!"
 domain_title: Ansible Demo
 wp_version: 6.3.1
 certbot_admin_email: noreply@cerbu.tech
