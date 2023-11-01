@@ -229,22 +229,39 @@
       args:
         chdir: "{{ web_root }}/{{ domain_name }}"
 
+    - name: Install WooCommerce Romanian Language Pack
+      command: wp language core install woocommerce ro_RO --path={{ web_root }}/{{ domain_name }}
+      become: yes
+      become_user: www-data  # Replace with your web server user
+
     - name: Set WooCommerce Language to Romanian
       command: wp option update woocommerce_admin_locales 'a:1:{i:0;s:5:"ro_RO";}' --path={{ web_root }}/{{ domain_name }}
       become: yes
       become_user: www-data  # Replace with your web server user
 
-    - name: Install and configure WooCommerce in Romanian
-      become: yes
-      become_user: root
-      command:
-        cmd: "{{ item }}"
-        chdir: "{{ web_root }}/{{ domain_name }}"
-        executable: /bin/bash
-      loop:
-        - "wp plugin install woocommerce --version=8.2.1 --activate --allow-root --force"
-        - "wp language plugin install woocommerce ro_RO --allow-root"
-        - "wp language core install ro_RO --allow-root"
+    #    - name: Install and activate WooCommerce
+    #      command: wp language plugin install woocommerce ro_RO --path={{ web_root }}/{{ domain_name }}  --allow-root
+
+    - name: Install and activate WooCommerce
+      command: wp plugin install woocommerce --version=8.2.1 --activate --path={{ web_root }}/{{ domain_name }} --allow-root --force
+
+
+#    - name: Set WooCommerce Language to Romanian
+#      command: wp option update woocommerce_admin_locales 'a:1:{i:0;s:5:"ro_RO";}' --path={{ web_root }}/{{ domain_name }}
+#      become: yes
+#      become_user: www-data  # Replace with your web server user
+
+#    - name: Install and configure WooCommerce in Romanian
+#      become: yes
+#      become_user: root
+#      command:
+#        cmd: "{{ item }}"
+#        chdir: "{{ web_root }}/{{ domain_name }}"
+#        executable: /bin/bash
+#      loop:
+#        - "wp plugin install woocommerce --version=8.2.1 --activate --allow-root --force"
+#        - "wp language plugin install woocommerce ro_RO --allow-root"
+#        - "wp language core install ro_RO --allow-root"
 
 
     - name: Install and activate WooCommerce public plugins
@@ -282,18 +299,18 @@
         path: "/var/ansible/keys/ansible"
       register: ssh_key
 
-    - name: Generate SSH key named 'ansible' if it doesn't exist in /var/ansible/keys
-      command: ssh-keygen -t rsa -b 4096 -f /var/ansible/keys/ansible -N ""
-      when: not ssh_key.stat.exists
+#    - name: Generate SSH key named 'ansible' if it doesn't exist in /var/ansible/keys
+#      command: ssh-keygen -t rsa -b 4096 -f /var/ansible/keys/ansible -N ""
+#      when: not ssh_key.stat.exists
 
-    - name: Get the content of the generated SSH public key named 'ansible'
-      command: cat /var/ansible/keys/ansible.pub
-      register: ssh_public_key
-      changed_when: false
+#    - name: Get the content of the generated SSH public key named 'ansible'
+#      command: cat /var/ansible/keys/ansible.pub
+#      register: ssh_public_key
+#      changed_when: false
 
-    - name: Display the public SSH key
-      debug:
-        msg: "{{ ssh_public_key.stdout }}"
+#    - name: Display the public SSH key
+#      debug:
+#        msg: "{{ ssh_public_key.stdout }}"
 
     - name: Start ssh-agent
       shell: ssh-agent
