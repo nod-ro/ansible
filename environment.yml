@@ -213,19 +213,19 @@ public_plugins:
     activate: true
   - name: one-click-demo-import
     version: 3.1.2
-    activate: true
+    activate: false
   - name: mainwp-child
     version: 4.5.2
-    activate: true
+    activate: false
   - name: windows-azure-storage
     version: 4.4.0
-    activate: true
+    activate: false
   - name: redux-framework
     version: 4.4.9
     activate: true
   - name: autoptimize
     version: 3.1.9
-    activate: true
+    activate: false
   - name: mas-woocommerce-brands
     version: 1.0.7
     activate: true
@@ -237,16 +237,16 @@ public_plugins:
     activate: false
   - name: wordpress-importer
     version: 0.8.1
-    activate: true
+    activate: false
   - name: advanced-nocaptcha-recaptcha
     version: 7.3.1
-    activate: true
+    activate: false
   - name: netopia-payments-payment-gateway
     version: 1.3
-    activate: true
+    activate: false
   - name: wpforms-lite
     version: 1.8.4
-    activate: false
+    activate: true
   - name: yith-woocommerce-compare
     version: 2.32.0
     activate: false
@@ -258,10 +258,10 @@ public_plugins:
     activate: true
   - name: regenerate-thumbnails
     version: 3.1.6
-    activate: true
+    activate: false
   - name: user-role-editor
     version: 4.64.1
-    activate: true
+    activate: false
 plugins:
   - name: github-updater
     repo: "git@github.com:afragen/git-updater.git"
