@@ -5,7 +5,7 @@ REMOTE_HOST=$(yq eval '.vm_ip' environment.yml)
 REMOTE_USER=$(yq eval '.vm_user' environment.yml)
 REMOTE_PASSWORD=$(yq eval '.vm_password' environment.yml)
 
-LOCAL_SSH_PRIVATE_KEY_PATH="/home/spanzuratorul/.ssh/ansible_remote_key"
+LOCAL_SSH_PRIVATE_KEY_PATH=$(yq eval '.ssh_key_path' environment.yml)
 SCRIPT_DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
 GIT_REPO_URL="https://github.com/nod-ro/ansible.git"
 

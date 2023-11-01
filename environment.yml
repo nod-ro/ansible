@@ -7,7 +7,7 @@ domain_title: Ansible Demo
 wp_version: 6.3.1
 certbot_admin_email: noreply@cerbu.tech
 php_version: 8.1
-ssh_key_path: "/var/ansible/keys/git_key.pub"
+ssh_key_path: "/home/spanzuratorul/.ssh/ansible_remote_key"
 wordpress_plugins_path: "/var/www/{{ domain_name }}/wp-content/plugins"
 wp_email: mariutamihaidan@gmail.com
 wp_user: administrator

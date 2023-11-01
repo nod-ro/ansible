@@ -305,31 +305,31 @@
         ssh_agent_socket: "{{ ssh_agent_info.stdout_lines[0].split(';')[0].split('=')[1] }}"
         ssh_agent_pid: "{{ ssh_agent_info.stdout_lines[1].split(';')[0].split('=')[1] }}"
 
-    - name: Ensure private key has correct permissions
-      ansible.builtin.file:
-        path: /var/ansible/keys/ansible
-        mode: '0600'
-        owner: root
-        group: root
-      become: yes
+#    - name: Ensure private key has correct permissions
+#      ansible.builtin.file:
+#        path: /var/ansible/keys/ansible
+#        mode: '0600'
+#        owner: root
+#        group: root
+#      become: yes
 
-    - name: Ensure keys directory has correct permissions
-      ansible.builtin.file:
-        path: /var/ansible/keys
-        mode: '0700'
-        owner: root
-        group: root
-        state: directory
-      become: yes
+#    - name: Ensure keys directory has correct permissions
+#      ansible.builtin.file:
+#        path: /var/ansible/keys
+#        mode: '0700'
+#        owner: root
+#        group: root
+#        state: directory
+#      become: yes
 
-    - name: Add SSH key to ssh-agent
-      ansible.builtin.shell: ssh-add /var/ansible/keys/ansible
-      environment:
-        SSH_AUTH_SOCK: "{{ ssh_agent_socket }}"
-        SSH_AGENT_PID: "{{ ssh_agent_pid }}"
-      become: yes
-      become_user: root  # or another user if needed
-      ignore_errors: true
+#    - name: Add SSH key to ssh-agent
+#      ansible.builtin.shell: ssh-add /var/ansible/keys/ansible
+#      environment:
+#        SSH_AUTH_SOCK: "{{ ssh_agent_socket }}"
+#        SSH_AGENT_PID: "{{ ssh_agent_pid }}"
+#      become: yes
+#      become_user: root  # or another user if needed
+#      ignore_errors: true
 
     - name: Test SSH connection to GitHub
       command: ssh -T git@github.com
