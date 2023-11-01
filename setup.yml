@@ -576,10 +576,14 @@
     - name: Get Home Page ID
       command: "wp post list --post_type=page --name=home --field=ID --format=ids --allow-root --path={{ web_root }}/{{ domain_name }} "
       register: home_page_id_result
+      tags:
+        - pages
 
     - name: Set Home Page ID as a variable for later use
       set_fact:
         home_page_id: "{{ home_page_id_result.stdout }}"
+      tags:
+        - pages
 
     - name: Create PHP script for updating WordPress option
       template:
@@ -651,6 +655,10 @@
         - { option: "nod_saas_mentenance_status", value: "disabled" }
       become: yes
       become_user: www-data
+      tags:
+        - options
+        - pages
+        - woocommerce
 
     ### GENERATING STATIC PAGES BASED ON THE DEFINED "pages" variable
     - name: Check if page with slug exists
