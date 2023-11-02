@@ -198,8 +198,11 @@
 
     - name: Create database as domain name
       mysql_db:
-        name: "{{ domain_name }}"
-        state: present
+          login_user: "{{ db_user }}"
+          login_password: "{{ db_password }}"
+          login_host: "{{ db_host }}"
+          name: "{{ domain_name }}"
+          state: present
       #no_log: true
 
     # Check if WordPress is installed
