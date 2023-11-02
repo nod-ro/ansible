@@ -972,7 +972,7 @@
 
     - name: Create flat rate shipping method for Romania shipping zone
       command: "{{ wp_cli_path }} --path={{ web_root }}/{{ domain_name }} wc shipping_zone_method create {{ romania_zone_id }} --method_id='flat_rate' --user='administrator' --allow-root"
-        when:
+      when:
         - romania_zone_id is defined
         - "'flat_rate' not in (zone_methods_output.stdout | from_json | map(attribute='method_id') | list)"
       register: flat_rate_method_output
