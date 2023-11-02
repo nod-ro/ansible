@@ -924,14 +924,14 @@
 
 
     - name: Ensure WooCommerce Romania shipping zone exists
-      command: "{{ wp_cli_path }} --path={{ web_root }}/{{ domain_name }} wc shipping_zone create --name='{{ zone_name }}' --order='{{ zone_order }}' --user='admin_username' --allow-root"
+      command: "{{ wp_cli_path }} --path={{ web_root }}/{{ domain_name }} wc shipping_zone create --name='Romania' --order=1 --user='administrator' --allow-root"
       register: zone_creation_output
       tags:
         - shipping
 
 
     - name: Set flat rate costs for Romania
-      command: "{{ wp_cli_path }} --path={{ web_root }}/{{ domain_name }} wc shipping_zone_method update {{ romania_zone_id }} 1 --settings='{{ flat_rate_settings }}' --user='admin_username' --allow-root"
+      command: "{{ wp_cli_path }} --path={{ web_root }}/{{ domain_name }} wc shipping_zone_method update {{ romania_zone_id }} 1 --settings='{{ flat_rate_settings }}' --user='administrator' --allow-root"
       vars:
         flat_rate_settings: >
           {
