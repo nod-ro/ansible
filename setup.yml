@@ -805,7 +805,7 @@
 
 # Pages to update
     - name: Update WordPress Page Names
-      command: "wp post update $(wp post list --name={{ item.slug }} --field=ID --post_type=page --allow-root) --post_title={{ item.new_name }} --allow-root"
+      command: "wp post update $(wp post list --name={{ item.slug }} --field=ID --post_type=page --allow-root) --post_title={{ item.new_name }} --allow-root --path=/var/www/{{domain_name}}"
       args:
         chdir: "{{ web_root }}"
       become: yes
