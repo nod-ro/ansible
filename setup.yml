@@ -271,16 +271,16 @@
         group: www-data
         recurse: yes
 
-#    - name: Ensure /var/ansible/keys directory exists
-#      file:
-#        path: "/var/ansible/keys"
-#        state: directory
-#        mode: '0700'
+    - name: Ensure /var/ansible/keys directory exists
+      file:
+        path: "/var/ansible/keys"
+        state: directory
+        mode: '0700'
 
-#    - name: Check if SSH key named 'ansible' already exists in /var/ansible/keys
-#      stat:
-#        path: "/var/ansible/keys/ansible"
-#      register: ssh_key
+    - name: Check if SSH key named 'ansible' already exists in /var/ansible/keys
+      stat:
+        path: "/var/ansible/keys/ansible"
+      register: ssh_key
 
 #    - name: Generate SSH key named 'ansible' if it doesn't exist in /var/ansible/keys
 #      command: ssh-keygen -t rsa -b 4096 -f /var/ansible/keys/ansible -N ""
@@ -305,31 +305,31 @@
         ssh_agent_socket: "{{ ssh_agent_info.stdout_lines[0].split(';')[0].split('=')[1] }}"
         ssh_agent_pid: "{{ ssh_agent_info.stdout_lines[1].split(';')[0].split('=')[1] }}"
 
-#    - name: Ensure private key has correct permissions
-#      ansible.builtin.file:
-#        path: /var/ansible/keys/ansible
-#        mode: '0600'
-#        owner: root
-#        group: root
-#      become: yes
+    - name: Ensure private key has correct permissions
+      ansible.builtin.file:
+        path: /var/ansible/keys/ansible
+        mode: '0600'
+        owner: root
+        group: root
+      become: yes
 
-#    - name: Ensure keys directory has correct permissions
-#      ansible.builtin.file:
-#        path: /var/ansible/keys
-#        mode: '0700'
-#        owner: root
-#        group: root
-#        state: directory
-#      become: yes
+    - name: Ensure keys directory has correct permissions
+      ansible.builtin.file:
+        path: /var/ansible/keys
+        mode: '0700'
+        owner: root
+        group: root
+        state: directory
+      become: yes
 
-#    - name: Add SSH key to ssh-agent
-#      ansible.builtin.shell: ssh-add /var/ansible/keys/ansible
-#      environment:
-#        SSH_AUTH_SOCK: "{{ ssh_agent_socket }}"
-#        SSH_AGENT_PID: "{{ ssh_agent_pid }}"
-#      become: yes
-#      become_user: root  # or another user if needed
-#      ignore_errors: true
+    - name: Add SSH key to ssh-agent
+      ansible.builtin.shell: ssh-add /var/ansible/keys/ansible
+      environment:
+        SSH_AUTH_SOCK: "{{ ssh_agent_socket }}"
+        SSH_AGENT_PID: "{{ ssh_agent_pid }}"
+      become: yes
+      become_user: root  # or another user if needed
+      ignore_errors: true
 
     - name: Test SSH connection to GitHub
       command: ssh -T git@github.com
@@ -583,6 +583,7 @@
       set_fact:
         home_page_id: "{{ home_page_id_result.stdout }}"
       tags:
+        - options
         - pages
 
     - name: Create PHP script for updating WordPress option
@@ -727,79 +728,81 @@
         path: "/var/ansible/utils/serialize_smartbill_options.php"
         state: absent
 
-# MENUS
-- name: Loop over each menu
-  vars:
-    current_menu: "{{ item }}"
-  loop: "{{ menus }}"
-  tags:
-    - menus
-  tasks:
+    ### HANDLING MENUS
     - name: Get list of existing menus
-      command: wp menu list --fields=name --format=csv --allow-root
+      command: wp menu list --fields=name --format=csv
       register: menu_list
+      become: yes
+      become_user: www-data
       args:
         chdir: "{{ web_root }}/{{ domain_name }}"
-      tags:
-        - menus
 
-    - name: Check if menu exists
-      set_fact:
-        menu_exists: "{{ current_menu.name in menu_list.stdout }}"
-      when: menu_list.stdout is defined
-      tags:
-        - menus
-
-    - name: Create menu if it doesn't exist
-      command: wp menu create "{{ current_menu.name }}" --allow-root
-      when: not menu_exists
-      args:
-        chdir: "{{ web_root }}/{{ domain_name }}"
-      tags:
-        - menus
-
-    - name: Assign the menu to the location
-      command: wp menu location assign "{{ current_menu.name }}" "{{ current_menu.location }}" --allow-root
-      args:
-        chdir: "{{ web_root }}/{{ domain_name }}"
-      when: current_menu.location is defined
-      tags:
-        - menus
-
-    - name: Loop over each menu item for pages
+    - name: Handle Menus
       vars:
-        current_menu_item: "{{ item }}"
-      loop: "{{ current_menu.items }}"
-      when: item.type == 'page'
+        current_menu: "{{ item }}"
+      loop: "{{ menus }}"
       tasks:
-        - name: Get post ID
-          command: "wp post list --post_type=page --field=ID --name={{ current_menu_item.name }} --allow-root"
-          register: post_id_result
-          args:
-            chdir: "{{ web_root }}/{{ domain_name }}"
-          tags:
-            - menus
+        - name: Check if menu exists
+          set_fact:
+            menu_exists: "{{ current_menu.name in menu_list.stdout }}"
+          when: menu_list.stdout is defined
 
-        - name: Add page to menu
-          command: "wp menu item add-post '{{ current_menu.name }}' {{ post_id_result.stdout }} --allow-root"
-          when: post_id_result.stdout | length > 0
+        - name: Create menu if it doesn't exist
+          command: wp menu create "{{ current_menu.name }}"
+          when: not menu_exists
+          become: yes
+          become_user: www-data
           args:
             chdir: "{{ web_root }}/{{ domain_name }}"
-          tags:
-            - menus
 
-    - name: Loop over each menu item for custom links
-      vars:
-        current_menu_item: "{{ item }}"
-      loop: "{{ current_menu.items }}"
-      when: item.type == 'custom'
-      tasks:
-        - name: Add custom link to menu
-          command: "wp menu item add-custom '{{ current_menu.name }}' '{{ current_menu_item.title }}' '{{ current_menu_item.url }}' --allow-root"
+        - name: Assign the menu to the location
+          command: "wp menu location assign '{{ current_menu.name }}' '{{ current_menu.location }}' --allow-root"
+          become: yes
+          become_user: www-data
           args:
             chdir: "{{ web_root }}/{{ domain_name }}"
-          tags:
-            - menus
+          when: current_menu.location is defined
+
+        - name: Get current menu items
+          command: "wp menu item list '{{ current_menu.name }}' --fields=ID --format=csv"
+          register: current_menu_items
+          become: yes
+          become_user: www-data
+          args:
+            chdir: "{{ web_root }}/{{ domain_name }}"
+          when: menu_exists
+
+        - name: Handle Menu Items
+          vars:
+            current_item: "{{ item }}"
+          loop: "{{ current_menu.items }}"
+          tasks:
+            - name: Get post IDs for menu pages
+              command: "wp post list --post_type=page --field=ID --name={{ current_item.name }}"
+              register: post_id_result
+              when: current_item.type == 'page'
+              become: yes
+              become_user: www-data
+              args:
+                chdir: "{{ web_root }}/{{ domain_name }}"
+
+            - name: Add page to the menu
+              command: "wp menu item add-post '{{ current_menu.name }}' {{ post_id_result.stdout }}"
+              when:
+                - post_id_result.stdout | length > 0
+                - current_item.type == 'page'
+              become: yes
+              become_user: www-data
+              args:
+                chdir: "{{ web_root }}/{{ domain_name }}"
+
+            - name: Add custom link to the menu
+              command: "wp menu item add-custom '{{ current_menu.name }}' '{{ current_item.title }}' '{{ current_item.url }}' --allow-root"
+              when: current_item.type == 'custom'
+              become: yes
+              become_user: www-data
+              args:
+                chdir: "{{ web_root }}/{{ domain_name }}"
   handlers:
     - name: Reload NGINX
       service:
