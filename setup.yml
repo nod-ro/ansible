@@ -736,7 +736,7 @@
         - menus
 
     - name: Get list of existing menus
-      command: wp menu list --fields=name --format=csv
+      command: wp menu list --fields=name --format=csv --allow-root
       register: menu_list
       args:
         chdir: "{{ web_root }}/{{ domain_name }}"
@@ -751,7 +751,7 @@
         - menus
 
     - name: Create menu if it doesn't exist
-      command: wp menu create "{{ current_menu.name }}"
+      command: wp menu create "{{ current_menu.name }}" --allow-root
       when: not menu_exists
       args:
         chdir: "{{ web_root }}/{{ domain_name }}"
@@ -759,7 +759,7 @@
         - menus
 
     - name: Assign the menu to the location
-      command: wp menu location assign "{{ current_menu.name }}" "{{ current_menu.location }}"
+      command: wp menu location assign "{{ current_menu.name }}" "{{ current_menu.location }}" --allow-root
       args:
         chdir: "{{ web_root }}/{{ domain_name }}"
       when: current_menu.location is defined
