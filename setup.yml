@@ -728,42 +728,43 @@
         state: absent
 
 # MENUS
-    - name: Handle Menus
-      vars:
+    - name: Loop over each menu
+      set_fact:
         current_menu: "{{ item }}"
       loop: "{{ menus }}"
-      tasks:
-        - name: Get list of existing menus
-          command: wp menu list --fields=name --format=csv
-          register: menu_list
-          args:
-            chdir: "{{ web_root }}/{{ domain_name }}"
-          tags:
-            - menus
+      tags:
+        - menus
 
-        - name: Check if menu exists
-          set_fact:
-            menu_exists: "{{ current_menu.name in menu_list.stdout }}"
-          when: menu_list.stdout is defined
-          tags:
-            - menus
+    - name: Get list of existing menus
+      command: wp menu list --fields=name --format=csv
+      register: menu_list
+      args:
+        chdir: "{{ web_root }}/{{ domain_name }}"
+      tags:
+        - menus
 
-        - name: Create menu if it doesn't exist
-          command: wp menu create "{{ current_menu.name }}"
-          when: not menu_exists
-          args:
-            chdir: "{{ web_root }}/{{ domain_name }}"
-          tags:
-            - menus
+    - name: Check if menu exists
+      set_fact:
+        menu_exists: "{{ current_menu.name in menu_list.stdout }}"
+      when: menu_list.stdout is defined
+      tags:
+        - menus
 
-        - name: Assign the menu to the location
-          command: wp menu location assign "{{ current_menu.name }}" "{{ current_menu.location }}"
-          args:
-            chdir: "{{ web_root }}/{{ domain_name }}"
-          when: current_menu.location is defined
-          tags:
-            - menus
+    - name: Create menu if it doesn't exist
+      command: wp menu create "{{ current_menu.name }}"
+      when: not menu_exists
+      args:
+        chdir: "{{ web_root }}/{{ domain_name }}"
+      tags:
+        - menus
 
+    - name: Assign the menu to the location
+      command: wp menu location assign "{{ current_menu.name }}" "{{ current_menu.location }}"
+      args:
+        chdir: "{{ web_root }}/{{ domain_name }}"
+      when: current_menu.location is defined
+      tags:
+        - menus
   handlers:
     - name: Reload NGINX
       service:
