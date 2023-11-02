@@ -803,6 +803,50 @@
       tags:
         - menus
 
+  # MENIU PRINCIPAL [primary-nav]
+
+    # Check if 'Meniu Principal' menu exists
+    - name: Check if 'Meniu Principal' menu exists
+      set_fact:
+        menu_principal_exists: "{{ 'Meniu Principal' in menu_list.stdout }}"
+      when: menu_list.stdout is defined
+      tags:
+        - menus
+
+    # Create 'Meniu Principal' menu if it doesn't exist
+    - name: Create 'Meniu Principal' menu if it doesn't exist
+      command: wp menu create "Meniu Principal"
+      when: not menu_principal_exists
+      become: yes
+      become_user: www-data
+      args:
+        chdir: "{{ web_root }}/{{ domain_name }}"
+      tags:
+        - menus
+
+    # Assign the 'Meniu Principal' menu to the location "primary-nav"
+    - name: Assign the 'Meniu Principal' menu to the location "primary-nav"
+      command: wp menu location assign "Meniu Principal" primary-nav --allow-root
+      when: not menu_principal_exists
+      become: yes
+      become_user: www-data
+      args:
+        chdir: "{{ web_root }}/{{ domain_name }}"
+      tags:
+        - menus
+
+    # Add a custom link to the 'Meniu Principal' menu
+    - name: Add custom link to the 'Meniu Principal' menu
+      command: wp menu item add-custom 'Meniu Principal' 'This is the Content' '#' --allow-root
+      when: not menu_principal_exists
+      become: yes
+      become_user: www-data
+      args:
+        chdir: "{{ web_root }}/{{ domain_name }}"
+      tags:
+        - menus
+
+
 # Pages to update
     - name: Update WordPress Page Names
       shell: "wp post update $(wp post list --name={{ item.slug }} --field=ID --post_type=page --allow-root --path={{ web_root }}/{{ domain_name }}) --post_title='{{ item.new_name }}' --allow-root --path={{ web_root }}/{{ domain_name }}"
