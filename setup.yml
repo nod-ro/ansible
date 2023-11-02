@@ -766,14 +766,14 @@
       tags:
         - menus
 
-    - name: Loop over menu items
+    - name: Loop over each menu item
       set_fact:
         current_menu_item: "{{ item }}"
       loop: "{{ current_menu.items }}"
       tags:
         - menus
 
-    - name: Get post ID for page menu items
+    - name: Add pages to the menu
       command: "wp post list --post_type=page --field=ID --name={{ current_menu_item.name }} --allow-root"
       register: post_id_result
       when: current_menu_item.type == 'page'
