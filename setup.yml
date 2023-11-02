@@ -201,7 +201,7 @@
           login_user: "{{ db_user }}"
           login_password: "{{ db_password }}"
           login_host: "{{ db_host }}"
-          name: "{{ domain_name }}"
+          name: "{{ db_name }}"
           state: present
       #no_log: true
 
