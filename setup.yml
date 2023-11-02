@@ -727,66 +727,52 @@
         path: "/var/ansible/utils/serialize_smartbill_options.php"
         state: absent
 
-    ### HANDLING MENUS
-    - name: Get list of existing menus
-      command: wp menu list --fields=name --format=csv
-      register: menu_list
-      become: yes
-      become_user: www-data
-      args:
-        chdir: "{{ web_root }}/{{ domain_name }}"
+# MENUS
+    - name: Handle Menus
+      block:
+        - name: Get list of existing menus
+          command: wp menu list --fields=name --format=csv
+          register: menu_list
+          args:
+            chdir: "{{ web_root }}/{{ domain_name }}"
+          tags:
+            - menus
 
-    - name: Check if 'Meniu Sus Dreapta' menu exists
-      set_fact:
-        menu_exists: "{{ 'Meniu Sus Dreapta' in menu_list.stdout }}"
-      when: menu_list.stdout is defined
+        - name: Check if menu exists
+          set_fact:
+            menu_exists: "{{ current_menu.name in menu_list.stdout }}"
+          when: menu_list.stdout is defined
+          tags:
+            - menus
 
-    - name: Create menu if it doesn't exist
-      command: wp menu create "Meniu Sus Dreapta"
-      when: not menu_exists
-      become: yes
-      become_user: www-data
-      args:
-        chdir: "{{ web_root }}/{{ domain_name }}"
+        - name: Create menu if it doesn't exist
+          command: wp menu create "{{ current_menu.name }}"
+          when: not menu_exists
+          args:
+            chdir: "{{ web_root }}/{{ domain_name }}"
+          tags:
+            - menus
 
-    - name: Assign the menu to the location "topbar-right"
-      command: wp menu location assign "Meniu Sus Dreapta" topbar-right --allow-root
-      become: yes
-      become_user: www-data
-      args:
-        chdir: "{{ web_root }}/{{ domain_name }}"
+        - name: Assign the menu to the location
+          command: wp menu location assign "{{ current_menu.name }}" "{{ current_menu.location }}"
+          args:
+            chdir: "{{ web_root }}/{{ domain_name }}"
+          when: current_menu.location is defined
+          tags:
+            - menus
 
-    # Get current menu items for "Meniu Sus Dreapta"
-    - name: Get current menu items
-      command: wp menu item list "Meniu Sus Dreapta" --fields=ID --format=csv
-      register: current_menu_items
-      become: yes
-      become_user: www-data
-      args:
-        chdir: "{{ web_root }}/{{ domain_name }}"
-      when: menu_exists
+        - name: Add menu items
+          include_tasks: add-menu-item.yml
+          loop: "{{ current_menu.items }}"
+          loop_control:
+            loop_var: current_item
+          tags:
+            - menus
+      loop: "{{ menus }}"
+      loop_control:
+        loop_var: current_menu
 
-    # Fetch the post IDs of the pages based on their slugs
-    - name: Get post IDs for menu pages
-      command: "wp post list --post_type=page --field=ID --name={{ item }}"
-      register: post_ids_results
-      loop: "{{ menu_top_bar_right_slugs }}"
-      become: yes
-      become_user: www-data
-      args:
-        chdir: "{{ web_root }}/{{ domain_name }}"
 
-    # Add pages to the menu "Meniu Sus Dreapta"
-    - name: Add pages to the menu "Meniu Sus Dreapta"
-      command: "wp menu item add-post 'Meniu Sus Dreapta' {{ item.stdout }}"
-      loop: "{{ post_ids_results.results }}"
-      when:
-        - item.stdout | length > 0  # Ensure there's a valid post ID
-        - (not menu_exists)  # Add items if the menu doesn't exist
-      become: yes
-      become_user: www-data
-      args:
-        chdir: "{{ web_root }}/{{ domain_name }}"
 
   handlers:
     - name: Reload NGINX
