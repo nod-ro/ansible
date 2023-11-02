@@ -729,6 +729,8 @@
 
 # MENUS
     - name: Handle Menus
+      vars:
+        current_menu: "{{ item }}"
       block:
         - name: Get list of existing menus
           command: wp menu list --fields=name --format=csv
@@ -761,18 +763,24 @@
           tags:
             - menus
 
-        - name: Add menu items
-          include_tasks: add-menu-item.yml
+        - name: Add pages to the menu
+          include_tasks: add-pages-to-menu.yml
           loop: "{{ current_menu.items }}"
+          when: current_item.type == 'page'
+          loop_control:
+            loop_var: current_item
+          tags:
+            - menus
+
+        - name: Add custom links to the menu
+          include_tasks: add-custom-links-to-menu.yml
+          loop: "{{ current_menu.items }}"
+          when: current_item.type == 'custom'
           loop_control:
             loop_var: current_item
           tags:
             - menus
       loop: "{{ menus }}"
-      loop_control:
-        loop_var: current_menu
-
-
 
   handlers:
     - name: Reload NGINX
