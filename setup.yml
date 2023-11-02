@@ -609,6 +609,10 @@
       template:
         src: update_option.php.j2
         dest: "/var/ansible/tmp/update_option.php"
+      tags:
+        - options
+        - pages
+        - woocommerce
 
     - name: Update WordPress Options
       command:

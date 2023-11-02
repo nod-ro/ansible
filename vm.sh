@@ -55,7 +55,11 @@ export LC_ALL=en_US.UTF-8
 export LANG=en_US.UTF-8
 export LANGUAGE=en_US.UTF-8
 ls -la /var/ansible
+
+
+
 #ansible-playbook /var/ansible/setup.yml --tags menus
+#ansible-playbook /var/ansible/setup.yml --tags pages
 ansible-playbook /var/ansible/setup.yml
 
 EOF

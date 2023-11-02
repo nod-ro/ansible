@@ -1,17 +1,15 @@
 web_root: "/var/www"
 domain_name: ansible2.codecodac.com
-vm_ip: 111.222.333.444
+vm_ip: 98.67.160.132
 vm_user: "ubuntu"
-vm_password: "pass"
+vm_password: "CerbuTechUbuntu!"
 domain_title: Ansible Demo
 wp_version: 6.3.1
-certbot_admin_email: noreply@cerbu.tech
+
 php_version: 8.1
-ssh_key_path: "/home/spanzuratorul/.ssh/ansible_remote_key"
-wordpress_plugins_path: "/var/www/{{ domain_name }}/wp-content/plugins"
 wp_email: mariutamihaidan@gmail.com
 wp_user: administrator
-wp_password: password
+wp_password: CerbuTechUbuntu!
 
 # Customer data
 customer_name: "Shop la cheie SRL"
@@ -31,8 +29,8 @@ replace_content: true  #uneused yet
 # DB
 db_name: wordpress
 db_user: shop
-db_password: pass
-db_host: remote_server_ip_or_address
+db_password: CerbuTechUbuntu!
+db_host: ansible-mysql.mysql.database.azure.com
 
 # Smartbill
 smartbill_options:
@@ -53,16 +51,16 @@ wp_debug_log: false
 
 # NOD CONNECTOR API credentials
 nod_api_url: http://api.b2b-sbx.nod.ro
-nod_api_user: test
-nod_api_key: test
+nod_api_user: 57d620670fed93307cc3cde577f18162
+nod_api_key: 8f3d70f0b7e1e81198b21775083b87d1
 
 # Azure cloud storage
 azure_storage_use_for_default_upload: 1
 microsoft_azure_account_name: nodcdn
-microsoft_azure_account_key: pass
+microsoft_azure_account_key: MepgF3FaTJU8NxKuatMpZdx+N2DXkfCi6SIU8W+tA19cGvPa3BqA6Y6ibn1rFmnPQJHYmrWezWwjr3bSvCjEoQ==
 microsoft_azure_container: octombrie
 azure_storage_account_name: r156
-azure_storage_account_primary_access_key: key
+azure_storage_account_primary_access_key: tjtW/F99XPPKB0D6I1UsygOrYORF/qcWZz+0obf9CFzSJT+rSwx44kkQ+PGc6iYie/UE+LnS5fVL+AStYh/knA==
 default_azure_storage_account_container_name: saas
 azure_browse_cache_results: 15
 azure_cache_control: 600
@@ -147,7 +145,7 @@ electro_options:
   off_canvas_nav_in_desktop: "1"
   header_vertical_menu_title: "Categorii Produse"
   header_vertical_menu_icon: "fa fa-list-ul"
-  header_departments_menu_title: "Shop By Department"
+  header_departments_menu_title: "Cauta in categorii"
   header_v5_departments_menu_title: "Categorii Produse"
   header_v6_departments_menu_title: "Categorii"
   header_navbar_search_placeholder: "Cautati produse"
@@ -314,6 +312,15 @@ themes:
   - name: nod-electro-theme-child
     repo: "git@github.com:nod-ro/nod-electro-theme-child.git"
     version: release-1.0.7
+
+pages_to_update:  # You can update the page titles and over
+  - slug: "my-account"
+    new_name: "Contul Meu"
+  - slug: "checkout"
+    new_name: "Finalizare comanda"
+  - slug: "cart"
+    new_name: "Cos"
+
 pages:
   - slug: home
     title: Prima pagina
