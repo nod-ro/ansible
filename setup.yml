@@ -341,14 +341,14 @@
 #        state: directory
 #      become: yes
 
-#    - name: Add SSH key to ssh-agent
-#      ansible.builtin.shell: ssh-add /var/ansible/keys/ansible
-#      environment:
-#        SSH_AUTH_SOCK: "{{ ssh_agent_socket }}"
-#        SSH_AGENT_PID: "{{ ssh_agent_pid }}"
-#      become: yes
-#      become_user: root  # or another user if needed
-#      ignore_errors: true
+    - name: Add SSH key to ssh-agent
+      ansible.builtin.shell: ssh-add /tmp/private_key
+      environment:
+        SSH_AUTH_SOCK: "{{ ssh_agent_socket }}"
+        SSH_AGENT_PID: "{{ ssh_agent_pid }}"
+      become: yes
+      become_user: root  # or another user if needed
+      ignore_errors: true
 
     - name: Test SSH connection to GitHub
       command: ssh -T git@github.com
