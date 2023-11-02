@@ -923,6 +923,7 @@
         - pages
 
 
+# SHIPPING
     - name: Ensure WooCommerce Romania shipping zone exists
       command: "{{ wp_cli_path }} --path={{ web_root }}/{{ domain_name }} wc shipping_zone create --name='Romania' --user='administrator' --allow-root"
       register: zone_creation_output
@@ -962,12 +963,29 @@
       tags:
         - shipping
 
-    - name: Set flat rate costs for Romania
-      shell: "{{ wp_cli_path }} --path={{ web_root }}/{{ domain_name }} wc shipping_zone_method update {{ romania_zone_id }} {{ instance_id }} --settings='{{ lookup('file', '/tmp/flat_rate_settings.json') }}' --user='administrator' --allow-root"
-      when: romania_zone_id is defined and instance_id is defined
+    - name: List shipping zone methods for Romania
+      command: "{{ wp_cli_path }} --path={{ web_root }}/{{ domain_name }} wc shipping_zone_method list {{ romania_zone_id }} --user='administrator' --format=json --allow-root"
+      register: zone_methods_output
+      when: romania_zone_id is defined
       tags:
         - shipping
 
+    - name: Parse flat rate instance ID
+      set_fact:
+        instance_id: "{{ (zone_methods_output.stdout | from_json) | json_query('[?method_id==`flat_rate`].instance_id') | first }}"
+      when:
+        - romania_zone_id is defined
+        - "'flat_rate' in (zone_methods_output.stdout | from_json | map(attribute='method_id') | list)"
+      tags:
+        - shipping
+
+    - name: Set flat rate costs for Romania
+      command: "{{ wp_cli_path }} --path={{ web_root }}/{{ domain_name }} wc shipping_zone_method update {{ romania_zone_id }} {{ instance_id }} --settings='{{ lookup('file', '/tmp/flat_rate_settings.json') }}' --user='administrator' --allow-root"
+      when:
+        - romania_zone_id is defined
+        - instance_id is defined
+      tags:
+        - shipping
 
 
 
