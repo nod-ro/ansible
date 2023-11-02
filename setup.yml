@@ -736,11 +736,15 @@
       become_user: www-data
       args:
         chdir: "{{ web_root }}/{{ domain_name }}"
+      tags:
+        - menus
 
     - name: Check if 'Meniu Sus Dreapta' menu exists
       set_fact:
         menu_exists: "{{ 'Meniu Sus Dreapta' in menu_list.stdout }}"
       when: menu_list.stdout is defined
+      tags:
+        - menus
 
     - name: Create menu if it doesn't exist
       command: wp menu create "Meniu Sus Dreapta"
@@ -749,6 +753,8 @@
       become_user: www-data
       args:
         chdir: "{{ web_root }}/{{ domain_name }}"
+      tags:
+        - menus
 
     - name: Assign the menu to the location "topbar-right"
       command: wp menu location assign "Meniu Sus Dreapta" topbar-right --allow-root
@@ -756,6 +762,8 @@
       become_user: www-data
       args:
         chdir: "{{ web_root }}/{{ domain_name }}"
+      tags:
+        - menus
 
     # Get current menu items for "Meniu Sus Dreapta"
     - name: Get current menu items
@@ -766,6 +774,8 @@
       args:
         chdir: "{{ web_root }}/{{ domain_name }}"
       when: menu_exists
+      tags:
+        - menus
 
     # Fetch the post IDs of the pages based on their slugs
     - name: Get post IDs for menu pages
@@ -776,6 +786,8 @@
       become_user: www-data
       args:
         chdir: "{{ web_root }}/{{ domain_name }}"
+      tags:
+        - menus
 
     # Add pages to the menu "Meniu Sus Dreapta"
     - name: Add pages to the menu "Meniu Sus Dreapta"
@@ -788,6 +800,8 @@
       become_user: www-data
       args:
         chdir: "{{ web_root }}/{{ domain_name }}"
+      tags:
+        - menus
 
   handlers:
     - name: Reload NGINX
