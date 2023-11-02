@@ -804,8 +804,6 @@
         - menus
 
   # MENIU PRINCIPAL [primary-nav]
-
-    # Check if 'Meniu Principal' menu exists
     - name: Check if 'Meniu Principal' menu exists
       set_fact:
         menu_principal_exists: "{{ 'Meniu Principal' in menu_list.stdout }}"
@@ -813,7 +811,6 @@
       tags:
         - menus
 
-    # Create 'Meniu Principal' menu if it doesn't exist
     - name: Create 'Meniu Principal' menu if it doesn't exist
       command: wp menu create "Meniu Principal"
       when: not menu_principal_exists
@@ -824,7 +821,6 @@
       tags:
         - menus
 
-    # Assign the 'Meniu Principal' menu to the location "primary-nav"
     - name: Assign the 'Meniu Principal' menu to the location "primary-nav"
       command: wp menu location assign "Meniu Principal" primary-nav --allow-root
       when: not menu_principal_exists
@@ -837,7 +833,7 @@
 
     # Add a custom link to the 'Meniu Principal' menu
     - name: Add custom link to the 'Meniu Principal' menu
-      command: wp menu item add-custom 'Meniu Principal' 'This is the Content' '#' --allow-root
+      command: wp menu item add-custom 'Meniu Principal' '<i class=&quot;fas fa-truck&quot;></i>  Livrare gratuita, la comenzi  de minim 500 lei' '#' --allow-root
       when: not menu_principal_exists
       become: yes
       become_user: www-data
@@ -846,6 +842,43 @@
       tags:
         - menus
 
+    # Meniu Sus Stanga
+    - name: Check if 'Meniu Sus Stanga' menu exists
+      set_fact:
+        menu_sus_stanga_exists: "{{ 'Meniu Sus Stanga' in menu_list.stdout }}"
+      when: menu_list.stdout is defined
+      tags:
+        - menus
+
+    - name: Create 'Meniu Sus Stanga' menu if it doesn't exist
+      command: wp menu create "Meniu Sus Stanga"
+      when: not menu_sus_stanga_exists
+      become: yes
+      become_user: www-data
+      args:
+        chdir: "{{ web_root }}/{{ domain_name }}"
+      tags:
+        - menus
+
+    - name: Assign the 'Meniu Sus Stanga' menu to the location "topbar-left"
+      command: wp menu location assign "Meniu Sus Stanga" topbar-left --allow-root
+      when: not menu_sus_stanga_exists
+      become: yes
+      become_user: www-data
+      args:
+        chdir: "{{ web_root }}/{{ domain_name }}"
+      tags:
+        - menus
+
+    - name: Add custom link to the 'Meniu Sus Stanga' menu
+      command: wp menu item add-custom 'Meniu Sus Stanga' 'O gama variata de produse' '#' --allow-root
+      when: not menu_sus_stanga_exists
+      become: yes
+      become_user: www-data
+      args:
+        chdir: "{{ web_root }}/{{ domain_name }}"
+      tags:
+        - menus
 
 # Pages to update
     - name: Update WordPress Page Names
