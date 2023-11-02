@@ -196,6 +196,12 @@
         name: pymysql
         executable: pip3
 
+    - name: Create database as domain name
+      mysql_db:
+        name: "{{ domain_name }}"
+        state: present
+      no_log: true
+
     # Check if WordPress is installed
     - name: Check if WordPress is installed
       command: wp core is-installed --path=/var/www/{{domain_name}} --allow-root
