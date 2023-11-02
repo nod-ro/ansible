@@ -927,18 +927,21 @@
     - name: Create 20RON shipping class
       command: "{{ wp_cli_path }} --path={{ web_root }}/{{ domain_name }} term create product_shipping_class '20RON' --description='20-ron transport' --slug='20-ron' --user='administrator' --allow-root"
       register: shipping_class_20ron
+      ignore_errors: yes
       tags:
         - shipping
 
     - name: Create 40RON shipping class
       command: "{{ wp_cli_path }} --path={{ web_root }}/{{ domain_name }} term create product_shipping_class '40RON' --description='40-ron transport' --slug='40-ron' --user='administrator' --allow-root"
       register: shipping_class_40ron
+      ignore_errors: yes
       tags:
         - shipping
 
     - name: Create 75RON shipping class
       command: "{{ wp_cli_path }} --path={{ web_root }}/{{ domain_name }} term create product_shipping_class '75RON' --description='75-ron transport' --slug='75-ron' --user='administrator' --allow-root"
       register: shipping_class_75ron
+      ignore_errors: yes
       tags:
         - shipping
 
