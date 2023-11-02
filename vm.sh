@@ -15,11 +15,11 @@ sshpass -p "$REMOTE_PASSWORD" scp -o StrictHostKeyChecking=no "$LOCAL_SSH_PRIVAT
 # Install Ansible, Git, clone the repository, and clean up
 sshpass -p "$REMOTE_PASSWORD" ssh -o StrictHostKeyChecking=no "$REMOTE_USER@$REMOTE_HOST" GIT_REPO_URL="$GIT_REPO_URL" bash -s << 'EOF'
 
-sudo apt-get update
-sudo apt-get install -y software-properties-common
-sudo add-apt-repository --yes --update ppa:ansible/ansible
-sudo apt-get install -y ansible
-sudo apt-get install -y git
+#sudo apt-get update
+#sudo apt-get install -y software-properties-common
+#sudo add-apt-repository --yes --update ppa:ansible/ansible
+#sudo apt-get install -y ansible
+#sudo apt-get install -y git
 
 # Configure SSH key for Git operations
 chmod 600 /tmp/private_key
