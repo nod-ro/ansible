@@ -987,6 +987,25 @@
       tags:
         - shipping
 
+    - name: Debug Romania shipping zone ID
+      debug:
+        var: romania_zone_id
+      tags:
+        - shipping
+
+    - name: Debug Zone Methods Output
+      debug:
+        var: zone_methods_output.stdout
+      when: romania_zone_id is defined
+      tags:
+        - shipping
+
+    - name: Debug Instance ID
+      debug:
+        var: instance_id
+      when: romania_zone_id is defined
+      tags:
+        - shipping
 
 
 
