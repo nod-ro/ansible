@@ -945,9 +945,6 @@
       tags:
         - shipping
 
-
-
-
     - name: Ensure WooCommerce Romania shipping zone exists
       command: "{{ wp_cli_path }} --path={{ web_root }}/{{ domain_name }} wc shipping_zone create --name='Romania' --user='administrator' --allow-root"
       register: zone_creation_output
@@ -1022,12 +1019,24 @@
         - shipping
 
     - name: Set flat rate costs for Romania
-      command: "{{ wp_cli_path }} --path={{ web_root }}/{{ domain_name }} wc shipping_zone_method update {{ romania_zone_id }} {{ instance_id }} --settings='{{ lookup('file', '/tmp/flat_rate_settings.json') | to_json }}' --user='administrator' --allow-root"
+      command: >
+        {{ wp_cli_path }} --path={{ web_root }}/{{ domain_name }}
+        wc shipping_zone_method update {{ romania_zone_id }} {{ instance_id }}
+        --settings='{{ lookup("file", "/tmp/flat_rate_settings.json") | to_json }}'
+        --user=administrator
+        --allow-root
       when:
         - romania_zone_id is defined
         - instance_id is defined
       tags:
         - shipping
+
+    - name: Debug flat rate settings JSON content
+      debug:
+        msg: '{{ lookup("file", "/tmp/flat_rate_settings.json") | to_json }}'
+      tags:
+        - shipping
+
 
     - name: Debug Romania shipping zone ID
       debug:
