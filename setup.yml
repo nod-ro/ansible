@@ -767,28 +767,36 @@
         - menus
 
     - name: Add pages to the menu
-      command: "wp menu item add-post '{{ current_menu.name }}' '{{ item.id }}' --allow-root"
-      loop: "{{ query('ansible.builtin.dict', current_menu.pages | default({})) }}"
-      when:
-        - item.value.type == 'page'
-        - not menu_exists
-      args:
-        chdir: "{{ web_root }}/{{ domain_name }}"
-      register: add_menu_result
+      block:
+        - name: Get post ID
+          command: "wp post list --post_type=page --field=ID --name={{ item.name }} --allow-root"
+          register: post_id_result
+          args:
+            chdir: "{{ web_root }}/{{ domain_name }}"
+          tags:
+            - menus
+          when: item.type == 'page'
+
+        - name: Add page to menu
+          command: "wp menu item add-post '{{ current_menu.name }}' {{ post_id_result.stdout }} --allow-root"
+          args:
+            chdir: "{{ web_root }}/{{ domain_name }}"
+          tags:
+            - menus
+          when: item.type == 'page' and post_id_result.stdout | length > 0
+      loop: "{{ current_menu.items }}"
       tags:
         - menus
 
     - name: Add custom links to the menu
-      command: "wp menu item add-custom '{{ current_menu.name }}' '{{ item.value.title }}' '{{ item.value.url }}' --allow-root"
-      loop: "{{ query('ansible.builtin.dict', current_menu.custom_links | default({})) }}"
-      when:
-        - item.value.type == 'custom'
-        - not menu_exists
+      command: "wp menu item add-custom '{{ current_menu.name }}' '{{ item.title }}' '{{ item.url }}' --allow-root"
       args:
         chdir: "{{ web_root }}/{{ domain_name }}"
-      register: add_custom_link_result
       tags:
         - menus
+      when: item.type == 'custom'
+      loop: "{{ current_menu.items }}"
+
   handlers:
     - name: Reload NGINX
       service:
