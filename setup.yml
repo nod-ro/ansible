@@ -803,6 +803,17 @@
       tags:
         - menus
 
+# Pages to update
+    - name: Update WordPress Page Names
+      command: "wp post update $(wp post list --name={{ item.slug }} --field=ID --post_type=page --allow-root) --post_title={{ item.new_name }} --allow-root"
+      args:
+        chdir: "{{ web_root }}"
+      become: yes
+      become_user: www-data
+      loop: "{{ pages_to_update }}"
+      tags:
+        - menus
+        - pages
   handlers:
     - name: Reload NGINX
       service:
