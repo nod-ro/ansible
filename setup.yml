@@ -967,10 +967,11 @@
         - shipping
 
     - name: Set flat rate costs for Romania
-      command: "{{ wp_cli_path }} --path={{ web_root }}/{{ domain_name }} wc shipping_method update flat_rate --zone_id={{ romania_zone_id }} --settings='$(< /tmp/flat_rate_settings.json)' --user='administrator' --allow-root"
+      command: "{{ wp_cli_path }} --path={{ web_root }}/{{ domain_name }} wc shipping_zone_method update {{ romania_zone_id }} --method_id=flat_rate --settings='$(cat /tmp/flat_rate_settings.json)' --user='administrator' --allow-root"
       when: romania_zone_id is defined
       tags:
         - shipping
+
 
 
 
