@@ -766,33 +766,41 @@
       tags:
         - menus
 
-    - name: Get post IDs for menu pages
-      command: "wp post list --post_type=page --field=ID --name={{ item.slug }} --allow-root"
-      register: post_ids_results
-      loop: "{{ current_menu.pages }}"
-      when: current_menu.pages is defined
-      args:
-        chdir: "{{ web_root }}/{{ domain_name }}"
-      tags:
-        - menus
-
     - name: Add pages to the menu
-      command: "wp menu item add-post '{{ current_menu.name }}' {{ item.stdout }} --allow-root"
-      loop: "{{ post_ids_results.results }}"
-      when:
-        - item.stdout | length > 0  # Ensure there's a valid post ID
-        - menu_exists  # Add items only if the menu exists
-      args:
-        chdir: "{{ web_root }}/{{ domain_name }}"
+      block:
+        - name: Get post ID
+          command: "wp post list --post_type=page --field=ID --name={{ current_menu_item.name }} --allow-root"
+          register: post_id_result
+          when: current_menu_item.type == 'page'
+          args:
+            chdir: "{{ web_root }}/{{ domain_name }}"
+          tags:
+            - menus
+
+        - name: Add page to menu
+          command: "wp menu item add-post '{{ current_menu.name }}' {{ post_id_result.stdout }} --allow-root"
+          when:
+            - post_id_result.stdout | length > 0
+            - current_menu_item.type == 'page'
+          args:
+            chdir: "{{ web_root }}/{{ domain_name }}"
+          tags:
+            - menus
+
+      loop: "{{ current_menu.items }}"
+      loop_control:
+        loop_var: current_menu_item
       tags:
         - menus
 
     - name: Add custom links to the menu
-      command: "wp menu item add-custom '{{ current_menu.name }}' '{{ item.name }}' '{{ item.url }}' --allow-root"
-      loop: "{{ current_menu.custom_links }}"
-      when: current_menu.custom_links is defined
+      command: "wp menu item add-custom '{{ current_menu.name }}' '{{ current_menu_item.title }}' '{{ current_menu_item.url }}' --allow-root"
+      loop: "{{ current_menu.items }}"
+      when: current_menu_item.type == 'custom'
       args:
         chdir: "{{ web_root }}/{{ domain_name }}"
+      loop_control:
+        loop_var: current_menu_item
       tags:
         - menus
 
