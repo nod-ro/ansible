@@ -766,37 +766,39 @@
       tags:
         - menus
 
-    - name: Add pages to the menu
-      block:
-        - name: Get post ID
-          command: "wp post list --post_type=page --field=ID --name={{ item.name }} --allow-root"
-          register: post_id_result
-          args:
-            chdir: "{{ web_root }}/{{ domain_name }}"
-          tags:
-            - menus
-          when: item.type == 'page'
-
-        - name: Add page to menu
-          command: "wp menu item add-post '{{ current_menu.name }}' {{ post_id_result.stdout }} --allow-root"
-          args:
-            chdir: "{{ web_root }}/{{ domain_name }}"
-          tags:
-            - menus
-          when: item.type == 'page' and post_id_result.stdout | length > 0
+    - name: Loop over menu items
+      set_fact:
+        current_menu_item: "{{ item }}"
       loop: "{{ current_menu.items }}"
       tags:
         - menus
 
-    - name: Add custom links to the menu
-      command: "wp menu item add-custom '{{ current_menu.name }}' '{{ item.title }}' '{{ item.url }}' --allow-root"
+    - name: Get post ID for page menu items
+      command: "wp post list --post_type=page --field=ID --name={{ current_menu_item.name }} --allow-root"
+      register: post_id_result
+      when: current_menu_item.type == 'page'
       args:
         chdir: "{{ web_root }}/{{ domain_name }}"
       tags:
         - menus
-      when: item.type == 'custom'
-      loop: "{{ current_menu.items }}"
 
+    - name: Add page to menu
+      command: "wp menu item add-post '{{ current_menu.name }}' {{ post_id_result.stdout }} --allow-root"
+      when:
+        - current_menu_item.type == 'page'
+        - post_id_result.stdout | length > 0
+      args:
+        chdir: "{{ web_root }}/{{ domain_name }}"
+      tags:
+        - menus
+
+    - name: Add custom link to menu
+      command: "wp menu item add-custom '{{ current_menu.name }}' '{{ current_menu_item.title }}' '{{ current_menu_item.url }}' --allow-root"
+      when: current_menu_item.type == 'custom'
+      args:
+        chdir: "{{ web_root }}/{{ domain_name }}"
+      tags:
+        - menus
   handlers:
     - name: Reload NGINX
       service:
