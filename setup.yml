@@ -601,6 +601,39 @@
         query: "UPDATE wp_users SET user_pass = MD5('{{ wp_password }}') WHERE user_login = 'admin';"
     #      no_log: true
 
+    ### GENERATING STATIC PAGES BASED ON THE DEFINED "pages" variable
+    - name: Check if page with slug exists
+      command: sudo -u www-data wp post list --post_type=page --field=post_name --path="{{ web_root }}/{{ domain_name }}"
+      register: existing_pages
+      changed_when: false  # This command just checks for existing pages, it doesn't change anything
+
+    - name: Render page content from template
+      template:
+        src: "pages/{{ item.slug }}.j2"
+        dest: "/tmp/{{ item.slug }}.txt"
+      become: yes
+      become_method: sudo
+      become_user: www-data
+      loop: "{{ pages }}"
+      when: "item.slug not in existing_pages.stdout_lines"
+
+    - name: Create a page in WordPress from rendered content
+      command: sudo -u www-data wp post create --post_type=page --post_status=publish --post_title='{{ item.title }}' --post_name='{{ item.slug }}' --path="{{ web_root }}/{{ domain_name }}" /tmp/{{ item.slug }}.txt
+      args:
+        chdir: "{{ web_root }}/{{ domain_name }}"
+      loop: "{{ pages }}"
+      when: "item.slug not in existing_pages.stdout_lines"
+
+    - name: Cleanup temporary content file
+      file:
+        path: "/tmp/{{ item.slug }}.txt"
+        state: absent
+      become: yes
+      become_method: sudo
+      become_user: www-data
+      loop: "{{ pages }}"
+      when: "item.slug not in existing_pages.stdout_lines"
+
     - name: Get Home Page ID
       command: "wp post list --post_type=page --name=home --field=ID --format=ids --allow-root --path={{ web_root }}/{{ domain_name }} "
       register: home_page_id_result
@@ -692,39 +725,6 @@
         - options
         - pages
         - woocommerce
-
-    ### GENERATING STATIC PAGES BASED ON THE DEFINED "pages" variable
-    - name: Check if page with slug exists
-      command: sudo -u www-data wp post list --post_type=page --field=post_name --path="{{ web_root }}/{{ domain_name }}"
-      register: existing_pages
-      changed_when: false  # This command just checks for existing pages, it doesn't change anything
-
-    - name: Render page content from template
-      template:
-        src: "pages/{{ item.slug }}.j2"
-        dest: "/tmp/{{ item.slug }}.txt"
-      become: yes
-      become_method: sudo
-      become_user: www-data
-      loop: "{{ pages }}"
-      when: "item.slug not in existing_pages.stdout_lines"
-
-    - name: Create a page in WordPress from rendered content
-      command: sudo -u www-data wp post create --post_type=page --post_status=publish --post_title='{{ item.title }}' --post_name='{{ item.slug }}' --path="{{ web_root }}/{{ domain_name }}" /tmp/{{ item.slug }}.txt
-      args:
-        chdir: "{{ web_root }}/{{ domain_name }}"
-      loop: "{{ pages }}"
-      when: "item.slug not in existing_pages.stdout_lines"
-
-    - name: Cleanup temporary content file
-      file:
-        path: "/tmp/{{ item.slug }}.txt"
-        state: absent
-      become: yes
-      become_method: sudo
-      become_user: www-data
-      loop: "{{ pages }}"
-      when: "item.slug not in existing_pages.stdout_lines"
 
     ## Handling Electro options
     - name: Setting the serialised electro_option string
