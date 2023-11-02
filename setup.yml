@@ -322,7 +322,7 @@
 #        state: directory
 #      become: yes
 
-    - name: Add SSH key to ssh-agent
+#    - name: Add SSH key to ssh-agent
 #      ansible.builtin.shell: ssh-add /var/ansible/keys/ansible
 #      environment:
 #        SSH_AUTH_SOCK: "{{ ssh_agent_socket }}"
