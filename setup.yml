@@ -58,7 +58,7 @@
         -d {{ domain_name }}
         --non-interactive --agree-tos
         --email {{ certbot_admin_email }}
-        --dry-run
+      #  --dry-run
       register: certbot_output
       ignore_errors: yes
 
