@@ -922,6 +922,27 @@
         - menus
         - pages
 
+
+    - name: Ensure WooCommerce Romania shipping zone exists
+      command: "{{ wp_cli_path }} --path={{ wp_path }} wc shipping_zone create --name='{{ zone_name }}' --order='{{ zone_order }}'"
+      register: zone_creation_output
+      ignore_errors: yes
+      # rest of the tasks...
+    - name: Set flat rate costs for Romania
+      command: "{{ wp_cli_path }} --path={{ wp_path }} wc shipping_zone_method update {{ romania_zone_id }} 1 --settings='{{ flat_rate_settings }}'"
+      vars:
+        flat_rate_settings: >
+          {
+            "cost": "{{ flat_rate_cost }}",
+            {% for sc in shipping_classes_costs %}
+            "{{ sc.class }}": "{{ sc.cost }}",
+            {% endfor %}
+            "calculation_type": "class"
+          }
+      when: romania_zone_id is defined
+      tags:
+        - shipping
+
   handlers:
     - name: Reload NGINX
       service:
