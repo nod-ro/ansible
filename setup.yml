@@ -200,7 +200,7 @@
       mysql_db:
         name: "{{ domain_name }}"
         state: present
-      no_log: true
+      #no_log: true
 
     # Check if WordPress is installed
     - name: Check if WordPress is installed
