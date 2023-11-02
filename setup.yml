@@ -930,6 +930,15 @@
       tags:
         - shipping
 
+    - name: Add flat rate shipping method to Romania shipping zone
+      command: "{{ wp_cli_path }} --path={{ web_root }}/{{ domain_name }} wc shipping_zone_method add {{ romania_zone_id }} flat_rate --user='administrator' --allow-root"
+      when:
+        - romania_zone_id is defined
+        - "'flat_rate' not in (zone_methods_output.stdout | from_json | map(attribute='method_id') | list)"
+      register: flat_rate_method_output
+      tags:
+        - shipping
+
     - name: Get Romania shipping zone ID
       command: "{{ wp_cli_path }} --path={{ web_root }}/{{ domain_name }} wc shipping_zone list --user='administrator' --format=json --allow-root"
       register: shipping_zones_output
