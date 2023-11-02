@@ -767,43 +767,28 @@
         - menus
 
     - name: Add pages to the menu
-      block:
-        - name: Get post ID
-          command: "wp post list --post_type=page --field=ID --name={{ current_menu_item.name }} --allow-root"
-          register: post_id_result
-          when: current_menu_item.type == 'page'
-          args:
-            chdir: "{{ web_root }}/{{ domain_name }}"
-          tags:
-            - menus
-
-        - name: Add page to menu
-          command: "wp menu item add-post '{{ current_menu.name }}' {{ post_id_result.stdout }} --allow-root"
-          when:
-            - post_id_result.stdout | length > 0
-            - current_menu_item.type == 'page'
-          args:
-            chdir: "{{ web_root }}/{{ domain_name }}"
-          tags:
-            - menus
-
-      loop: "{{ current_menu.items }}"
-      loop_control:
-        loop_var: current_menu_item
+      command: "wp menu item add-post '{{ current_menu.name }}' '{{ item.id }}' --allow-root"
+      loop: "{{ query('ansible.builtin.dict', current_menu.pages | default({})) }}"
+      when:
+        - item.value.type == 'page'
+        - not menu_exists
+      args:
+        chdir: "{{ web_root }}/{{ domain_name }}"
+      register: add_menu_result
       tags:
         - menus
 
     - name: Add custom links to the menu
-      command: "wp menu item add-custom '{{ current_menu.name }}' '{{ current_menu_item.title }}' '{{ current_menu_item.url }}' --allow-root"
-      loop: "{{ current_menu.items }}"
-      when: current_menu_item.type == 'custom'
+      command: "wp menu item add-custom '{{ current_menu.name }}' '{{ item.value.title }}' '{{ item.value.url }}' --allow-root"
+      loop: "{{ query('ansible.builtin.dict', current_menu.custom_links | default({})) }}"
+      when:
+        - item.value.type == 'custom'
+        - not menu_exists
       args:
         chdir: "{{ web_root }}/{{ domain_name }}"
-      loop_control:
-        loop_var: current_menu_item
+      register: add_custom_link_result
       tags:
         - menus
-
   handlers:
     - name: Reload NGINX
       service:
