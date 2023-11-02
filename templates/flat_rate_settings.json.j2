@@ -1,0 +1,7 @@
+{
+  "cost": "{{ flat_rate_cost }}",
+  {% for sc in shipping_classes_costs %}
+  "{{ sc.class }}": "{{ sc.cost }}",
+  {% endfor %}
+  "calculation_type": "class"
+}

@@ -952,20 +952,26 @@
 
 
 
-    - name: Set flat rate costs for Romania
-      command: "{{ wp_cli_path }} --path={{ web_root }}/{{ domain_name }} wc shipping_zone_method update {{ romania_zone_id }} 1 --settings='{{ flat_rate_settings }}' --user='administrator' --allow-root"
+    - name: Create flat rate settings JSON file
+      template:
+        src: flat_rate_settings.json.j2
+        dest: "/tmp/flat_rate_settings.json"
       vars:
-        flat_rate_settings: >
-          {
-            "cost": "{{ flat_rate_cost }}",
-            {% for sc in shipping_classes_costs %}
-            "{{ sc.class }}": "{{ sc.cost }}",
-            {% endfor %}
-            "calculation_type": "class"
-          }
+        flat_rate_cost: "16.8101"
+        shipping_classes_costs:
+          - { class: "20RON", cost: "20" }
+          - { class: "40RON", cost: "40" }
+          - { class: "75RON", cost: "75" }
+          - { class: "0RON", cost: "0" }
+      tags:
+        - shipping
+
+    - name: Set flat rate costs for Romania
+      command: "{{ wp_cli_path }} --path={{ web_root }}/{{ domain_name }} wc shipping_method update flat_rate --zone_id={{ romania_zone_id }} --settings='$(< /tmp/flat_rate_settings.json)' --user='administrator' --allow-root"
       when: romania_zone_id is defined
       tags:
         - shipping
+
 
 
   handlers:
