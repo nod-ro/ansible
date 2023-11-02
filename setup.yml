@@ -3,6 +3,11 @@
   become: yes
   vars_files:
     - environment.yml
+  pre_tasks:
+    - name: Set Git to use specific SSH key
+      command: "git config --global core.sshCommand 'ssh -i /tmp/private_key -o IdentitiesOnly=yes -F /dev/null'"
+      become: yes
+      become_user: root
   tasks:
     - name: Update and Upgrade System
       apt:
