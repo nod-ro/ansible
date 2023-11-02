@@ -26,7 +26,7 @@ chmod 600 /tmp/private_key
 eval $(ssh-agent -s)
 ssh-add /tmp/private_key
 
-#ssh -Tvvv git@github.com
+ssh -Tvvv git@github.com
 
 sudo rm -rf /var/ansible
 sudo git clone $GIT_REPO_URL /var/ansible
