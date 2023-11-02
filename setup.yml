@@ -924,10 +924,30 @@
 
 
     - name: Ensure WooCommerce Romania shipping zone exists
-      command: "{{ wp_cli_path }} --path={{ web_root }}/{{ domain_name }} wc shipping_zone create --name='Romania' --order=1 --user='administrator' --allow-root"
+      command: "{{ wp_cli_path }} --path={{ web_root }}/{{ domain_name }} wc shipping_zone create --name='Romania' --user='administrator' --allow-root"
       register: zone_creation_output
       tags:
         - shipping
+
+    - name: Get Romania shipping zone ID
+      command: "{{ wp_cli_path }} --path={{ web_root }}/{{ domain_name }} wc shipping_zone list --user='administrator' --format=json --allow-root"
+      register: shipping_zones_output
+      tags:
+        - shipping
+
+    - name: Parse Romania shipping zone ID
+      set_fact:
+        romania_zone_id: "{{ (shipping_zones_output.stdout | from_json) | json_query('[?name==`Romania`].id') | first }}"
+      when: shipping_zones_output.stdout | from_json | json_query('[?name==`Romania`]')
+      tags:
+        - shipping
+
+    - name: Add Romania as a location to the shipping zone
+      command: "{{ wp_cli_path }} --path={{ web_root }}/{{ domain_name }} wc shipping_zone_method add_location {{ romania_zone_id }} --code='RO' --type='country' --user='administrator' --allow-root"
+      when: romania_zone_id is defined
+      tags:
+        - shipping
+
 
 
     - name: Set flat rate costs for Romania
