@@ -728,13 +728,13 @@
         state: absent
 
 # MENUS
-    - name: Loop over each menu
-      set_fact:
-        current_menu: "{{ item }}"
-      loop: "{{ menus }}"
-      tags:
-        - menus
-
+- name: Loop over each menu
+  vars:
+    current_menu: "{{ item }}"
+  loop: "{{ menus }}"
+  tags:
+    - menus
+  tasks:
     - name: Get list of existing menus
       command: wp menu list --fields=name --format=csv --allow-root
       register: menu_list
@@ -766,39 +766,40 @@
       tags:
         - menus
 
-    - name: Loop over each menu item
-      set_fact:
+    - name: Loop over each menu item for pages
+      vars:
         current_menu_item: "{{ item }}"
       loop: "{{ current_menu.items }}"
-      tags:
-        - menus
+      when: item.type == 'page'
+      tasks:
+        - name: Get post ID
+          command: "wp post list --post_type=page --field=ID --name={{ current_menu_item.name }} --allow-root"
+          register: post_id_result
+          args:
+            chdir: "{{ web_root }}/{{ domain_name }}"
+          tags:
+            - menus
 
-    - name: Add pages to the menu
-      command: "wp post list --post_type=page --field=ID --name={{ current_menu_item.name }} --allow-root"
-      register: post_id_result
-      when: current_menu_item.type == 'page'
-      args:
-        chdir: "{{ web_root }}/{{ domain_name }}"
-      tags:
-        - menus
+        - name: Add page to menu
+          command: "wp menu item add-post '{{ current_menu.name }}' {{ post_id_result.stdout }} --allow-root"
+          when: post_id_result.stdout | length > 0
+          args:
+            chdir: "{{ web_root }}/{{ domain_name }}"
+          tags:
+            - menus
 
-    - name: Add page to menu
-      command: "wp menu item add-post '{{ current_menu.name }}' {{ post_id_result.stdout }} --allow-root"
-      when:
-        - current_menu_item.type == 'page'
-        - post_id_result.stdout | length > 0
-      args:
-        chdir: "{{ web_root }}/{{ domain_name }}"
-      tags:
-        - menus
-
-    - name: Add custom link to menu
-      command: "wp menu item add-custom '{{ current_menu.name }}' '{{ current_menu_item.title }}' '{{ current_menu_item.url }}' --allow-root"
-      when: current_menu_item.type == 'custom'
-      args:
-        chdir: "{{ web_root }}/{{ domain_name }}"
-      tags:
-        - menus
+    - name: Loop over each menu item for custom links
+      vars:
+        current_menu_item: "{{ item }}"
+      loop: "{{ current_menu.items }}"
+      when: item.type == 'custom'
+      tasks:
+        - name: Add custom link to menu
+          command: "wp menu item add-custom '{{ current_menu.name }}' '{{ current_menu_item.title }}' '{{ current_menu_item.url }}' --allow-root"
+          args:
+            chdir: "{{ web_root }}/{{ domain_name }}"
+          tags:
+            - menus
   handlers:
     - name: Reload NGINX
       service:
