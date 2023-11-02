@@ -8,6 +8,7 @@
       shell: |
         eval $(ssh-agent -s)
         ssh-add /tmp/private_key
+        echo "SSH_AUTH_SOCK=$SSH_AUTH_SOCK"
       register: ssh_agent_output
       ignore_errors: yes
 
@@ -17,9 +18,10 @@
 
     - name: Set environment variables for SSH agent
       set_fact:
-        ssh_agent_socket: "{{ ssh_agent_output.stdout_lines[0].split('=')[1].split(' ')[0] }}"
-        ssh_agent_pid: "{{ ssh_agent_output.stdout_lines[1].split('=')[1] }}"
+        ssh_agent_socket: "{{ ssh_agent_output.stdout_lines[1].split('=')[1] }}"
+        ssh_agent_pid: "{{ ssh_agent_output.stdout_lines[0].split(' ')[2] }}"
       when: ssh_agent_output is defined and ssh_agent_output.stdout_lines is defined and ssh_agent_output.stdout_lines | length > 1
+
   tasks:
     - name: Update and Upgrade System
       apt:
