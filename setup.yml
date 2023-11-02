@@ -943,10 +943,11 @@
         - shipping
 
     - name: Add Romania as a location to the shipping zone
-      command: "{{ wp_cli_path }} --path={{ web_root }}/{{ domain_name }} wc shipping_zone_method add_location {{ romania_zone_id }} --code='RO' --type='country' --user='administrator' --allow-root"
+      command: "{{ wp_cli_path }} --path={{ web_root }}/{{ domain_name }} wc shipping_zone add_location {{ romania_zone_id }} --code='RO' --type='country' --user='administrator' --allow-root"
       when: romania_zone_id is defined
       tags:
         - shipping
+
 
 
 
