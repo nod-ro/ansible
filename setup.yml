@@ -930,15 +930,6 @@
       tags:
         - shipping
 
-    - name: Add flat rate shipping method to Romania shipping zone
-      command: "{{ wp_cli_path }} --path={{ web_root }}/{{ domain_name }} wc shipping_zone_method add {{ romania_zone_id }} flat_rate --user='administrator' --allow-root"
-      when:
-        - romania_zone_id is defined
-        - "'flat_rate' not in (zone_methods_output.stdout | from_json | map(attribute='method_id') | list)"
-      register: flat_rate_method_output
-      tags:
-        - shipping
-
     - name: Get Romania shipping zone ID
       command: "{{ wp_cli_path }} --path={{ web_root }}/{{ domain_name }} wc shipping_zone list --user='administrator' --format=json --allow-root"
       register: shipping_zones_output
@@ -979,7 +970,26 @@
       tags:
         - shipping
 
+    - name: Add flat rate shipping method to Romania shipping zone
+      # This needs to check if the flat_rate is already in the methods list before adding it
+      command: "{{ wp_cli_path }} --path={{ web_root }}/{{ domain_name }} wc shipping_zone_method add {{ romania_zone_id }} flat_rate --user='administrator' --allow-root"
+      when:
+        - romania_zone_id is defined
+        - "'flat_rate' not in (zone_methods_output.stdout | from_json | map(attribute='method_id') | list)"
+      register: flat_rate_method_output
+      tags:
+        - shipping
+
+    - name: List shipping zone methods for Romania (after adding flat rate)
+      # This task should be executed again to refresh the methods list after adding flat rate
+      command: "{{ wp_cli_path }} --path={{ web_root }}/{{ domain_name }} wc shipping_zone_method list {{ romania_zone_id }} --user='administrator' --format=json --allow-root"
+      when: romania_zone_id is defined
+      register: zone_methods_output
+      tags:
+        - shipping
+
     - name: Parse flat rate instance ID
+      # Now this task will be able to find the flat rate instance ID
       set_fact:
         instance_id: "{{ (zone_methods_output.stdout | from_json) | json_query('[?method_id==`flat_rate`].instance_id') | first }}"
       when:
