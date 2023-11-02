@@ -1049,8 +1049,8 @@
 
     - name: Set flat rate costs for Romania
       command: >
-        /usr/local/bin/wp --path=/var/www/ansible5.codecodac.com wc shipping_zone_method update {{ romania_zone_id }} {{ instance_id }}
-        --settings='{{ {"cost": "16.8101", "20RON": "20", "40RON": "40", "75RON": "75", "0RON": "0", "calculation_type": "class"} | to_json }}'
+        /usr/local/bin/wp --path=/var/www/ansible5.codecodac.com wc shipping_zone_method update 22 3
+        --settings='{"cost": "16.8101", "20RON": "20", "40RON": "40", "75RON": "75", "0RON": "0", "calculation_type": "class"}'
         --user=administrator
         --allow-root
       when:
