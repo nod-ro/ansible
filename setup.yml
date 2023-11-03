@@ -978,7 +978,6 @@
       tags:
         - shipping
 
-
     - name: Add Romania as a location to the shipping zone in the database
       command: "{{ wp_cli_path }} --path={{ web_root }}/{{ domain_name }} db query \"INSERT INTO wp_woocommerce_shipping_zone_locations (zone_id, location_code, location_type) VALUES ('{{ romania_zone_id }}', 'RO', 'country') ON DUPLICATE KEY UPDATE location_code='RO';\" --user='administrator' --allow-root"
       when: romania_zone_id is defined
@@ -999,28 +998,10 @@
         - shipping
 
     - name: Set flat rate shipping classes costs
-      command: "{{ wp_cli_path }} --path={{ web_root }}/{{ domain_name }} wc shipping_method update {{ flat_rate_creation_output.result.id }} --settings='{{ {\"class_costs\":\"20RON:20,40RON:40,75RON:75,0RON:0\"} | to_json }}' --user='administrator' --allow-root"
+      command: "{{ wp_cli_path }} --path={{ web_root }}/{{ domain_name }} wc shipping_method update {{ flat_rate_creation_output.result.id }} --settings='{{ {\"class_costs\":\"20RON:20,40RON:40,75RON:75,\":no_shipping_class:\"0\"} | to_json }}' --user='administrator' --allow-root"
       when: flat_rate_creation_output is defined
       tags:
         - shipping
-
-
-
-#    - name: Create flat rate settings JSON file
-#      template:
-#        src: flat_rate_settings.json.j2
-#        dest: "/tmp/flat_rate_settings.json"
-#      vars:
-#        flat_rate_cost: "16.8101"
-#        shipping_classes_costs:
-#          - { class: "20RON", cost: "20" }
-#          - { class: "40RON", cost: "40" }
-#          - { class: "75RON", cost: "75" }
-#          - { class: "0RON", cost: "0" }
-#      tags:
-#        - shipping
-
-
 
 
 
