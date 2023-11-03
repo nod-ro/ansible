@@ -945,63 +945,63 @@
       tags:
         - shipping
 
-    - name: Get existing WooCommerce shipping zones
-      command: "{{ wp_cli_path }} --path={{ web_root }}/{{ domain_name }} wc shipping_zone list --user='administrator' --format=json --allow-root"
-      register: existing_zones_output
-      tags:
-        - shipping
-
-    - name: Check if Romania shipping zone already exists
-      set_fact:
-        romania_zone_exists: "{{ (existing_zones_output.stdout | from_json) | json_query('[?name==`Romania`]') | length > 0 }}"
-      tags:
-        - shipping
-
-    - name: Ensure WooCommerce Romania shipping zone exists
-      command: "{{ wp_cli_path }} --path={{ web_root }}/{{ domain_name }} wc shipping_zone create --name='Romania' --user='administrator' --allow-root"
-      register: zone_creation_output
-      when: not romania_zone_exists
-      tags:
-        - shipping
-
-    - name: Get Romania shipping zone ID
-      set_fact:
-        romania_zone_id: "{{ (existing_zones_output.stdout | from_json) | json_query('[?name==`Romania`].id') | first }}"
-      when: romania_zone_exists
-      tags:
-        - shipping
-
-    - name: Set Romania shipping zone ID from new creation
-      set_fact:
-        romania_zone_id: "{{ zone_creation_output.stdout }}"
-      when: zone_creation_output is defined and not romania_zone_exists
-      tags:
-        - shipping
-
-    - name: Add Romania as a location to the shipping zone in the database
-      command: "{{ wp_cli_path }} --path={{ web_root }}/{{ domain_name }} db query \"INSERT INTO wp_woocommerce_shipping_zone_locations (zone_id, location_code, location_type) VALUES ('{{ romania_zone_id }}', 'RO', 'country') ON DUPLICATE KEY UPDATE location_code='RO';\" --user='administrator' --allow-root"
-      when: romania_zone_id is defined
-      tags:
-        - shipping
-
-    - name: Add flat rate shipping method to Romania shipping zone
-      command: "{{ wp_cli_path }} --path={{ web_root }}/{{ domain_name }} wc shipping_method create flat_rate --zone_id='{{ romania_zone_id }}' --user='administrator' --allow-root"
-      register: flat_rate_creation_output
-      when: romania_zone_id is defined
-      tags:
-        - shipping
-
-    - name: Set flat rate shipping method default cost
-      command: "{{ wp_cli_path }} --path={{ web_root }}/{{ domain_name }} wc shipping_method update {{ flat_rate_creation_output.result.id }} --settings='{{ {\"cost\":\"16.8101\"} | to_json }}' --user='administrator' --allow-root"
-      when: flat_rate_creation_output is defined
-      tags:
-        - shipping
-
-    - name: Set flat rate shipping classes costs
-      command: "{{ wp_cli_path }} --path={{ web_root }}/{{ domain_name }} wc shipping_method update {{ flat_rate_creation_output.result.id }} --settings='{{ {\"class_costs\":\"20RON:20,40RON:40,75RON:75,\":no_shipping_class:\"0\"} | to_json }}' --user='administrator' --allow-root"
-      when: flat_rate_creation_output is defined
-      tags:
-        - shipping
+#    - name: Get existing WooCommerce shipping zones
+#      command: "{{ wp_cli_path }} --path={{ web_root }}/{{ domain_name }} wc shipping_zone list --user='administrator' --format=json --allow-root"
+#      register: existing_zones_output
+#      tags:
+#        - shipping
+#
+#    - name: Check if Romania shipping zone already exists
+#      set_fact:
+#        romania_zone_exists: "{{ (existing_zones_output.stdout | from_json) | json_query('[?name==`Romania`]') | length > 0 }}"
+#      tags:
+#        - shipping
+#
+#    - name: Ensure WooCommerce Romania shipping zone exists
+#      command: "{{ wp_cli_path }} --path={{ web_root }}/{{ domain_name }} wc shipping_zone create --name='Romania' --user='administrator' --allow-root"
+#      register: zone_creation_output
+#      when: not romania_zone_exists
+#      tags:
+#        - shipping
+#
+#    - name: Get Romania shipping zone ID
+#      set_fact:
+#        romania_zone_id: "{{ (existing_zones_output.stdout | from_json) | json_query('[?name==`Romania`].id') | first }}"
+#      when: romania_zone_exists
+#      tags:
+#        - shipping
+#
+#    - name: Set Romania shipping zone ID from new creation
+#      set_fact:
+#        romania_zone_id: "{{ zone_creation_output.stdout }}"
+#      when: zone_creation_output is defined and not romania_zone_exists
+#      tags:
+#        - shipping
+#
+#    - name: Add Romania as a location to the shipping zone in the database
+#      command: "{{ wp_cli_path }} --path={{ web_root }}/{{ domain_name }} db query \"INSERT INTO wp_woocommerce_shipping_zone_locations (zone_id, location_code, location_type) VALUES ('{{ romania_zone_id }}', 'RO', 'country') ON DUPLICATE KEY UPDATE location_code='RO';\" --user='administrator' --allow-root"
+#      when: romania_zone_id is defined
+#      tags:
+#        - shipping
+#
+#    - name: Add flat rate shipping method to Romania shipping zone
+#      command: "{{ wp_cli_path }} --path={{ web_root }}/{{ domain_name }} wc shipping_method create flat_rate --zone_id='{{ romania_zone_id }}' --user='administrator' --allow-root"
+#      register: flat_rate_creation_output
+#      when: romania_zone_id is defined
+#      tags:
+#        - shipping
+#
+#    - name: Set flat rate shipping method default cost
+#      command: "{{ wp_cli_path }} --path={{ web_root }}/{{ domain_name }} wc shipping_method update {{ flat_rate_creation_output.result.id }} --settings='{{ {\"cost\":\"16.8101\"} | to_json }}' --user='administrator' --allow-root"
+#      when: flat_rate_creation_output is defined
+#      tags:
+#        - shipping
+#
+#    - name: Set flat rate shipping classes costs
+#      command: "{{ wp_cli_path }} --path={{ web_root }}/{{ domain_name }} wc shipping_method update {{ flat_rate_creation_output.result.id }} --settings='{{ {\"class_costs\":\"20RON:20,40RON:40,75RON:75,\":no_shipping_class:\"0\"} | to_json }}' --user='administrator' --allow-root"
+#      when: flat_rate_creation_output is defined
+#      tags:
+#        - shipping
 
 
 
