@@ -945,32 +945,38 @@
       tags:
         - shipping
 
-#    - name: Get existing WooCommerce shipping zones
-#      command: "{{ wp_cli_path }} --path={{ web_root }}/{{ domain_name }} wc shipping_zone list --user='administrator' --format=json --allow-root"
-#      register: existing_zones_output
-#      tags:
-#        - shipping
-#
-#    - name: Check if Romania shipping zone already exists
-#      set_fact:
-#        romania_zone_exists: "{{ (existing_zones_output.stdout | from_json) | json_query('[?name==`Romania`]') | length > 0 }}"
-#      tags:
-#        - shipping
-#
-#    - name: Ensure WooCommerce Romania shipping zone exists
-#      command: "{{ wp_cli_path }} --path={{ web_root }}/{{ domain_name }} wc shipping_zone create --name='Romania' --user='administrator' --allow-root"
-#      register: zone_creation_output
-#      when: not romania_zone_exists
-#      tags:
-#        - shipping
-#
-#    - name: Get Romania shipping zone ID
-#      set_fact:
-#        romania_zone_id: "{{ (existing_zones_output.stdout | from_json) | json_query('[?name==`Romania`].id') | first }}"
-#      when: romania_zone_exists
-#      tags:
-#        - shipping
-#
+    - name: Get existing WooCommerce shipping zones
+      command: "{{ wp_cli_path }} --path={{ web_root }}/{{ domain_name }} wc shipping_zone list --user='administrator' --format=json --allow-root"
+      register: existing_zones_output
+      tags:
+        - shipping
+
+    - name: Check if Romania shipping zone already exists
+      set_fact:
+        romania_zone_exists: "{{ (existing_zones_output.stdout | from_json) | json_query('[?name==`Romania`]') | length > 0 }}"
+      tags:
+        - shipping
+
+    - name: Ensure WooCommerce Romania shipping zone exists
+      command: "{{ wp_cli_path }} --path={{ web_root }}/{{ domain_name }} wc shipping_zone create --name='Romania' --user='administrator' --allow-root"
+      register: zone_creation_output
+      when: not romania_zone_exists
+      tags:
+        - shipping
+
+    - name: Get Romania shipping zone ID
+      set_fact:
+        romania_zone_id: "{{ (existing_zones_output.stdout | from_json) | json_query('[?name==`Romania`].id') | first }}"
+      when: romania_zone_exists
+      tags:
+        - shipping
+
+    - name: Debug Romania shipping zone ID
+      debug:
+        var: romania_zone_id
+      tags:
+        - shipping
+
 #    - name: Set Romania shipping zone ID from new creation
 #      set_fact:
 #        romania_zone_id: "{{ zone_creation_output.stdout }}"
