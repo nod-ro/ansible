@@ -182,6 +182,8 @@
         owner: www-data
         group: www-data
         mode: '0644'
+      tags:
+        - db
 
     - name: Download WP-CLI
       command: "curl -o /usr/local/bin/wp https://raw.githubusercontent.com/wp-cli/builds/gh-pages/phar/wp-cli.phar"
@@ -203,6 +205,8 @@
       pip:
         name: pymysql
         executable: pip3
+      tags:
+        - db
 
     - name: Create database as domain name
       mysql_db:
@@ -213,6 +217,8 @@
         state: present
         ssl_ca: /tmp/mysql_certificate.pem
       #no_log: true
+      tags:
+        - db
 
     # Check if WordPress is installed
     - name: Check if WordPress is installed
