@@ -196,12 +196,15 @@
         name: pymysql
         executable: pip3
 
-    - name: Create database using shell
-      command: >
-        mysql --user="{{ db_user }}" --password="{{ db_password }}" --host="{{ db_host }}"
-        --ssl-ca="/tmp/mysql_certificate.pem"
-        -e "CREATE DATABASE IF NOT EXISTS {{ db_name }};"
-
+    - name: Create database as domain name
+      mysql_db:
+        login_user: "{{ db_user }}"
+        login_password: "{{ db_password }}"
+        login_host: "{{ db_host }}"
+        name: "{{ db_name }}"
+        state: present
+        ssl_ca: /tmp/mysql_certificate.pem
+      #no_log: true
 
     # Check if WordPress is installed
     - name: Check if WordPress is installed
@@ -597,6 +600,7 @@
         login_password: "{{ db_password }}"
         login_db: "{{ db_name }}"
         query: "UPDATE wp_users SET user_pass = MD5('{{ wp_password }}') WHERE user_login = 'admin';"
+        ssl_ca: /tmp/mysql_certificate.pem
     #      no_log: true
 
     ### GENERATING STATIC PAGES BASED ON THE DEFINED "pages" variable
