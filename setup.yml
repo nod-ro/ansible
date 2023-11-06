@@ -178,7 +178,7 @@
     - name: Configure phpMyAdmin to connect to Azure MySQL with SSL and ask for credentials
       template:
         src: config.inc.php.j2
-        dest: "{{ web_root }}/{{ domain_name }}/phpmyadmin/config.inc.php"
+        dest: "/usr/share/phpmyadmin/config.inc.php"
         owner: www-data
         group: www-data
         mode: '0644'
