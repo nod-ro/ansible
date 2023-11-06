@@ -1,0 +1,23 @@
+<?php
+/* Servers configuration */
+$i = 0;
+
+/* Server: Azure MySQL [1] */
+$i++;
+$cfg['Servers'][$i]['verbose'] = 'Azure MySQL Server';
+$cfg['Servers'][$i]['host'] = '{{ db_host }}';
+$cfg['Servers'][$i]['port'] = 3306;
+$cfg['Servers'][$i]['socket'] = '';
+$cfg['Servers'][$i]['connect_type'] = 'tcp';
+$cfg['Servers'][$i]['compress'] = false;
+$cfg['Servers'][$i]['extension'] = 'mysqli';
+$cfg['Servers'][$i]['auth_type'] = 'cookie';
+$cfg['Servers'][$i]['ssl'] = true;
+$cfg['Servers'][$i]['ssl_ca'] = '{{ remote_mysql_cert_path }}';
+/* End of servers configuration */
+
+$cfg['ExecTimeLimit'] = 600;
+$cfg['UploadDir'] = '';
+$cfg['SaveDir'] = '';
+$cfg['AllowThirdPartyFraming'] = false;
+?>

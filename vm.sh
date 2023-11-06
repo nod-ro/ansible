@@ -6,14 +6,15 @@ REMOTE_USER=$(yq read environment.yml 'vm_user')
 REMOTE_PASSWORD=$(yq read environment.yml 'vm_password')
 
 LOCAL_SSH_PRIVATE_KEY_PATH=$(yq read environment.yml 'ssh_key_path')
-LOCAL_MYSQL_PRIVATE_KEY_PATH=$(yq read environment.yml 'mysql_cert_path')
+LOCAL_MYSQL_PRIVATE_KEY_PATH=$(yq read environment.yml 'local_mysql_cert_path')
+REMOTE_MYSQL_PRIVATE_KEY_PATH=$(yq read environment.yml 'remote_mysql_cert_path')
 
 SCRIPT_DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
 GIT_REPO_URL="https://github.com/nod-ro/ansible.git"
 
 # Upload SSH private key for Git operations
 sshpass -p "$REMOTE_PASSWORD" scp -o StrictHostKeyChecking=no "$LOCAL_SSH_PRIVATE_KEY_PATH" "$REMOTE_USER@$REMOTE_HOST:/tmp/private_key"
-sshpass -p "$REMOTE_PASSWORD" scp -o StrictHostKeyChecking=no "$LOCAL_MYSQL_PRIVATE_KEY_PATH" "$REMOTE_USER@$REMOTE_HOST:/tmp/mysql_certificate.pem"
+sshpass -p "$REMOTE_PASSWORD" scp -o StrictHostKeyChecking=no "$LOCAL_MYSQL_PRIVATE_KEY_PATH" "$REMOTE_USER@$REMOTE_HOST:$REMOTE_MYSQL_PRIVATE_KEY_PATH"
 
 # Install Ansible, Git, clone the repository, and clean up
 sshpass -p "$REMOTE_PASSWORD" ssh -o StrictHostKeyChecking=no "$REMOTE_USER@$REMOTE_HOST" GIT_REPO_URL="$GIT_REPO_URL" bash -s << 'EOF'

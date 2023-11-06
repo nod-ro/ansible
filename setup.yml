@@ -141,13 +141,6 @@
         dest: /etc/nginx/sites-enabled/{{ domain_name }}
         state: link
 
-    - name: Install phpMyAdmin and necessary PHP extensions
-      apt:
-        name:
-          - phpmyadmin
-          - php8.1-mbstring
-        state: present
-
     - name: Ensure main website directory exists
       ansible.builtin.file:
         path: /var/www/{{ domain_name }}
@@ -174,6 +167,21 @@
         owner: www-data
         group: www-data
         recurse: yes  # to operate recursively
+
+    - name: Install phpMyAdmin and necessary PHP extensions
+      apt:
+        name:
+          - phpmyadmin
+          - php8.1-mbstring
+        state: present
+
+    - name: Configure phpMyAdmin to connect to Azure MySQL with SSL and ask for credentials
+      template:
+        src: config.inc.php.j2
+        dest: "{{ web_root }}/{{ domain_name }}/phpmyadmin/config.inc.php"
+        owner: www-data
+        group: www-data
+        mode: '0644'
 
     - name: Download WP-CLI
       command: "curl -o /usr/local/bin/wp https://raw.githubusercontent.com/wp-cli/builds/gh-pages/phar/wp-cli.phar"
