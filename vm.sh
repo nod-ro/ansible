@@ -65,7 +65,7 @@ ls -la /var/ansible
 #ansible-playbook /var/ansible/setup.yml --tags menus
 #ansible-playbook /var/ansible/setup.yml --tags pages
 #ansible-playbook /var/ansible/setup.yml --tags shipping
-ansible-playbook /var/ansible/setup.yml --tags db
+#ansible-playbook /var/ansible/setup.yml --tags db
 #ansible-playbook /var/ansible/setup.yml
 
 EOF
