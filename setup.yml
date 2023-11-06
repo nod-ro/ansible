@@ -196,14 +196,12 @@
         name: pymysql
         executable: pip3
 
-    - name: Create database as domain name
-      mysql_db:
-          login_user: "{{ db_user }}"
-          login_password: "{{ db_password }}"
-          login_host: "{{ db_host }}"
-          name: "{{ db_name }}"
-          state: present
-      #no_log: true
+    - name: Create database using shell
+      command: >
+        mysql --user="{{ db_user }}" --password="{{ db_password }}" --host="{{ db_host }}"
+        --ssl-ca="/tmp/mysql_certificate.pem"
+        -e "CREATE DATABASE IF NOT EXISTS {{ db_name }};"
+
 
     # Check if WordPress is installed
     - name: Check if WordPress is installed

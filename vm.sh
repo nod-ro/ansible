@@ -1,18 +1,19 @@
 #!/bin/bash
 
 # Parse variables from the local environment.yml file
-REMOTE_HOST=$(yq eval '.vm_ip' environment.yml)
-REMOTE_USER=$(yq eval '.vm_user' environment.yml)
-REMOTE_PASSWORD=$(yq eval '.vm_password' environment.yml)
+REMOTE_HOST=$(yq read environment.yml 'vm_ip')
+REMOTE_USER=$(yq read environment.yml 'vm_user')
+REMOTE_PASSWORD=$(yq read environment.yml 'vm_password')
 
-LOCAL_SSH_PRIVATE_KEY_PATH=$(yq eval '.ssh_key_path' environment.yml)
-LOCAL_SSH_PRIVATE_KEY_PATH=$(yq eval '.mysql_cert_path' environment.yml)
+LOCAL_SSH_PRIVATE_KEY_PATH=$(yq read environment.yml 'ssh_key_path')
+LOCAL_MYSQL_PRIVATE_KEY_PATH=$(yq read environment.yml 'mysql_cert_path')
+
 SCRIPT_DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
 GIT_REPO_URL="https://github.com/nod-ro/ansible.git"
 
 # Upload SSH private key for Git operations
 sshpass -p "$REMOTE_PASSWORD" scp -o StrictHostKeyChecking=no "$LOCAL_SSH_PRIVATE_KEY_PATH" "$REMOTE_USER@$REMOTE_HOST:/tmp/private_key"
-sshpass -p "$REMOTE_PASSWORD" scp -o StrictHostKeyChecking=no "$LOCAL_SSH_PRIVATE_KEY_PATH" "$REMOTE_USER@$REMOTE_HOST:/tmp/mysql_certificate.pem"
+sshpass -p "$REMOTE_PASSWORD" scp -o StrictHostKeyChecking=no "$LOCAL_MYSQL_PRIVATE_KEY_PATH" "$REMOTE_USER@$REMOTE_HOST:/tmp/mysql_certificate.pem"
 
 # Install Ansible, Git, clone the repository, and clean up
 sshpass -p "$REMOTE_PASSWORD" ssh -o StrictHostKeyChecking=no "$REMOTE_USER@$REMOTE_HOST" GIT_REPO_URL="$GIT_REPO_URL" bash -s << 'EOF'
@@ -62,7 +63,7 @@ ls -la /var/ansible
 
 #ansible-playbook /var/ansible/setup.yml --tags menus
 #ansible-playbook /var/ansible/setup.yml --tags pages
-ansible-playbook /var/ansible/setup.yml --tags shipping
-#ansible-playbook /var/ansible/setup.yml
+#ansible-playbook /var/ansible/setup.yml --tags shipping
+ansible-playbook /var/ansible/setup.yml
 
 EOF
