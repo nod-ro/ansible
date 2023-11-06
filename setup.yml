@@ -1003,7 +1003,6 @@
       tags:
         - shipping
 
-
     - name: Debug Romania shipping zone ID
       debug:
         var: romania_zone_id
