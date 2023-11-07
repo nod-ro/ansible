@@ -1053,6 +1053,31 @@
       tags:
         - shipping
 
+    - name: Update flat rate shipping method default cost
+      command: >
+        {{ wp_cli_path }} --path={{ web_root }}/{{ domain_name }} db query
+        "UPDATE wp_woocommerce_shipping_zone_methods
+         SET settings = CONCAT(settings, 'a:1:{s:4:\"cost\";s:7:\"{{ flat_rate_cost }}\";}')
+         WHERE method_id = 'flat_rate' AND zone_id = '{{ romania_zone_id }}';"
+        --allow-root
+      when: romania_zone_id is defined
+      tags:
+        - shipping
+
+    - name: Update flat rate shipping classes costs for Romania shipping zone
+      command: >
+        {{ wp_cli_path }} --path={{ web_root }}/{{ domain_name }} db query
+        "INSERT INTO wp_woocommerce_shipping_zone_method_settings (instance_id, shipping_class_id, cost)
+         VALUES
+         ('{{ flat_rate_instance_id }}', (SELECT shipping_class_id FROM wp_woocommerce_shipping_classes WHERE class = '{{ item.class }}'), '{{ item.cost }}')
+         ON DUPLICATE KEY UPDATE cost = VALUES(cost);"
+        --allow-root
+      with_items: "{{ shipping_classes_costs }}"
+      when: flat_rate_instance_id is defined
+      tags:
+        - shipping
+
+
 
 #    - name: Add flat rate shipping method to Romania shipping zone
 #      command: "{{ wp_cli_path }} --path={{ web_root }}/{{ domain_name }} wc shipping_method create flat_rate --zone_id='{{ romania_zone_id }}' --user='administrator' --allow-root"
