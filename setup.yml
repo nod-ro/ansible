@@ -154,6 +154,8 @@
         mode: '0755'  # Set the permissions (optional)
       tags:
         - sidebars
+        - pages
+        - contact
 
     - name: Ensure main utils directory exists
       ansible.builtin.file:
@@ -162,6 +164,8 @@
         mode: '0755'  # Set the permissions (optional)
       tags:
         - sidebars
+        - pages
+        - contact
 
     - name: Change ownership of web directory
       become: yes  # to become superuser
@@ -1086,6 +1090,18 @@
       command: php /var/ansible/utils/add_premmerce_in_sidebar.php
       tags:
         - sidebars
+
+    - name: Check if the 'Contact Page Form' already exists
+      command: wp post list --post_type=wpforms --field=post_title
+      register: wpforms_titles
+      tags:
+        - contact
+
+    - name: Create 'Contact Page Form' if it does not exist
+      command: wp post create --post_type=wpforms --post_title='Contact Page Form' --post_status=publish --post_content='{{ contact_page_form_content }}'
+      when: "'Contact Page Form' not in wpforms_titles.stdout"
+      tags:
+        - contact
 
   handlers:
     - name: Reload NGINX
