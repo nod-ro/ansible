@@ -980,16 +980,16 @@
       tags:
         - shipping
 
-#    - name: Get Romania shipping zone ID
-#      set_fact:
-#        romania_zone_id: "{{ (existing_zones_output.stdout | from_json) | json_query('[?name==`Romania`].id') | first }}"
-#      when: romania_zone_exists
-#      tags:
-#        - shipping
+    - name: Set Romania shipping zone ID from existing zones
+      set_fact:
+        romania_zone_id: "{{ (existing_zones_output.stdout | from_json) | json_query('[?name==`Romania`].id') | first }}"
+      when: romania_zone_exists
+      tags:
+        - shipping
 
     - name: Set Romania shipping zone ID from new creation
       set_fact:
-        romania_zone_id: "{{ zone_creation_output.stdout | regex_search('shipping_zone (\\d+)', '\\1') | first }}"
+        romania_zone_id: "{{ zone_creation_output.stdout | regex_search('Created shipping_zone (\\d+)', '\\1') | first }}"
       when: zone_creation_output is defined and not romania_zone_exists
       tags:
         - shipping
@@ -1000,23 +1000,18 @@
       tags:
         - shipping
 
-    - name: Pause for 5 seconds
+    - name: Pause for 10 seconds
       pause:
         seconds: 10
       tags:
         - shipping
 
-    - name: Debug Romania shipping zone ID
-      debug:
-        var: romania_zone_id
+    - name: Add Romania as a location to the shipping zone in the database
+      command: "{{ wp_cli_path }} --path={{ web_root }}/{{ domain_name }} db query \"INSERT INTO wp_woocommerce_shipping_zone_locations (zone_id, location_code, location_type) VALUES ('{{ romania_zone_id | int }}', 'RO', 'country') ON DUPLICATE KEY UPDATE location_code='RO';\" --user='administrator' --allow-root"
+      when: romania_zone_id is defined and romania_zone_id | int > 0
       tags:
         - shipping
 
-    - name: Add Romania as a location to the shipping zone in the database
-      command: "{{ wp_cli_path }} --path={{ web_root }}/{{ domain_name }} db query \"INSERT INTO wp_woocommerce_shipping_zone_locations (zone_id, location_code, location_type) VALUES ('{{ romania_zone_id }}', 'RO', 'country') ON DUPLICATE KEY UPDATE location_code='RO';\" --user='administrator' --allow-root"
-      when: romania_zone_id is defined
-      tags:
-        - shipping
 
 
 
