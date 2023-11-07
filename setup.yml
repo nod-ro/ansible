@@ -645,6 +645,33 @@
         ssl_ca: /tmp/mysql_certificate.pem
     #      no_log: true
 
+    - name: Retrieve 'Contact Page Form' ID if it exists
+      command: wp post list --post_type=wpforms --fields=ID,post_title --format=csv --allow-root --path={{ web_root }}/{{ domain_name }}
+      register: wpforms_list
+      tags:
+        - contact
+
+    - name: Determine if 'Contact Page Form' exists and get its ID
+      set_fact:
+        contact_form_id: "{{ (wpforms_list.stdout | regex_search('^(\\d+),Contact Page Form', '\\1') or '').strip() }}"
+      tags:
+        - contact
+
+    - name: Create 'Contact Page Form' if it does not exist
+      command: wp post create --post_type=wpforms --post_title='Contact Page Form' --post_status=publish --post_content='{{ contact_page_form_content }}' --path={{ web_root }}/{{ domain_name }} --allow-root --porcelain
+      register: post_creation_output
+      when: contact_form_id == ""
+      tags:
+        - contact
+
+    - name: Set contact form ID fact if new form was created
+      set_fact:
+        contact_form_id: "{{ post_creation_output.stdout }}"
+      when: post_creation_output is changed
+      tags:
+        - contact
+
+
     ### GENERATING STATIC PAGES BASED ON THE DEFINED "pages" variable
     - name: Check if page with slug exists
       command: sudo -u www-data wp post list --post_type=page --field=post_name --path="{{ web_root }}/{{ domain_name }}"
@@ -1094,20 +1121,6 @@
     - name: Check if the 'Contact Page Form' already exists
       command: wp post list --post_type=wpforms --field=post_title --format=ids --allow-root --path={{ web_root }}/{{ domain_name }}
       register: wpforms_titles
-      tags:
-        - contact
-
-    - name: Create 'Contact Page Form' if it does not exist
-      command: wp post create --post_type=wpforms --post_title='Contact Page Form' --post_status=publish --post_content='{{ contact_page_form_content }}' --path={{ web_root }}/{{ domain_name }} --allow-root --porcelain
-      register: post_creation_output
-      when: "'Contact Page Form' not in wpforms_titles.stdout_lines"
-      tags:
-        - contact
-
-    - name: Set contact form ID fact
-      set_fact:
-        contact_form_id: "{{ post_creation_output.stdout }}"
-      when: post_creation_output is changed
       tags:
         - contact
 
