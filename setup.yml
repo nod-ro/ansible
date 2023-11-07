@@ -1029,9 +1029,11 @@
       command: >
         {{ wp_cli_path }} --path={{ web_root }}/{{ domain_name }} db query
         "SELECT instance_id FROM wp_woocommerce_shipping_zone_methods WHERE method_id='flat_rate' AND zone_id='{{ romania_zone_id }}';"
+        --allow-root
       register: flat_rate_check
       tags:
         - shipping
+
 
     - name: Add flat rate shipping method to Romania shipping zone if not exists
       command: >
