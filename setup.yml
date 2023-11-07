@@ -1000,9 +1000,9 @@
       tags:
         - shipping
 
-    - name: Pause for 3 seconds
+    - name: Pause for 10 seconds
       pause:
-        seconds: 3
+        seconds: 10
       tags:
         - shipping
 
@@ -1037,38 +1037,45 @@
 
     - name: Add flat rate shipping method to Romania shipping zone if not exists
       command: >
-        {{ wp_cli_path }} --path={{ web_root }}/{{ domain_name }} wc shipping_zone_method create
-        --user={{ wp_user }}
-        --zone_id={{ romania_zone_id }}
-        --method_id='flat_rate'
-        --enabled=true
+        {{ wp_cli_path }} --path={{ web_root }}/{{ domain_name }} db query
+        "INSERT INTO wp_woocommerce_shipping_zone_methods (zone_id, method_id, method_order, is_enabled) VALUES ('{{ romania_zone_id }}', 'flat_rate', 1, 1) ON DUPLICATE KEY UPDATE is_enabled=1;"
+        --allow-root
       register: flat_rate_add
       ignore_errors: yes
       tags:
         - shipping
 
 
+    - name: Set flat rate shipping method ID
+      set_fact:
+        flat_rate_method_id: "{{ flat_rate_check.stdout }}"
+      when: flat_rate_check.stdout_lines | length > 0
+      tags:
+        - shipping
 
-#    - name: Update flat rate shipping method default cost
-#      command: >
-#        {{ wp_cli_path }} --path={{ web_root }}/{{ domain_name }} wc shipping_zone_method update
-#        {{ flat_rate_instance_id }}
-#        --user={{ wp_user }}
-#        --settings='{"cost":"{{ flat_rate_cost }}"}'
-#      when: flat_rate_instance_id is defined
-#      tags:
-#        - shipping
-#
-#    - name: Update flat rate shipping classes costs for Romania shipping zone
-#      command: >
-#        {{ wp_cli_path }} --path={{ web_root }}/{{ domain_name }} wc shipping_zone_method update
-#        {{ flat_rate_instance_id }}
-#        --user={{ wp_user }}
-#        --settings='{"shipping_classes":{"_value_":"set","{{ item.class_id }}":"{{ item.cost }}"}'
-#      loop: "{{ shipping_classes_costs }}"
-#      when: flat_rate_instance_id is defined
-#      tags:
-#        - shipping
+    - name: Update flat rate shipping method default cost
+      command: >
+        {{ wp_cli_path }} --path={{ web_root }}/{{ domain_name }} db query
+        "UPDATE wp_woocommerce_shipping_zone_methods
+         SET settings = CONCAT(settings, 'a:1:{s:4:\"cost\";s:7:\"{{ flat_rate_cost }}\";}')
+         WHERE method_id = 'flat_rate' AND zone_id = '{{ romania_zone_id }}';"
+        --allow-root
+      when: romania_zone_id is defined
+      tags:
+        - shipping
+
+    - name: Update flat rate shipping classes costs for Romania shipping zone
+      command: >
+        {{ wp_cli_path }} --path={{ web_root }}/{{ domain_name }} db query
+        "INSERT INTO wp_woocommerce_shipping_zone_method_settings (instance_id, shipping_class_id, cost)
+         VALUES
+         ('{{ flat_rate_instance_id }}', (SELECT shipping_class_id FROM wp_woocommerce_shipping_classes WHERE class = '{{ item.class }}'), '{{ item.cost }}')
+         ON DUPLICATE KEY UPDATE cost = VALUES(cost);"
+        --allow-root
+      with_items: "{{ shipping_classes_costs }}"
+      when: flat_rate_instance_id is defined
+      tags:
+        - shipping
 
 
 
