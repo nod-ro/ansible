@@ -152,12 +152,16 @@
         path: /var/ansible/tmp
         state: directory
         mode: '0755'  # Set the permissions (optional)
+      tags:
+        - shipping
 
     - name: Ensure main utils directory exists
       ansible.builtin.file:
         path: /var/ansible/utils
         state: directory
         mode: '0755'  # Set the permissions (optional)
+      tags:
+        - shipping
 
     - name: Change ownership of web directory
       become: yes  # to become superuser
