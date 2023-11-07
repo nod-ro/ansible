@@ -1026,27 +1026,24 @@
 
 
 
+    - name: Add flat rate shipping method to Romania shipping zone
+      command: "{{ wp_cli_path }} --path={{ web_root }}/{{ domain_name }} wc shipping_method create flat_rate --zone_id='{{ romania_zone_id }}' --user='administrator' --allow-root"
+      register: flat_rate_creation_output
+      when: romania_zone_id is defined
+      tags:
+        - shipping
 
+    - name: Set flat rate shipping method default cost
+      command: "{{ wp_cli_path }} --path={{ web_root }}/{{ domain_name }} wc shipping_method update {{ flat_rate_creation_output.result.id }} --settings='{{ {\"cost\":\"16.8101\"} | to_json }}' --user='administrator' --allow-root"
+      when: flat_rate_creation_output is defined
+      tags:
+        - shipping
 
-
-#    - name: Add flat rate shipping method to Romania shipping zone
-#      command: "{{ wp_cli_path }} --path={{ web_root }}/{{ domain_name }} wc shipping_method create flat_rate --zone_id='{{ romania_zone_id }}' --user='administrator' --allow-root"
-#      register: flat_rate_creation_output
-#      when: romania_zone_id is defined
-#      tags:
-#        - shipping
-#
-#    - name: Set flat rate shipping method default cost
-#      command: "{{ wp_cli_path }} --path={{ web_root }}/{{ domain_name }} wc shipping_method update {{ flat_rate_creation_output.result.id }} --settings='{{ {\"cost\":\"16.8101\"} | to_json }}' --user='administrator' --allow-root"
-#      when: flat_rate_creation_output is defined
-#      tags:
-#        - shipping
-#
-#    - name: Set flat rate shipping classes costs
-#      command: "{{ wp_cli_path }} --path={{ web_root }}/{{ domain_name }} wc shipping_method update {{ flat_rate_creation_output.result.id }} --settings='{{ {\"class_costs\":\"20RON:20,40RON:40,75RON:75,\":no_shipping_class:\"0\"} | to_json }}' --user='administrator' --allow-root"
-#      when: flat_rate_creation_output is defined
-#      tags:
-#        - shipping
+    - name: Set flat rate shipping classes costs
+      command: "{{ wp_cli_path }} --path={{ web_root }}/{{ domain_name }} wc shipping_method update {{ flat_rate_creation_output.result.id }} --settings='{{ {\"class_costs\":\"20RON:20,40RON:40,75RON:75,\":no_shipping_class:\"0\"} | to_json }}' --user='administrator' --allow-root"
+      when: flat_rate_creation_output is defined
+      tags:
+        - shipping
 
 
   handlers:
