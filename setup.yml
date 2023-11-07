@@ -1007,7 +1007,7 @@
         - shipping
 
     - name: Check if Romania is already set as a location for any shipping zone
-      command: "{{ wp_cli_path }} --path={{ web_root }}/{{ domain_name }} db query \"SELECT COUNT(*) FROM wp_woocommerce_shipping_zone_locations WHERE location_code='RO';\" --user='administrator' --allow-root"
+      command: "{{ wp_cli_path }} --path={{ web_root }}/{{ domain_name }} db query \"SELECT COUNT(*) FROM wp_woocommerce_shipping_zone_locations WHERE location_code='RO' AND zone_id='{{ romania_zone_id }}';\" --user='administrator' --allow-root"
       register: romania_location_check
       tags:
         - shipping
@@ -1020,7 +1020,7 @@
 
     - name: Add Romania as a location to the shipping zone in the database
       command: "{{ wp_cli_path }} --path={{ web_root }}/{{ domain_name }} db query \"INSERT INTO wp_woocommerce_shipping_zone_locations (zone_id, location_code, location_type) VALUES ('{{ romania_zone_id }}', 'RO', 'country') ON DUPLICATE KEY UPDATE location_code='RO';\" --user='administrator' --allow-root"
-      when: "'0' in romania_location_check.stdout"
+      when: "'0' in (romania_location_check.stdout | regex_search('\\d+'))"
       tags:
         - shipping
 
