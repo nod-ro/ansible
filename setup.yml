@@ -987,15 +987,28 @@
       tags:
         - shipping
 
+    - name: Set Romania shipping zone ID from new creation
+      set_fact:
+        romania_zone_id: "{{ zone_creation_output.stdout }}"
+      when: zone_creation_output is defined and not romania_zone_exists
+      tags:
+        - shipping
+
+    - name: Debug Romania shipping zone ID
+      debug:
+        var: romania_zone_id
+      tags:
+        - shipping
+
     - name: Pause for 5 seconds
       pause:
         seconds: 10
       tags:
         - shipping
 
-    - name: Set Romania shipping zone ID from new creation
-      set_fact:
-        romania_zone_id: "{{ zone_creation_output.stdout }}"
+    - name: Debug Romania shipping zone ID
+      debug:
+        var: romania_zone_id
       tags:
         - shipping
 
@@ -1005,11 +1018,7 @@
       tags:
         - shipping
 
-    - name: Debug Romania shipping zone ID
-      debug:
-        var: romania_zone_id
-      tags:
-        - shipping
+
 
 #    - name: Add flat rate shipping method to Romania shipping zone
 #      command: "{{ wp_cli_path }} --path={{ web_root }}/{{ domain_name }} wc shipping_method create flat_rate --zone_id='{{ romania_zone_id }}' --user='administrator' --allow-root"
