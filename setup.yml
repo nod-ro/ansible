@@ -1052,16 +1052,6 @@
       tags:
         - shipping
 
-    - name: Change Flat Rate shipping method name to Transport
-      command: >
-        {{ wp_cli_path }} --path={{ web_root }}/{{ domain_name }} wc shipping_zone_method update
-        {{ flat_rate_instance_id }}
-        --user={{ wp_user }}
-        --settings='{"title":"Transport"}'
-      when: flat_rate_instance_id is defined
-      tags:
-        - shipping
-
 
   handlers:
     - name: Reload NGINX
