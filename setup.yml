@@ -198,13 +198,12 @@
     - name: Configure phpMyAdmin to connect to Azure MySQL with SSL and ask for credentials
       template:
         src: config.inc.php.j2
-        dest: "/usr/share/phpmyadmin/config.inc.php"
+        dest: "/etc/phpmyadmin/config.inc.php"  # Update this line with the correct path
         owner: www-data
         group: www-data
         mode: '0644'
       tags:
         - db
-
 
     - name: Download WP-CLI
       command: "curl -o /usr/local/bin/wp https://raw.githubusercontent.com/wp-cli/builds/gh-pages/phar/wp-cli.phar"
