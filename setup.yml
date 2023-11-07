@@ -677,6 +677,9 @@
       command: sudo -u www-data wp post list --post_type=page --field=post_name --path="{{ web_root }}/{{ domain_name }}"
       register: existing_pages
       changed_when: false  # This command just checks for existing pages, it doesn't change anything
+      tags:
+        - contact
+        - pages
 
     - name: Render page content from template
       template:
@@ -687,6 +690,9 @@
       become_user: www-data
       loop: "{{ pages }}"
       when: "item.slug not in existing_pages.stdout_lines"
+      tags:
+        - contact
+        - pages
 
     - name: Create a page in WordPress from rendered content
       command: sudo -u www-data wp post create --post_type=page --post_status=publish --post_title='{{ item.title }}' --post_name='{{ item.slug }}' --path="{{ web_root }}/{{ domain_name }}" /tmp/{{ item.slug }}.txt
@@ -694,6 +700,9 @@
         chdir: "{{ web_root }}/{{ domain_name }}"
       loop: "{{ pages }}"
       when: "item.slug not in existing_pages.stdout_lines"
+      tags:
+        - contact
+        - pages
 
     - name: Cleanup temporary content file
       file:
@@ -704,6 +713,9 @@
       become_user: www-data
       loop: "{{ pages }}"
       when: "item.slug not in existing_pages.stdout_lines"
+      tags:
+        - contact
+        - pages
 
     - name: Get Home Page ID
       command: "wp post list --post_type=page --name=home --field=ID --format=ids --allow-root --path={{ web_root }}/{{ domain_name }} "
