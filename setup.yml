@@ -996,7 +996,6 @@
     - name: Set Romania shipping zone ID from new creation
       set_fact:
         romania_zone_id: "{{ zone_creation_output.stdout }}"
-      when: zone_creation_output is defined and not romania_zone_exists
       tags:
         - shipping
 
