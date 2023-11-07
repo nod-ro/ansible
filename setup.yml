@@ -1039,9 +1039,12 @@
       command: >
         {{ wp_cli_path }} --path={{ web_root }}/{{ domain_name }} db query
         "INSERT INTO wp_woocommerce_shipping_zone_methods (zone_id, method_id, method_order, is_enabled) VALUES ('{{ romania_zone_id }}', 'flat_rate', 1, 1) ON DUPLICATE KEY UPDATE is_enabled=1;"
-      when: flat_rate_check.stdout_lines | length == 0
+        --allow-root
+      register: flat_rate_add
+      ignore_errors: yes
       tags:
         - shipping
+
 
     - name: Set flat rate shipping method ID
       set_fact:
