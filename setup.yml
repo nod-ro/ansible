@@ -175,6 +175,26 @@
           - php8.1-mbstring
         state: present
 
+    - name: Ensure phpMyAdmin log directory exists
+      ansible.builtin.file:
+        path: /var/log/phpmyadmin
+        state: directory
+        owner: www-data   # Use nginx or another user if using a different web server
+        group: www-data   # Use nginx or another group if using a different web server
+        mode: '0755'
+      tags:
+        - db
+
+    - name: Ensure phpMyAdmin error log file exists
+      ansible.builtin.file:
+        path: /var/log/phpmyadmin/error.log
+        state: touch
+        owner: www-data   # Use nginx or another user if using a different web server
+        group: www-data   # Use nginx or another group if using a different web server
+        mode: '0644'
+      tags:
+        - db
+
     - name: Configure phpMyAdmin to connect to Azure MySQL with SSL and ask for credentials
       template:
         src: config.inc.php.j2
@@ -184,6 +204,7 @@
         mode: '0644'
       tags:
         - db
+
 
     - name: Download WP-CLI
       command: "curl -o /usr/local/bin/wp https://raw.githubusercontent.com/wp-cli/builds/gh-pages/phar/wp-cli.phar"
