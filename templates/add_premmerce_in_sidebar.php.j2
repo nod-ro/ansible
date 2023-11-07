@@ -1,0 +1,62 @@
+<?php
+// Load WordPress
+require_once('{{ web_root }}/{{ domain_name }}/wp-load.php');  // Load WordPress Core for direct interactions
+
+// Your widget settings
+$sidebar_id = 'shop-sidebar-widgets'; // The ID of your sidebar
+$widget_id_base = 'premmerce_filter_filter_widget'; // The base ID of the Premmerce filter widget
+$widget_instance = array(
+    'title' => 'test', // The title you want to give your widget
+    'style' => 'premmerce', // Additional options for the widget
+    // Include other options here if necessary
+);
+$widget_title = $widget_instance['title']; // Assuming the title is unique and can be used to identify your widget
+
+// Get existing sidebar widgets
+$sidebars_widgets = get_option('sidebars_widgets');
+$existing_widgets = get_option('widget_'.$widget_id_base);
+
+// Check if our widget is already in the sidebar
+$widget_exists = false;
+foreach ($sidebars_widgets[$sidebar_id] as $widget) {
+    // Check if our widget is based on the title, you may need a different method
+    $widget_number = str_replace($widget_id_base.'-', '', $widget);
+    if (!empty($existing_widgets[$widget_number]) && $existing_widgets[$widget_number]['title'] == $widget_title) {
+        $widget_exists = true;
+        break;
+    }
+}
+
+// If the widget isn't there, add it
+if (!$widget_exists) {
+    // Function to find the next available widget number
+    function get_next_widget_number($id_base, $existing_widgets) {
+        $widget_number = 1;
+        if (!empty($existing_widgets)) {
+            $numbers = array_map(function($id) use ($id_base) {
+                return intval(str_replace($id_base.'-', '', $id));
+            }, array_keys($existing_widgets));
+            $widget_number = max($numbers) + 1;
+        }
+        return $widget_number;
+    }
+
+    $widget_number = get_next_widget_number($widget_id_base, $existing_widgets);
+    $widget_id = $widget_id_base.'-'.$widget_number;
+
+    // Add widget to sidebar
+    $sidebars_widgets[$sidebar_id][] = $widget_id;
+
+    // Update sidebar widgets option
+    update_option('sidebars_widgets', $sidebars_widgets);
+
+    // Add new widget instance
+    $existing_widgets[$widget_number] = $widget_instance;
+
+    // Update widget option
+    update_option('widget_'.$widget_id_base, $existing_widgets);
+
+    echo "Widget added to sidebar.\n";
+} else {
+    echo "Widget already exists in sidebar.\n";
+}

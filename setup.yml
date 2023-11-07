@@ -1071,6 +1071,17 @@
       tags:
         - shipping
 
+    - name: Template out the command to add the widget
+      template:
+        src: add_premmerce_in_sidebar.php.j2
+        dest: /var/ansible/utils/add_premmerce_in_sidebar.php
+      tags:
+        - sidebars
+
+    - name: Add premmerce to "Shop Sidebar"
+      command: php /var/ansible/utils/add_premmerce_in_sidebar.php
+      tags:
+        - sidebars
 
   handlers:
     - name: Reload NGINX
