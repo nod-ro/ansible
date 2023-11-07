@@ -153,7 +153,7 @@
         state: directory
         mode: '0755'  # Set the permissions (optional)
       tags:
-        - shipping
+        - sidebars
 
     - name: Ensure main utils directory exists
       ansible.builtin.file:
@@ -161,7 +161,7 @@
         state: directory
         mode: '0755'  # Set the permissions (optional)
       tags:
-        - shipping
+        - sidebars
 
     - name: Change ownership of web directory
       become: yes  # to become superuser
