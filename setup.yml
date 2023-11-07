@@ -980,16 +980,16 @@
       tags:
         - shipping
 
-    - name: Get Romania shipping zone ID
-      set_fact:
-        romania_zone_id: "{{ (existing_zones_output.stdout | from_json) | json_query('[?name==`Romania`].id') | first }}"
-      when: romania_zone_exists
-      tags:
-        - shipping
+#    - name: Get Romania shipping zone ID
+#      set_fact:
+#        romania_zone_id: "{{ (existing_zones_output.stdout | from_json) | json_query('[?name==`Romania`].id') | first }}"
+#      when: romania_zone_exists
+#      tags:
+#        - shipping
 
     - name: Set Romania shipping zone ID from new creation
       set_fact:
-        romania_zone_id: "{{ zone_creation_output.stdout }}"
+        romania_zone_id: "{{ zone_creation_output.stdout | regex_search('shipping_zone (\\d+)', '\\1') | first }}"
       when: zone_creation_output is defined and not romania_zone_exists
       tags:
         - shipping
