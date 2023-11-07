@@ -1092,13 +1092,13 @@
         - sidebars
 
     - name: Check if the 'Contact Page Form' already exists
-      command: wp post list --post_type=wpforms --field=post_title --allow-root
+      command: wp post list --post_type=wpforms --field=post_title --allow-root  --path={{ web_root }}/{{ domain_name }}
       register: wpforms_titles
       tags:
         - contact
 
     - name: Create 'Contact Page Form' if it does not exist
-      command: wp post create --post_type=wpforms --post_title='Contact Page Form' --post_status=publish --post_content='{{ contact_page_form_content }}' --allow-root
+      command: wp post create --post_type=wpforms --post_title='Contact Page Form' --post_status=publish --post_content='{{ contact_page_form_content }}'  --path={{ web_root }}/{{ domain_name }} --allow-root
       when: "'Contact Page Form' not in wpforms_titles.stdout"
       tags:
         - contact
