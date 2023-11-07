@@ -987,6 +987,12 @@
       tags:
         - shipping
 
+    - name: Pause for 5 seconds
+      pause:
+        seconds: 10
+      tags:
+        - shipping
+
     - name: Set Romania shipping zone ID from new creation
       set_fact:
         romania_zone_id: "{{ zone_creation_output.stdout }}"
