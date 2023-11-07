@@ -6,6 +6,8 @@ $i = 0;
 $i++;
 $cfg['Servers'][$i]['verbose'] = 'Azure MySQL Server';
 $cfg['Servers'][$i]['host'] = '{{ db_host }}';
+$cfg['Servers'][$i]['controluser'] = '{{ db_user }}';
+$cfg['Servers'][$i]['controlpass'] = '{{ db_password }}';
 $cfg['Servers'][$i]['port'] = 3306;
 $cfg['Servers'][$i]['socket'] = '';
 $cfg['Servers'][$i]['connect_type'] = 'tcp';
