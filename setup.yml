@@ -23,6 +23,30 @@
       when: ssh_agent_output is defined and ssh_agent_output.stdout_lines is defined and ssh_agent_output.stdout_lines | length > 1
 
   tasks:
+    - name: Ensure __future__ imports are at the beginning of the file
+      lineinfile:
+        path: /usr/lib/python3/dist-packages/ansible_collections/netapp/ontap/plugins/modules/na_ontap_s3_users.py
+        insertbefore: BOF
+        line: 'from __future__ import absolute_import, division, print_function'
+        state: present
+      become: yes
+
+    - name: Remove the __future__ import if it exists elsewhere
+      lineinfile:
+        path: /usr/lib/python3/dist-packages/ansible_collections/netapp/ontap/plugins/modules/na_ontap_s3_users.py
+        regexp: '^(?!from __future__ import absolute_import, division, print_function).*(from __future__ import .*)'
+        state: absent
+      become: yes
+
+    - name: Reconfigure packages, in case they are in a broken state
+      apt:
+        name: "{{ item }}"
+        state: present
+        fix_broken: true
+      loop:
+        - ansible
+      become: yes
+
     - name: Configure dpkg and fix broken packages
       command: dpkg --configure -a
 
