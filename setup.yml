@@ -749,6 +749,7 @@
         - options
         - pages
         - woocommerce
+        - fast_options
 
     - name: Update WordPress Options For Custom / Faster use
       command:
