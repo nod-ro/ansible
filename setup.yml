@@ -861,6 +861,21 @@
         - taxes
         - options
 
+    - name: Enable 'Cash on Delivery' payment method in WooCommerce
+      command: wp option update woocommerce_cod_settings '{{ cod_settings }}' --format=json --allow-root
+      vars:
+        cod_settings:
+          enabled: "yes" # Set 'yes' to enable, 'no' to disable
+          title: "Cash on Delivery"
+          description: "Pay with cash upon delivery."
+          instructions: "Pay with cash upon delivery."
+      args:
+        chdir: "{{ web_root }}/{{ domain_name }}"
+      tags:
+        - woocommerce
+        - payment
+        - options
+
 
     ## Handling Electro options
     - name: Setting the serialised electro_option string
