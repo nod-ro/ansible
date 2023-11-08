@@ -1203,6 +1203,26 @@
       tags:
         - contact
 
+# Handling revolution sliders
+    - name: Check if slider setup is needed
+      command: wp db query "SELECT COUNT(*) FROM your_slider_table" --allow-root
+      args:
+        chdir: "{{ web_root }}/{{ domain_name }}"
+      register: slider_setup_needed
+      tags:
+        - sliders
+
+    - name: Import SQL files for sliders
+      command: wp db import "{{ item }}" --allow-root
+      loop: "{{ slider_sql_files }}"
+      args:
+        chdir: "{{ web_root }}/{{ domain_name }}"
+      register: import_sliders_result
+      ignore_errors: yes  # Only if you want to ignore errors and proceed.
+      changed_when: "'Success' in import_sliders_result.stdout"
+      when: slider_setup_needed.stdout == "0"
+      tags:
+        - sliders
 
   handlers:
     - name: Reload NGINX
