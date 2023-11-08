@@ -156,7 +156,6 @@
         - sidebars
         - pages
         - contact
-        - fast_options
         - options
 
     - name: Ensure main utils directory exists
@@ -747,24 +746,6 @@
         - options
         - pages
         - woocommerce
-        - fast_options
-
-    - name: Update WordPress Options For Custom / Faster use
-      command:
-        argv:
-          - php
-          - "/var/ansible/tmp/update_option.php"
-          - "{{ item.option }}"
-          - "{{ item.value }}"
-      loop:
-        - { option: "woocommerce_default_country", value: "RO:B" }
-        - { option: "smartbill_plugin_options_settings", value: 'a:30:{s:12:"included_vat";i:1;s:11:"product_vat";s:1:"3";s:21:"shipping_included_vat";i:1;s:12:"shipping_vat";i:0;s:20:"included_vat_coupons";i:1;s:15:"use_payment_tax";s:1:"0";s:13:"document_type";i:0;s:28:"automatically_issue_document";s:1:"0";s:12:"order_status";s:2:"-1";s:14:"invoice_series";s:4:"EMKT";s:13:"document_date";s:1:"1";s:16:"billing_currency";s:3:"RON";s:5:"stock";s:13:"fara-gestiune";s:16:"invoice_is_draft";s:1:"0";s:19:"issue_with_due_date";s:1:"0";s:8:"due_days";s:2:"15";s:18:"show_delivery_days";s:1:"0";s:13:"delivery_days";s:2:"15";s:16:"include_shipping";i:1;s:25:"show_discount_on_document";i:0;s:11:"save_client";s:1:"0";s:15:"custom_checkout";i:1;s:23:"send_mail_with_document";s:1:"0";s:12:"send_mail_cc";s:0:"";s:13:"send_mail_bcc";s:0:"";s:12:"save_product";s:1:"0";s:2:"um";s:3:"buc";s:17:"smartbill_product";s:1:"0";s:10:"sync_stock";s:1:"0";s:10:"used_stock";s:13:"fara-gestiune";}' }
-      become: yes
-      become_user: www-data
-      tags:
-        - fast_options
-
-
 
     - name: Update WordPress Options
       command:
