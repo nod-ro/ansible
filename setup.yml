@@ -795,6 +795,7 @@
         - { option: "nod_settings_debug_level", value: "200" }
 
         # Woocommerce default settings
+        - { option: "woocommerce_calc_taxes", value: "yes" }
         - { option: "woocommerce_store_address", value: "{{customer_support_address}}" }
         - { option: "woocommerce_store_city", value: "{{customer_city}}" }
         - { option: "woocommerce_store_postcode", value: "{{customer_zip}}" }
