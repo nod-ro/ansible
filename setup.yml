@@ -828,19 +828,36 @@
         - options
         - pages
         - woocommerce
+        - taxes
 
-    - name: Add standard tax rate of 19%
+    - name: Check if standard tax rate of 19% exists
+      command: wp db query "SELECT COUNT(*) FROM wp_woocommerce_tax_rates WHERE tax_rate='19.0000' AND tax_rate_name='VAT';" --allow-root --path={{ web_root }}/{{ domain_name }} --skip-column-names
+      register: tax_rate_exists
+      changed_when: false
+      tags:
+        - taxes
+        - options
+
+    - name: Add standard tax rate of 19% if it doesn't exist
       command: wp db query "{{ item }}" --allow-root
       loop:
-        - "INSERT INTO wp_woocommerce_tax_rates (tax_rate_country, tax_rate_state, tax_rate, tax_rate_name, tax_rate_priority, tax_rate_compound, tax_rate_shipping, tax_rate_order, tax_rate_class) VALUES ('*', '', '19.0000', 'VAT', '1', '0', '1', '0', '');"
-        - "INSERT INTO wp_woocommerce_tax_rate_locations (location_code, location_type) VALUES ('*', 'country');"
+        - >
+          INSERT INTO wp_woocommerce_tax_rates
+          (tax_rate_country, tax_rate_state, tax_rate, tax_rate_name, tax_rate_priority,
+          tax_rate_compound, tax_rate_shipping, tax_rate_order, tax_rate_class)
+          VALUES ('*', '', '19.0000', 'VAT', '1', '0', '1', '0', '');
+        - >
+          INSERT INTO wp_woocommerce_tax_rate_locations
+          (location_code, location_type)
+          VALUES ('*', 'country');
       args:
         chdir: "{{ web_root }}/{{ domain_name }}"
       register: insert_tax_result
       failed_when: "'Duplicate entry' not in insert_tax_result.stderr and insert_tax_result.rc != 0"
       changed_when: "'INSERT 0 1' in insert_tax_result.stdout"
-      when: tax_setup|default(true)
+      when: tax_rate_exists.stdout == "0"
       tags:
+        - taxes
         - options
 
 
