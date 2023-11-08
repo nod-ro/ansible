@@ -23,6 +23,48 @@
       when: ssh_agent_output is defined and ssh_agent_output.stdout_lines is defined and ssh_agent_output.stdout_lines | length > 1
 
   tasks:
+    - name: Configure dpkg and fix broken packages
+      command: dpkg --configure -a
+
+    - name: Check for held back packages
+      command: apt-mark showhold
+      register: held_packages
+
+    - name: Unhold packages if found
+      command: "apt-mark unhold {{ item }}"
+      loop: "{{ held_packages.stdout_lines }}"
+      when: held_packages.stdout_lines | length > 0
+
+    - name: Clean the local repository
+      apt:
+        autoclean: yes
+
+    - name: Clean up the apt cache
+      apt:
+        clean: yes
+
+    - name: Remove unnecessary packages
+      apt:
+        autoremove: yes
+
+    - name: Attempt to correct a system with broken dependencies in place
+      apt:
+        fix_broken: yes
+
+    - name: Check disk space
+      command: df -h
+      register: disk_space
+
+    - name: Display disk space
+      debug:
+        msg: "{{ disk_space.stdout_lines }}"
+
+    - name: Update cache and upgrade the system
+      apt:
+        update_cache: yes
+        upgrade: 'dist'
+        force_apt_get: yes
+
     - name: Update and Upgrade System
       apt:
         update_cache: yes
