@@ -772,10 +772,6 @@
         - { option: "azure_browse_cache_results", value: "{{ azure_browse_cache_results }}" }
         - { option: "azure_cache_control", value: "{{ azure_cache_control }}" }
 
-        # Set homepage
-        - { option: "show_on_front", value: "page" }
-        - { option: "page_on_front", value: "{{ home_page_id }}" }
-
         # Update smartbill_password shown in NC & NE
         - { option: "smartbill_password", value: "{{ smartbill_options.smartbill_password }}" }
 
@@ -813,6 +809,10 @@
 
         # Random
         - { option: "nod_saas_mentenance_status", value: "disabled" }
+
+        # Set homepage  [this is dependent on other tasks]
+        - { option: "show_on_front", value: "page" }
+        - { option: "page_on_front", value: "{{ home_page_id }}" }
       become: yes
       become_user: www-data
       tags:
