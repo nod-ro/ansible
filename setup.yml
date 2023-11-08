@@ -835,7 +835,7 @@
         - "INSERT INTO wp_woocommerce_tax_rates (tax_rate_country, tax_rate_state, tax_rate, tax_rate_name, tax_rate_priority, tax_rate_compound, tax_rate_shipping, tax_rate_order, tax_rate_class) VALUES ('*', '', '19.0000', 'VAT', '1', '0', '1', '0', '');"
         - "INSERT INTO wp_woocommerce_tax_rate_locations (location_code, location_type) VALUES ('*', 'country');"
       args:
-        chdir: "{{ wp_directory }}"
+        chdir: "{{ web_root }}/{{ domain_name }}"
       register: insert_tax_result
       failed_when: "'Duplicate entry' not in insert_tax_result.stderr and insert_tax_result.rc != 0"
       changed_when: "'INSERT 0 1' in insert_tax_result.stdout"
