@@ -798,10 +798,11 @@
         - { option: "woocommerce_calc_taxes", value: "yes" }
         - { option: "woocommerce_prices_include_tax", value: "no" }
         - { option: "woocommerce_tax_based_on", value: "shipping" }
-        - { option: "woocommerce_shipping_tax_class", value: "standard" }
+        - { option: "woocommerce_shipping_tax_class", value: "" }
         - { option: "woocommerce_tax_round_at_subtotal", value: "yes" }
         - { option: "woocommerce_tax_display_shop", value: "incl" }
         - { option: "woocommerce_tax_display_cart", value: "incl" }
+        - { option: "woocommerce_tax_total_display", value: "single" }
 
 
         - { option: "woocommerce_store_address", value: "{{customer_support_address}}" }
