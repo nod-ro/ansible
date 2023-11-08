@@ -156,6 +156,8 @@
         - sidebars
         - pages
         - contact
+        - fast_options
+        - options
 
     - name: Ensure main utils directory exists
       ansible.builtin.file:
