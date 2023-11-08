@@ -866,9 +866,9 @@
       vars:
         cod_settings:
           enabled: "yes" # Set 'yes' to enable, 'no' to disable
-          title: "Cash on Delivery"
-          description: "Pay with cash upon delivery."
-          instructions: "Pay with cash upon delivery."
+          title: "Numerar la livrare"
+          description: "Plateste cu numerar la livrare."
+          instructions: "Plateste cu numerar la livrare."
       args:
         chdir: "{{ web_root }}/{{ domain_name }}"
       tags:
