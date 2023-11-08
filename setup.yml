@@ -680,9 +680,6 @@
       tags:
         - contact
 
-
-
-
     ### GENERATING STATIC PAGES BASED ON THE DEFINED "pages" variable
     - name: Check if page with slug exists
       command: sudo -u www-data wp post list --post_type=page --field=post_name --path="{{ web_root }}/{{ domain_name }}"
@@ -733,6 +730,7 @@
       register: home_page_id_result
       tags:
         - pages
+        - options
 
     - name: Set Home Page ID as a variable for later use
       set_fact:
