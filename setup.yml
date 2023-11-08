@@ -862,7 +862,7 @@
         - options
 
     - name: Enable 'Cash on Delivery' payment method in WooCommerce
-      command: wp option update woocommerce_cod_settings '{{ cod_settings }}' --format=json --allow-root
+      command: wp option update woocommerce_cod_settings '{{ cod_settings | to_json }}' --format=json --allow-root
       vars:
         cod_settings:
           enabled: "yes" # Set 'yes' to enable, 'no' to disable
@@ -875,7 +875,6 @@
         - woocommerce
         - payment
         - options
-
 
     ## Handling Electro options
     - name: Setting the serialised electro_option string
