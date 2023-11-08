@@ -23,59 +23,6 @@
       when: ssh_agent_output is defined and ssh_agent_output.stdout_lines is defined and ssh_agent_output.stdout_lines | length > 1
 
   tasks:
-    - name: Ensure __future__ imports are at the beginning of the file
-      lineinfile:
-        path: /usr/lib/python3/dist-packages/ansible_collections/netapp/ontap/plugins/modules/na_ontap_s3_users.py
-        regexp: '^(from __future__ import .*)'
-        line: 'from __future__ import absolute_import, division, print_function'
-        backrefs: yes
-      become: yes
-
-    - name: Configure dpkg and fix broken packages
-      command: dpkg --configure -a
-      become: yes
-      register: dpkg_configure
-      failed_when:
-        dpkg_configure.rc != 0 and "dpkg: error processing package" in dpkg_configure.stderr
-
-    - name: Check for held back packages
-      command: apt-mark showhold
-      become: yes
-      register: held_packages
-
-    - name: Unhold packages if found
-      command: "apt-mark unhold {{ item }}"
-      loop: "{{ held_packages.stdout_lines }}"
-      when: held_packages.stdout_lines | length > 0
-      become: yes
-
-    - name: Clean the local repository of retrieved package files
-      apt:
-        autoclean: yes
-      become: yes
-
-    - name: Clean up the apt cache
-      apt:
-        clean: yes
-      become: yes
-
-    - name: Remove unnecessary packages and their configs
-      apt:
-        autoremove: yes
-        purge: yes
-      become: yes
-
-    - name: Attempt to correct a system with broken dependencies in place
-      apt:
-        fix_broken: yes
-      become: yes
-
-    - name: Update cache and upgrade the system
-      apt:
-        update_cache: yes
-        upgrade: 'safe'
-      become: yes
-
     - name: Update and Upgrade System
       apt:
         update_cache: yes
