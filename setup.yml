@@ -311,7 +311,6 @@
       command:
         cmd: "{{ item }}"
         chdir: "{{ web_root }}/{{ domain_name }}"
-        executable: /bin/bash
       loop:
         - "wp plugin install woocommerce --version=8.2.1 --activate --allow-root --force"
         - "wp language plugin install woocommerce ro_RO --allow-root"
