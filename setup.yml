@@ -811,8 +811,8 @@
         - { option: "nod_saas_mentenance_status", value: "disabled" }
 
         # Set homepage  [this is dependent on other tasks]
-        - { option: "show_on_front", value: "page" }
-        - { option: "page_on_front", value: "{{ home_page_id }}" }
+#        - { option: "show_on_front", value: "page" }
+#        - { option: "page_on_front", value: "{{ home_page_id }}" }
       become: yes
       become_user: www-data
       tags:
