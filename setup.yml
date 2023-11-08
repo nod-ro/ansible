@@ -673,9 +673,12 @@
     - name: Set 'contact_form_id' if a new form was created
       set_fact:
         contact_form_id: "{{ post_creation_output.stdout }}"
-      when: post_creation_output.stdout != ""
+      when:
+        - post_creation_output is defined
+        - post_creation_output.stdout is defined and post_creation_output.stdout != ""
       tags:
         - contact
+
 
 
 
