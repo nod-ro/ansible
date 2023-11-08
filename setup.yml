@@ -26,68 +26,55 @@
     - name: Ensure __future__ imports are at the beginning of the file
       lineinfile:
         path: /usr/lib/python3/dist-packages/ansible_collections/netapp/ontap/plugins/modules/na_ontap_s3_users.py
-        insertbefore: BOF
+        regexp: '^(from __future__ import .*)'
         line: 'from __future__ import absolute_import, division, print_function'
-        state: present
-      become: yes
-
-    - name: Remove the __future__ import if it exists elsewhere
-      lineinfile:
-        path: /usr/lib/python3/dist-packages/ansible_collections/netapp/ontap/plugins/modules/na_ontap_s3_users.py
-        regexp: '^(?!from __future__ import absolute_import, division, print_function).*(from __future__ import .*)'
-        state: absent
-      become: yes
-
-    - name: Reconfigure packages, in case they are in a broken state
-      apt:
-        name: "{{ item }}"
-        state: present
-        fix_broken: true
-      loop:
-        - ansible
+        backrefs: yes
       become: yes
 
     - name: Configure dpkg and fix broken packages
       command: dpkg --configure -a
+      become: yes
+      register: dpkg_configure
+      failed_when:
+        dpkg_configure.rc != 0 and "dpkg: error processing package" in dpkg_configure.stderr
 
     - name: Check for held back packages
       command: apt-mark showhold
+      become: yes
       register: held_packages
 
     - name: Unhold packages if found
       command: "apt-mark unhold {{ item }}"
       loop: "{{ held_packages.stdout_lines }}"
       when: held_packages.stdout_lines | length > 0
+      become: yes
 
-    - name: Clean the local repository
+    - name: Clean the local repository of retrieved package files
       apt:
         autoclean: yes
+      become: yes
 
     - name: Clean up the apt cache
       apt:
         clean: yes
+      become: yes
 
-    - name: Remove unnecessary packages
+    - name: Remove unnecessary packages and their configs
       apt:
         autoremove: yes
+        purge: yes
+      become: yes
 
     - name: Attempt to correct a system with broken dependencies in place
       apt:
         fix_broken: yes
-
-    - name: Check disk space
-      command: df -h
-      register: disk_space
-
-    - name: Display disk space
-      debug:
-        msg: "{{ disk_space.stdout_lines }}"
+      become: yes
 
     - name: Update cache and upgrade the system
       apt:
         update_cache: yes
-        upgrade: 'dist'
-        force_apt_get: yes
+        upgrade: 'safe'
+      become: yes
 
     - name: Update and Upgrade System
       apt:
