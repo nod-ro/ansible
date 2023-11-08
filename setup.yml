@@ -645,15 +645,21 @@
         ssl_ca: /tmp/mysql_certificate.pem
     #      no_log: true
 
-    - name: Retrieve 'Contact Page Form' ID if it exists
-      command: wp post list --post_type=wpforms --fields=ID,post_title --format=csv --allow-root --path={{ web_root }}/{{ domain_name }}
+    - name: Retrieve 'Contact Page Form' posts
+      command: wp post list --post_type=wpforms --fields=ID,post_title --format=json --allow-root --path={{ web_root }}/{{ domain_name }}
       register: wpforms_list
       tags:
         - contact
 
-    - name: Determine if 'Contact Page Form' exists and get its ID
+    - name: Check if 'Contact Page Form' exists and get its ID
       set_fact:
-        contact_form_id: "{{ (wpforms_list.stdout | regex_search('^(\\d+),Contact Page Form', '\\1') or '').strip() }}"
+        contact_form_id: "{{ (wpforms_list.stdout | from_json | json_query('[?post_title==`Contact Page Form`].ID') | first) | default('') }}"
+      tags:
+        - contact
+
+    - name: Debug contact_form_id
+      debug:
+        var: contact_form_id
       tags:
         - contact
 
@@ -664,12 +670,13 @@
       tags:
         - contact
 
-    - name: Set contact form ID fact if new form was created
+    - name: Set 'contact_form_id' if a new form was created
       set_fact:
         contact_form_id: "{{ post_creation_output.stdout }}"
-      when: post_creation_output is changed
+      when: post_creation_output.stdout != ""
       tags:
         - contact
+
 
 
     ### GENERATING STATIC PAGES BASED ON THE DEFINED "pages" variable
