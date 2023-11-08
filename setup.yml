@@ -1205,7 +1205,7 @@
 
 # Handling revolution sliders
     - name: Check if slider setup is needed
-      command: wp db query "SELECT COUNT(*) FROM your_slider_table" --allow-root
+      command: wp db query "SELECT COUNT(*) FROM wp_revslider_sliders" --allow-root
       args:
         chdir: "{{ web_root }}/{{ domain_name }}"
       register: slider_setup_needed
