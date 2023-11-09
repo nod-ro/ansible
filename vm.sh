@@ -69,5 +69,6 @@ ls -la /var/ansible
 #ansible-playbook /var/ansible/setup.yml --tags sidebars
 #ansible-playbook /var/ansible/setup.yml --tags contact
 #ansible-playbook /var/ansible/setup.yml --tags options
-#ansible-playbook /var/ansible/setup.yml  --tags sliders
 ansible-playbook /var/ansible/setup.yml
+
+EOF
