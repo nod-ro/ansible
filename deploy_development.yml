@@ -49,13 +49,13 @@
     - name: Deploy Nginx config (HTTP)
       template:
         src: nginx_config_non_https.j2
-        dest: /etc/nginx/sites-available/{{ domain_name }}
+        dest: /etc/nginx/sites-available/{{ development_domain }}
       notify: Reload NGINX
 
     - name: Generate and/or install certificate
       shell: >
         certbot certonly --nginx
-        -d {{ domain_name }}
+        -d {{ development_domain }}
         --non-interactive --agree-tos
         --email {{ certbot_admin_email }}
       #  --dry-run
@@ -90,14 +90,14 @@
     - name: Generate NGINX Site Configuration
       template:
         src: nginx_config.j2
-        dest: "/etc/nginx/sites-available/{{ domain_name }}"
+        dest: "/etc/nginx/sites-available/{{ development_domain }}"
       notify:
         - Reload NGINX
 
     - name: Enable NGINX Site
       file:
-        src: "/etc/nginx/sites-available/{{ domain_name }}"
-        dest: "/etc/nginx/sites-enabled/{{ domain_name }}"
+        src: "/etc/nginx/sites-available/{{ development_domain }}"
+        dest: "/etc/nginx/sites-enabled/{{ development_domain }}"
         state: link
       notify:
         - Reload NGINX
@@ -132,18 +132,18 @@
     - name: Deploy Nginx site configuration
       template:
         src: nginx_config.j2
-        dest: /etc/nginx/sites-available/{{ domain_name }}
+        dest: /etc/nginx/sites-available/{{ development_domain }}
       notify: Reload NGINX
 
     - name: Ensure Nginx configuration is enabled
       file:
-        src: /etc/nginx/sites-available/{{ domain_name }}
-        dest: /etc/nginx/sites-enabled/{{ domain_name }}
+        src: /etc/nginx/sites-available/{{ development_domain }}
+        dest: /etc/nginx/sites-enabled/{{ development_domain }}
         state: link
 
     - name: Ensure main website directory exists
       ansible.builtin.file:
-        path: /var/www/{{ domain_name }}
+        path: /var/www/{{ development_domain }}
         state: directory
         mode: '0755'  # Set the permissions (optional)
 
@@ -172,7 +172,7 @@
       become: yes  # to become superuser
       no_log: true
       ansible.builtin.file:
-        path: "/var/www/{{ domain_name }}"
+        path: "/var/www/{{ development_domain }}"
         owner: www-data
         group: www-data
         recurse: yes  # to operate recursively
@@ -251,20 +251,20 @@
 
     # Check if WordPress is installed
     - name: Check if WordPress is installed
-      command: wp core is-installed --path=/var/www/{{domain_name}} --allow-root
+      command: wp core is-installed --path=/var/www/{{development_domain}} --allow-root
       register: wp_is_installed
       ignore_errors: true
 
     # Download Romanian WordPress core if not installed
     - name: Download Romanian WordPress core
-      command: wp core download --locale=ro_RO --path=/var/www/{{domain_name}} --allow-root
+      command: wp core download --locale=ro_RO --path=/var/www/{{development_domain}} --allow-root
       when: wp_is_installed.rc != 0  # Only run when wp core is-installed command fails
       ignore_errors: true
 
     # Forcefully remove existing wp-config.php if WordPress is not already installed
     - name: Forcefully remove existing wp-config.php
       file:
-        path: "/var/www/{{ domain_name }}/wp-config.php"
+        path: "/var/www/{{ development_domain }}/wp-config.php"
         state: absent
       when: wp_is_installed.rc != 0
 
@@ -272,17 +272,17 @@
     - name: Copy WordPress Config
       template:
         src: wp-config.php.j2
-        dest: "/var/www/{{ domain_name }}/wp-config.php"
+        dest: "/var/www/{{ development_domain }}/wp-config.php"
       when: wp_is_installed.rc != 0
 
     # Install WordPress core if not already installed
     - name: Install WordPress core
-      command: wp core install --url={{ domain_name }} --title="{{ domain_title }}" --admin_user={{ wp_user }} --admin_password={{ wp_password }} --admin_email={{ wp_email }} --allow-root --path={{ web_root }}/{{ domain_name }}
+      command: wp core install --url={{ development_domain }} --title="{{ domain_title }}" --admin_user={{ wp_user }} --admin_password={{ wp_password }} --admin_email={{ wp_email }} --allow-root --path={{ web_root }}/{{ development_domain }}
       when: wp_is_installed.rc != 0
       ignore_errors: true
 
     - name: Set WordPress and WooCommerce Language to Romanian
-      command: wp site switch-language ro_RO --path={{ web_root }}/{{ domain_name }}
+      command: wp site switch-language ro_RO --path={{ web_root }}/{{ development_domain }}
       become: yes
       become_user: www-data  # Replace with your web server user
 
@@ -292,17 +292,17 @@
       become: yes
       become_user: www-data
       args:
-        chdir: "{{ web_root }}/{{ domain_name }}"
+        chdir: "{{ web_root }}/{{ development_domain }}"
 
     - name: Flush rewrite rules
       command: wp rewrite flush
       become: yes
       become_user: www-data
       args:
-        chdir: "{{ web_root }}/{{ domain_name }}"
+        chdir: "{{ web_root }}/{{ development_domain }}"
 
     - name: Set WooCommerce Language to Romanian
-      command: wp option update woocommerce_admin_locales 'a:1:{i:0;s:5:"ro_RO";}' --path={{ web_root }}/{{ domain_name }}
+      command: wp option update woocommerce_admin_locales 'a:1:{i:0;s:5:"ro_RO";}' --path={{ web_root }}/{{ development_domain }}
       become: yes
       become_user: www-data  # Replace with your web server user
 
@@ -311,7 +311,7 @@
       become_user: root
       command:
         cmd: "{{ item }}"
-        chdir: "{{ web_root }}/{{ domain_name }}"
+        chdir: "{{ web_root }}/{{ development_domain }}"
       loop:
         - "wp plugin install woocommerce --version=8.2.1 --activate --allow-root --force"
         - "wp language plugin install woocommerce ro_RO --allow-root"
@@ -319,24 +319,24 @@
 
 
     - name: Install and activate WooCommerce public plugins
-      command: wp plugin install {{ item.name }} --version={{ item.version }} --path={{ web_root }}/{{ domain_name }} {{ '--activate' if item.activate else '' }} --allow-root --force
+      command: wp plugin install {{ item.name }} --version={{ item.version }} --path={{ web_root }}/{{ development_domain }} {{ '--activate' if item.activate else '' }} --allow-root --force
       with_items: "{{ public_plugins }}"
 
     - name: Ensure wp-content permissions are set correctly
       file:
-        path: /var/www/{{ domain_name }}/wp-content
+        path: /var/www/{{ development_domain }}/wp-content
         state: directory
         mode: '0755'
 
     - name: Ensure wp-content/upgrade permissions are set correctly
       file:
-        path: /var/www/{{ domain_name }}/wp-content/upgrade
+        path: /var/www/{{ development_domain }}/wp-content/upgrade
         state: directory
         mode: '0755'
 
     - name: Ensure wp-content ownership is correct
       file:
-        path: /var/www/{{ domain_name }}/wp-content
+        path: /var/www/{{ development_domain }}/wp-content
         state: directory
         owner: www-data
         group: www-data
@@ -432,9 +432,9 @@
         path: "/usr/local/bin/wp"
         mode: '0755'
 
-    - name: Ensure Destination Directory Exists as /var/www/<domain_name>
+    - name: Ensure Destination Directory Exists as /var/www/<development_domain>
       file:
-        path: "/var/www/{{ domain_name }}"
+        path: "/var/www/{{ development_domain }}"
         state: directory
         owner: www-data  # adjust the owner as per your setup
         group: www-data  # adjust the group as per your setup
@@ -443,10 +443,10 @@
     #    - name: Extract WordPress Directly to Domain Root
     #      unarchive:
     #        src: "/tmp/wordpress.tar.gz"
-    #        dest: "/var/www/{{ domain_name }}"
+    #        dest: "/var/www/{{ development_domain }}"
     #        remote_src: yes
     #        extra_opts: [--strip-components=1]  # Exclude the wordpress/ directory in archive
-    #        creates: "/var/www/{{ domain_name }}/wp-config-sample.php"  # Identify WordPress extraction by a specific file
+    #        creates: "/var/www/{{ development_domain }}/wp-config-sample.php"  # Identify WordPress extraction by a specific file
 
     - name: Ensure git is installed
       apt:
@@ -455,7 +455,7 @@
 
     - name: Ensure plugins directory exists with correct permissions
       file:
-        path: "{{ web_root }}/{{ domain_name }}/wp-content/plugins/{{ item.name }}"
+        path: "{{ web_root }}/{{ development_domain }}/wp-content/plugins/{{ item.name }}"
         state: directory
         owner: root  # Replace with your web user, possibly www-data
         group: root  # Replace with your web group, possibly www-data
@@ -466,11 +466,11 @@
     - name: Install specific version of WooCommerce
       command: wp plugin install woocommerce --version=5.5.1 --allow-root --activate
       args:
-        chdir: "{{ web_root }}/{{ domain_name }}"
+        chdir: "{{ web_root }}/{{ development_domain }}"
 
     - name: Check if plugin directories are not empty
       find:
-        paths: "{{ web_root }}/{{ domain_name }}/wp-content/plugins/{{ item.name }}"
+        paths: "{{ web_root }}/{{ development_domain }}/wp-content/plugins/{{ item.name }}"
         file_type: any
       register: plugin_directory_contents
       loop: "{{ plugins }}"
@@ -478,7 +478,7 @@
     - name: Clone the plugin repositories from private repos only if directory is empty
       git:
         repo: "{{ item.item.repo }}"
-        dest: "{{ web_root }}/{{ domain_name }}/wp-content/plugins/{{ item.item.name }}"
+        dest: "{{ web_root }}/{{ development_domain }}/wp-content/plugins/{{ item.item.name }}"
         force: yes
         version: "{{ item.item.version }}"
         accept_hostkey: yes
@@ -494,7 +494,7 @@
     - name: Activate plugins where "activate" property is true
       command: wp plugin activate {{ item.name }} --allow-root
       args:
-        chdir: "{{ web_root }}/{{ domain_name }}"
+        chdir: "{{ web_root }}/{{ development_domain }}"
       when: item.activate
       loop: "{{ plugins }}"
       become: yes
@@ -502,27 +502,27 @@
 
     - name: Check if plugin directory exists and is empty
       find:
-        paths: "/var/www/{{domain_name}}/wp-content/plugins/{{ item.slug }}"
+        paths: "/var/www/{{development_domain}}/wp-content/plugins/{{ item.slug }}"
         file_type: directory
       register: plugin_directory
       with_items: "{{ external_plugins }}"
 
     - name: Install and activate external theme's plugins only if directory is empty
-      command: "wp plugin install {{ item.url }} --version={{ item.version }} --activate --path=/var/www/{{domain_name}} --allow-root"
+      command: "wp plugin install {{ item.url }} --version={{ item.version }} --activate --path=/var/www/{{development_domain}} --allow-root"
       when:
         - "plugin_directory.results[0]['matched'] == 0 or plugin_directory.results[0]['files'] | length == 0"
       with_items: "{{ external_plugins }}"
 
     - name: Check if theme directories exist
       stat:
-        path: "{{ web_root }}/{{ domain_name }}/wp-content/themes/{{ item.name }}"
+        path: "{{ web_root }}/{{ development_domain }}/wp-content/themes/{{ item.name }}"
       register: theme_directory_checks
       loop: "{{ themes }}"
 
     - name: Clone the themes repositories from private repos only if directory doesn't exist
       git:
         repo: "{{ item.item.repo }}"
-        dest: "{{ web_root }}/{{ domain_name }}/wp-content/themes/{{ item.item.name }}"
+        dest: "{{ web_root }}/{{ development_domain }}/wp-content/themes/{{ item.item.name }}"
         force: yes
         version: "{{ item.item.version }}"
         accept_hostkey: yes
@@ -536,7 +536,7 @@
         SSH_AGENT_PID: "{{ ssh_agent_pid }}"
 
     - name: Switch to 'nod-electro-theme-child' theme
-      command: wp theme activate nod-electro-theme-child --path={{ web_root }}/{{ domain_name }} --allow-root
+      command: wp theme activate nod-electro-theme-child --path={{ web_root }}/{{ development_domain }} --allow-root
       become: yes
       become_user: root
 
@@ -547,27 +547,27 @@
 
     - name: Creating logs directory
       file:
-        path: "{{ web_root }}/{{ domain_name }}/wp-content/logs"
+        path: "{{ web_root }}/{{ development_domain }}/wp-content/logs"
         state: directory
 
     - name: Creates NOD Connector logs directory
       file:
-        path: "{{ web_root }}/{{ domain_name }}/wp-content/logs/nod-connector"
+        path: "{{ web_root }}/{{ development_domain }}/wp-content/logs/nod-connector"
         state: directory
 
     - name: Creates lockers directory
       file:
-        path: "{{ web_root }}/{{ domain_name }}/wp-content/logs/lockers"
+        path: "{{ web_root }}/{{ development_domain }}/wp-content/logs/lockers"
         state: directory
 
     - name: Creates NOD Connector logs orders directory
       file:
-        path: "{{ web_root }}/{{ domain_name }}/wp-content/logs/nod-connector/orders"
+        path: "{{ web_root }}/{{ development_domain }}/wp-content/logs/nod-connector/orders"
         state: directory
 
     - name: Creates NOD Connector logs orders directory
       file:
-        path: "{{ web_root }}/{{ domain_name }}/wp-content/logs/nod-connector/orders/send_to_nod"
+        path: "{{ web_root }}/{{ development_domain }}/wp-content/logs/nod-connector/orders/send_to_nod"
         state: directory
 
     - name: Ensure wget is installed
@@ -580,28 +580,28 @@
         name: "Trigger WordPress wp-cron"
         minute: "*"
         user: "root"
-        job: "wget -qO- http://{{ domain_name }}/wp-cron.php &> /dev/null"
+        job: "wget -qO- http://{{ development_domain }}/wp-cron.php &> /dev/null"
 
     - name: Change ownership of web directory
       become: yes  # to become superuser
       no_log: true
       ansible.builtin.file:
-        path: "/var/www/{{ domain_name }}"
+        path: "/var/www/{{ development_domain }}"
         owner: www-data
         group: www-data
         recurse: yes  # to operate recursively
 
     - name: Set directory permissions
       become: yes
-      shell: "find /var/www/{{ domain_name }}/ -type d -exec chmod 755 {} \\;"
+      shell: "find /var/www/{{ development_domain }}/ -type d -exec chmod 755 {} \\;"
 
     - name: Set file permissions
       become: yes
-      shell: "find /var/www/{{ domain_name }}/ -type f -exec chmod 644 {} \\;"
+      shell: "find /var/www/{{ development_domain }}/ -type f -exec chmod 644 {} \\;"
 
     - name: Change owner of files
       become: yes
-      shell: "chown -R www-data:www-data /var/www/{{ domain_name }}"
+      shell: "chown -R www-data:www-data /var/www/{{ development_domain }}"
 
     - name: Ensure UFW is installed
       apt:
@@ -646,7 +646,7 @@
     #      no_log: true
 
     - name: Retrieve 'Contact Page Form' posts
-      command: wp post list --post_type=wpforms --fields=ID,post_title --format=json --allow-root --path={{ web_root }}/{{ domain_name }}
+      command: wp post list --post_type=wpforms --fields=ID,post_title --format=json --allow-root --path={{ web_root }}/{{ development_domain }}
       register: wpforms_list
       tags:
         - contact
@@ -664,7 +664,7 @@
         - contact
 
     - name: Create 'Contact Page Form' if it does not exist
-      command: wp post create --post_type=wpforms --post_title='Contact Page Form' --post_status=publish --post_content='{{ contact_page_form_content }}' --path={{ web_root }}/{{ domain_name }} --allow-root --porcelain
+      command: wp post create --post_type=wpforms --post_title='Contact Page Form' --post_status=publish --post_content='{{ contact_page_form_content }}' --path={{ web_root }}/{{ development_domain }} --allow-root --porcelain
       register: post_creation_output
       when: contact_form_id == ""
       tags:
@@ -681,7 +681,7 @@
 
     ### GENERATING STATIC PAGES BASED ON THE DEFINED "pages" variable
     - name: Check if page with slug exists
-      command: sudo -u www-data wp post list --post_type=page --field=post_name --path="{{ web_root }}/{{ domain_name }}"
+      command: sudo -u www-data wp post list --post_type=page --field=post_name --path="{{ web_root }}/{{ development_domain }}"
       register: existing_pages
       changed_when: false  # This command just checks for existing pages, it doesn't change anything
       tags:
@@ -702,9 +702,9 @@
         - pages
 
     - name: Create a page in WordPress from rendered content
-      command: sudo -u www-data wp post create --post_type=page --post_status=publish --post_title='{{ item.title }}' --post_name='{{ item.slug }}' --path="{{ web_root }}/{{ domain_name }}" /tmp/{{ item.slug }}.txt
+      command: sudo -u www-data wp post create --post_type=page --post_status=publish --post_title='{{ item.title }}' --post_name='{{ item.slug }}' --path="{{ web_root }}/{{ development_domain }}" /tmp/{{ item.slug }}.txt
       args:
-        chdir: "{{ web_root }}/{{ domain_name }}"
+        chdir: "{{ web_root }}/{{ development_domain }}"
       loop: "{{ pages }}"
       when: "item.slug not in existing_pages.stdout_lines"
       tags:
@@ -725,7 +725,7 @@
         - pages
 
     - name: Get Home Page ID
-      command: "wp post list --post_type=page --name=home --field=ID --format=ids --allow-root --path={{ web_root }}/{{ domain_name }} "
+      command: "wp post list --post_type=page --name=home --field=ID --format=ids --allow-root --path={{ web_root }}/{{ development_domain }} "
       register: home_page_id_result
       tags:
         - pages
@@ -832,7 +832,7 @@
         - taxes
 
     - name: Check if standard tax rate of 19% exists
-      command: wp db query "SELECT COUNT(*) FROM wp_woocommerce_tax_rates WHERE tax_rate='19.0000' AND tax_rate_name='VAT';" --allow-root --path={{ web_root }}/{{ domain_name }} --skip-column-names
+      command: wp db query "SELECT COUNT(*) FROM wp_woocommerce_tax_rates WHERE tax_rate='19.0000' AND tax_rate_name='VAT';" --allow-root --path={{ web_root }}/{{ development_domain }} --skip-column-names
       register: tax_rate_exists
       changed_when: false
       tags:
@@ -852,7 +852,7 @@
           (location_code, location_type)
           VALUES ('*', 'country');
       args:
-        chdir: "{{ web_root }}/{{ domain_name }}"
+        chdir: "{{ web_root }}/{{ development_domain }}"
       register: insert_tax_result
       failed_when: "'Duplicate entry' not in insert_tax_result.stderr and insert_tax_result.rc != 0"
       changed_when: "'INSERT 0 1' in insert_tax_result.stdout"
@@ -870,7 +870,7 @@
           description: "Plateste cu numerar la livrare."
           instructions: "Plateste cu numerar la livrare."
       args:
-        chdir: "{{ web_root }}/{{ domain_name }}"
+        chdir: "{{ web_root }}/{{ development_domain }}"
       tags:
         - woocommerce
         - payment
@@ -886,7 +886,7 @@
     - name: Convert JSON to PHP serialized string and update WP option electro_options
       command: php /var/ansible/utils/serialize_electro_options.php
       args:
-        chdir: "{{ web_root }}/{{ domain_name }}"
+        chdir: "{{ web_root }}/{{ development_domain }}"
 
     - name: Cleanup - Remove the temporary PHP script
       file:
@@ -903,7 +903,7 @@
     - name: Convert JSON to PHP serialized string and update WP option electro_options
       command: php /var/ansible/utils/serialize_smartbill_options.php
       args:
-        chdir: "{{ web_root }}/{{ domain_name }}"
+        chdir: "{{ web_root }}/{{ development_domain }}"
 
     - name: Cleanup - Remove the temporary PHP script
       file:
@@ -917,7 +917,7 @@
       become: yes
       become_user: www-data
       args:
-        chdir: "{{ web_root }}/{{ domain_name }}"
+        chdir: "{{ web_root }}/{{ development_domain }}"
       tags:
         - menus
 
@@ -934,7 +934,7 @@
       become: yes
       become_user: www-data
       args:
-        chdir: "{{ web_root }}/{{ domain_name }}"
+        chdir: "{{ web_root }}/{{ development_domain }}"
       tags:
         - menus
 
@@ -943,7 +943,7 @@
       become: yes
       become_user: www-data
       args:
-        chdir: "{{ web_root }}/{{ domain_name }}"
+        chdir: "{{ web_root }}/{{ development_domain }}"
       tags:
         - menus
 
@@ -954,7 +954,7 @@
       become: yes
       become_user: www-data
       args:
-        chdir: "{{ web_root }}/{{ domain_name }}"
+        chdir: "{{ web_root }}/{{ development_domain }}"
       when: menu_exists
       tags:
         - menus
@@ -967,7 +967,7 @@
       become: yes
       become_user: www-data
       args:
-        chdir: "{{ web_root }}/{{ domain_name }}"
+        chdir: "{{ web_root }}/{{ development_domain }}"
       tags:
         - menus
 
@@ -981,7 +981,7 @@
       become: yes
       become_user: www-data
       args:
-        chdir: "{{ web_root }}/{{ domain_name }}"
+        chdir: "{{ web_root }}/{{ development_domain }}"
       tags:
         - menus
 
@@ -999,7 +999,7 @@
       become: yes
       become_user: www-data
       args:
-        chdir: "{{ web_root }}/{{ domain_name }}"
+        chdir: "{{ web_root }}/{{ development_domain }}"
       tags:
         - menus
 
@@ -1009,7 +1009,7 @@
       become: yes
       become_user: www-data
       args:
-        chdir: "{{ web_root }}/{{ domain_name }}"
+        chdir: "{{ web_root }}/{{ development_domain }}"
       tags:
         - menus
 
@@ -1020,7 +1020,7 @@
       become: yes
       become_user: www-data
       args:
-        chdir: "{{ web_root }}/{{ domain_name }}"
+        chdir: "{{ web_root }}/{{ development_domain }}"
       tags:
         - menus
 
@@ -1038,7 +1038,7 @@
       become: yes
       become_user: www-data
       args:
-        chdir: "{{ web_root }}/{{ domain_name }}"
+        chdir: "{{ web_root }}/{{ development_domain }}"
       tags:
         - menus
 
@@ -1048,7 +1048,7 @@
       become: yes
       become_user: www-data
       args:
-        chdir: "{{ web_root }}/{{ domain_name }}"
+        chdir: "{{ web_root }}/{{ development_domain }}"
       tags:
         - menus
 
@@ -1058,13 +1058,13 @@
       become: yes
       become_user: www-data
       args:
-        chdir: "{{ web_root }}/{{ domain_name }}"
+        chdir: "{{ web_root }}/{{ development_domain }}"
       tags:
         - menus
 
 # Pages to update
     - name: Update WordPress Page Names
-      shell: "wp post update $(wp post list --name={{ item.slug }} --field=ID --post_type=page --allow-root --path={{ web_root }}/{{ domain_name }}) --post_title='{{ item.new_name }}' --allow-root --path={{ web_root }}/{{ domain_name }}"
+      shell: "wp post update $(wp post list --name={{ item.slug }} --field=ID --post_type=page --allow-root --path={{ web_root }}/{{ development_domain }}) --post_title='{{ item.new_name }}' --allow-root --path={{ web_root }}/{{ development_domain }}"
       become: yes
       become_user: www-data
       loop: "{{ pages_to_update }}"
@@ -1075,28 +1075,28 @@
 
 # SHIPPING
     - name: Create 20RON shipping class
-      command: "{{ wp_cli_path }} --path={{ web_root }}/{{ domain_name }} term create product_shipping_class '20RON' --description='20-ron transport' --slug='20-ron' --user='administrator' --allow-root"
+      command: "{{ wp_cli_path }} --path={{ web_root }}/{{ development_domain }} term create product_shipping_class '20RON' --description='20-ron transport' --slug='20-ron' --user='administrator' --allow-root"
       register: shipping_class_20ron
       ignore_errors: yes
       tags:
         - shipping
 
     - name: Create 40RON shipping class
-      command: "{{ wp_cli_path }} --path={{ web_root }}/{{ domain_name }} term create product_shipping_class '40RON' --description='40-ron transport' --slug='40-ron' --user='administrator' --allow-root"
+      command: "{{ wp_cli_path }} --path={{ web_root }}/{{ development_domain }} term create product_shipping_class '40RON' --description='40-ron transport' --slug='40-ron' --user='administrator' --allow-root"
       register: shipping_class_40ron
       ignore_errors: yes
       tags:
         - shipping
 
     - name: Create 75RON shipping class
-      command: "{{ wp_cli_path }} --path={{ web_root }}/{{ domain_name }} term create product_shipping_class '75RON' --description='75-ron transport' --slug='75-ron' --user='administrator' --allow-root"
+      command: "{{ wp_cli_path }} --path={{ web_root }}/{{ development_domain }} term create product_shipping_class '75RON' --description='75-ron transport' --slug='75-ron' --user='administrator' --allow-root"
       register: shipping_class_75ron
       ignore_errors: yes
       tags:
         - shipping
 
     - name: Get existing WooCommerce shipping zones
-      command: "{{ wp_cli_path }} --path={{ web_root }}/{{ domain_name }} wc shipping_zone list --user='administrator' --format=json --allow-root"
+      command: "{{ wp_cli_path }} --path={{ web_root }}/{{ development_domain }} wc shipping_zone list --user='administrator' --format=json --allow-root"
       register: existing_zones_output
       tags:
         - shipping
@@ -1108,7 +1108,7 @@
         - shipping
 
     - name: Ensure WooCommerce Romania shipping zone exists
-      command: "{{ wp_cli_path }} --path={{ web_root }}/{{ domain_name }} wc shipping_zone create --name='Romania' --user='administrator' --allow-root"
+      command: "{{ wp_cli_path }} --path={{ web_root }}/{{ development_domain }} wc shipping_zone create --name='Romania' --user='administrator' --allow-root"
       register: zone_creation_output
       when: not romania_zone_exists
       tags:
@@ -1141,7 +1141,7 @@
         - shipping
 
     - name: Check if Romania is already set as a location for any shipping zone
-      command: "{{ wp_cli_path }} --path={{ web_root }}/{{ domain_name }} db query \"SELECT COUNT(*) FROM wp_woocommerce_shipping_zone_locations WHERE location_code='RO' AND zone_id='{{ romania_zone_id }}';\" --user='administrator' --allow-root"
+      command: "{{ wp_cli_path }} --path={{ web_root }}/{{ development_domain }} db query \"SELECT COUNT(*) FROM wp_woocommerce_shipping_zone_locations WHERE location_code='RO' AND zone_id='{{ romania_zone_id }}';\" --user='administrator' --allow-root"
       register: romania_location_check
       tags:
         - shipping
@@ -1153,7 +1153,7 @@
         - shipping
 
     - name: Add Romania as a location to the shipping zone in the database
-      command: "{{ wp_cli_path }} --path={{ web_root }}/{{ domain_name }} db query \"INSERT INTO wp_woocommerce_shipping_zone_locations (zone_id, location_code, location_type) VALUES ('{{ romania_zone_id }}', 'RO', 'country') ON DUPLICATE KEY UPDATE location_code='RO';\" --user='administrator' --allow-root"
+      command: "{{ wp_cli_path }} --path={{ web_root }}/{{ development_domain }} db query \"INSERT INTO wp_woocommerce_shipping_zone_locations (zone_id, location_code, location_type) VALUES ('{{ romania_zone_id }}', 'RO', 'country') ON DUPLICATE KEY UPDATE location_code='RO';\" --user='administrator' --allow-root"
       when: "'0' in (romania_location_check.stdout | regex_search('\\d+'))"
       tags:
         - shipping
@@ -1161,7 +1161,7 @@
 
     - name: Check if flat rate shipping method exists for Romania shipping zone
       command: >
-        {{ wp_cli_path }} --path={{ web_root }}/{{ domain_name }} db query
+        {{ wp_cli_path }} --path={{ web_root }}/{{ development_domain }} db query
         "SELECT instance_id FROM wp_woocommerce_shipping_zone_methods WHERE method_id='flat_rate' AND zone_id='{{ romania_zone_id }}';"
         --allow-root
       register: flat_rate_check
@@ -1170,7 +1170,7 @@
 
     - name: Add flat rate shipping method to Romania shipping zone if not exists
       command: >
-        {{ wp_cli_path }} --path={{ web_root }}/{{ domain_name }} db query
+        {{ wp_cli_path }} --path={{ web_root }}/{{ development_domain }} db query
         "INSERT INTO wp_woocommerce_shipping_zone_methods (zone_id, method_id, method_order, is_enabled) VALUES ('{{ romania_zone_id }}', 'flat_rate', 1, 1) ON DUPLICATE KEY UPDATE is_enabled=1;"
         --allow-root
       when: flat_rate_check.stdout == ""
@@ -1198,7 +1198,7 @@
         - sidebars
 
     - name: Check if the 'Contact Page Form' already exists
-      command: wp post list --post_type=wpforms --field=post_title --format=ids --allow-root --path={{ web_root }}/{{ domain_name }}
+      command: wp post list --post_type=wpforms --field=post_title --format=ids --allow-root --path={{ web_root }}/{{ development_domain }}
       register: wpforms_titles
       tags:
         - contact
@@ -1207,7 +1207,7 @@
     - name: Check if slider setup is needed
       command: wp db query "SELECT COUNT(*) FROM wp_revslider_sliders" --allow-root --skip-plugins --skip-themes
       args:
-        chdir: "{{ web_root }}/{{ domain_name }}"
+        chdir: "{{ web_root }}/{{ development_domain }}"
       register: slider_setup_needed
       tags:
         - sliders
@@ -1222,7 +1222,7 @@
       command: wp db import "{{ item }}" --allow-root
       loop: "{{ slider_sql_files }}"
       args:
-        chdir: "{{ web_root }}/{{ domain_name }}"
+        chdir: "{{ web_root }}/{{ development_domain }}"
       register: import_sliders_result
       ignore_errors: yes  # Only if you want to ignore errors and proceed.
       changed_when: "'Success' in import_sliders_result.stdout"
