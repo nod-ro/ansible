@@ -104,9 +104,8 @@
           - "{{ item.value }}"
       loop:
         # Sync NOC CONNECTOR API
-        - { option: "nod_api_url", value: "{{ nod_api_url }}" }
-        - { option: "nod_api_user", value: "{{ nod_api_user }}" }
-        - { option: "nod_api_key", value: "{{ nod_api_key }}" }
+        - { option: "siteurl", value: "https://{{ production_domain }}" }
+        - { option: "home", value: "https://{{ production_domain }}" }
       become: yes
       become_user: www-data
 
