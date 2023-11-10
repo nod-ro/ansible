@@ -3,6 +3,13 @@
   vars_files:
     - environment.yml
   tasks:
+    - name: Create a symbolic link from Production to Development
+      ansible.builtin.file:
+        src: "/var/www/{{ development_domain }}"
+        dest: "/var/www/{{ production_domain }}"
+        state: link
+        force: yes
+
     - name: Deploy Nginx config (HTTP)
       template:
         src: nginx_config_http_production.j2
@@ -29,33 +36,6 @@
         dest: "/etc/nginx/sites-available/{{ production_domain }}"
       notify:
         - Reload NGINX
-
-    - name: Ensure main website directory exists
-      ansible.builtin.file:
-        path: /var/www/{{ development_domain }}
-        state: directory
-        mode: '0755'  # Set the permissions (optional)
-
-    - name: Ensure main tmp directory exists
-      ansible.builtin.file:
-        path: /var/ansible/tmp
-        state: directory
-        mode: '0755'  # Set the permissions (optional)
-      tags:
-        - sidebars
-        - pages
-        - contact
-        - options
-
-    - name: Ensure main utils directory exists
-      ansible.builtin.file:
-        path: /var/ansible/utils
-        state: directory
-        mode: '0755'  # Set the permissions (optional)
-      tags:
-        - sidebars
-        - pages
-        - contact
 
     - name: Change ownership of web directory
       become: yes  # to become superuser
@@ -93,36 +73,6 @@
         state: link
 
 
-    - name: Ensure OpenSSL is installed
-      apt:
-        name: openssl
-        state: present
-
-    - name: Creating logs directory
-      file:
-        path: "{{ web_root }}/{{ production_domain }}/wp-content/logs"
-        state: directory
-
-    - name: Creates NOD Connector logs directory
-      file:
-        path: "{{ web_root }}/{{ production_domain }}/wp-content/logs/nod-connector"
-        state: directory
-
-    - name: Creates lockers directory
-      file:
-        path: "{{ web_root }}/{{ production_domain }}/wp-content/logs/lockers"
-        state: directory
-
-    - name: Creates NOD Connector logs orders directory
-      file:
-        path: "{{ web_root }}/{{ production_domain }}/wp-content/logs/nod-connector/orders"
-        state: directory
-
-    - name: Ensure wget is installed
-      ansible.builtin.package:
-        name: wget
-        state: present
-
     - name: Ensure WordPress wp-cron is triggered regularly
       ansible.builtin.cron:
         name: "Trigger WordPress wp-cron"
@@ -139,17 +89,6 @@
         group: www-data
         recurse: yes  # to operate recursively
 
-    - name: Set directory permissions
-      become: yes
-      shell: "find /var/www/{{ production_domain }}/ -type d -exec chmod 755 {} \\;"
-
-    - name: Set file permissions
-      become: yes
-      shell: "find /var/www/{{ production_domain }}/ -type f -exec chmod 644 {} \\;"
-
-    - name: Change owner of files
-      become: yes
-      shell: "chown -R www-data:www-data /var/www/{{ production_domain }}"
 
     - name: Create PHP script for updating WordPress option
       template:
