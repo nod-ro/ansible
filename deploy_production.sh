@@ -17,6 +17,9 @@ sshpass -p "$REMOTE_PASSWORD" ssh -o StrictHostKeyChecking=no "$REMOTE_USER@$REM
 
 cd /var/ansible
 ls -la
+ls -la
+ls -la
+ls -la
 
 ansible-playbook /var/ansible/deploy_production.yml
 
