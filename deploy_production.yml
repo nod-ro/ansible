@@ -89,6 +89,11 @@
 #        group: www-data
 #        recurse: yes  # to operate recursively
 
+    - name: Ensure main tmp directory exists
+      ansible.builtin.file:
+        path: /var/ansible/tmp
+        state: directory
+        mode: '0755'  # Set the permissions (optional)
 
     - name: Create PHP script for updating WordPress option
       template:
