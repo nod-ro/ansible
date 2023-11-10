@@ -23,7 +23,6 @@
       debug:
         var: certbot_output.stdout_lines
 
-
     - name: Generate NGINX Site Configuration
       template:
         src: nginx_config_https_production.j2
@@ -119,11 +118,6 @@
         path: "{{ web_root }}/{{ production_domain }}/wp-content/logs/nod-connector/orders"
         state: directory
 
-    - name: Creates NOD Connector logs orders directory
-      file:
-        path: "{{ web_root }}/{{ production_domain }}/wp-content/logs/nod-connector/orders/send_to_nod"
-        state: directory
-
     - name: Ensure wget is installed
       ansible.builtin.package:
         name: wget
@@ -157,15 +151,10 @@
       become: yes
       shell: "chown -R www-data:www-data /var/www/{{ production_domain }}"
 
-
     - name: Create PHP script for updating WordPress option
       template:
         src: update_option.php.j2
         dest: "/var/ansible/tmp/update_option.php"
-      tags:
-        - options
-        - pages
-        - woocommerce
 
     - name: Update WordPress Options
       command:
@@ -179,12 +168,8 @@
         - { option: "nod_api_url", value: "{{ nod_api_url }}" }
         - { option: "nod_api_user", value: "{{ nod_api_user }}" }
         - { option: "nod_api_key", value: "{{ nod_api_key }}" }
-
       become: yes
       become_user: www-data
-      tags:
-        - options
-
 
   handlers:
     - name: Reload NGINX
