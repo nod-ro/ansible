@@ -37,14 +37,14 @@
       notify:
         - Reload NGINX
 
-    - name: Change ownership of web directory
-      become: yes  # to become superuser
-      no_log: true
-      ansible.builtin.file:
-        path: "/var/www/{{ production_domain }}"
-        owner: www-data
-        group: www-data
-        recurse: yes  # to operate recursively
+#    - name: Change ownership of web directory
+#      become: yes  # to become superuser
+#      no_log: true
+#      ansible.builtin.file:
+#        path: "/var/www/{{ production_domain }}"
+#        owner: www-data
+#        group: www-data
+#        recurse: yes  # to operate recursively
 
     - name: Enable NGINX Site
       file:
@@ -80,14 +80,14 @@
         user: "root"
         job: "wget -qO- http://{{ production_domain }}/wp-cron.php &> /dev/null"
 
-    - name: Change ownership of web directory
-      become: yes  # to become superuser
-      no_log: true
-      ansible.builtin.file:
-        path: "/var/www/{{ production_domain }}"
-        owner: www-data
-        group: www-data
-        recurse: yes  # to operate recursively
+#    - name: Change ownership of web directory
+#      become: yes  # to become superuser
+#      no_log: true
+#      ansible.builtin.file:
+#        path: "/var/www/{{ production_domain }}"
+#        owner: www-data
+#        group: www-data
+#        recurse: yes  # to operate recursively
 
 
     - name: Create PHP script for updating WordPress option
