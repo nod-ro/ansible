@@ -1,5 +1,5 @@
 web_root: "/var/www"
-domain_name: ansible2.codecodac.com
+deploy_development: ansible2.codecodac.com
 vm_ip: 98.67.160.132
 vm_user: "ubuntu"
 vm_password: "CerbuTechUbuntu!"
@@ -190,7 +190,7 @@ electro_options:
   show_footer_bottom_widgets: "1"
   footer_bottom_widgets_columns: "3"
   footer_credit_block_enable: "1"
-  footer_credit: "&copy; <a href=\"https://{{domain_name}}/\">WordPress</a> - All Rights Reserved"
+  footer_credit: "&copy; <a href=\"https://{{production_domain}}/\">WordPress</a> - All Rights Reserved"
   footer_credit_icons: ""
   enable_mobile_frontpage: "0"
   mobile_frontpage_id: ""
