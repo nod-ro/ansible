@@ -1,5 +1,5 @@
 web_root: "/var/www"
-deploy_development: ansible2.codecodac.com
+development_domain: ansible2.codecodac.com
 vm_ip: 98.67.160.132
 vm_user: "ubuntu"
 vm_password: "CerbuTechUbuntu!"

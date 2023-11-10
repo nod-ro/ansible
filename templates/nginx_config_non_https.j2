@@ -1,8 +1,8 @@
 server {
     listen 80;
-    server_name {{ deploy_development }} www.{{ deploy_development }};
+    server_name {{ development_domain }} www.{{ development_domain }};
 
-    root /var/www/{{ deploy_development }};
+    root /var/www/{{ development_domain }};
     index index.php index.html;
 
     location / {
@@ -16,7 +16,7 @@ server {
         include snippets/fastcgi-php.conf;
         fastcgi_pass unix:/var/run/php/php{{ php_version }}-fpm.sock;
         fastcgi_param SCRIPT_FILENAME $document_root$fastcgi_script_name;
-        fastcgi_param SERVER_NAME {{ deploy_development }};
+        fastcgi_param SERVER_NAME {{ development_domain }};
         fastcgi_read_timeout 600s;
         include fastcgi_params;
     }
