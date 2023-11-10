@@ -62,13 +62,13 @@ ls -la /var/ansible
 
 
 
-#ansible-playbook /var/ansible/setup.yml --tags menus
-#ansible-playbook /var/ansible/setup.yml --tags pages
-#ansible-playbook /var/ansible/setup.yml --tags shipping
-#ansible-playbook /var/ansible/setup.yml --tags db
-#ansible-playbook /var/ansible/setup.yml --tags sidebars
-#ansible-playbook /var/ansible/setup.yml --tags contact
-#ansible-playbook /var/ansible/setup.yml --tags options
-ansible-playbook /var/ansible/setup.yml
+#ansible-playbook /var/ansible/deploy_development.yml --tags menus
+#ansible-playbook /var/ansible/deploy_development.yml --tags pages
+#ansible-playbook /var/ansible/deploy_development.yml --tags shipping
+#ansible-playbook /var/ansible/deploy_development.yml --tags db
+#ansible-playbook /var/ansible/deploy_development.yml --tags sidebars
+#ansible-playbook /var/ansible/deploy_development.yml --tags contact
+#ansible-playbook /var/ansible/deploy_development.yml --tags options
+ansible-playbook /var/ansible/deploy_development.yml
 
 EOF
