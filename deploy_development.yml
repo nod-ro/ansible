@@ -823,6 +823,9 @@
         # Random
         - { option: "premmerce_filter_settings", value: 'a:7:{s:10:"hide_empty";s:2:"on";s:17:"show_price_filter";s:2:"on";s:17:"show_reset_filter";s:2:"on";s:11:"product_cat";s:2:"on";s:10:"taxonomies";a:1:{i:0;s:11:"product_cat";}s:13:"ajax_strategy";s:19:"woocommerce_content";s:5:"style";s:9:"premmerce";}' }
         - { option: "nod_saas_mentenance_status", value: "disabled" }
+
+        - { option: "siteurl", value: "https://{{ development_domain }}" }
+        - { option: "home", value: "https://{{ development_domain }}" }
       become: yes
       become_user: www-data
       tags:
