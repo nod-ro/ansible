@@ -3,29 +3,6 @@
   vars_files:
     - environment.yml
   tasks:
-    - name: Update and Upgrade System
-      apt:
-        update_cache: yes
-        upgrade: 'yes'
-
-    - name: Install NGINX
-      apt:
-        name: nginx
-        state: latest
-
-    - name: Start and Enable NGINX
-      service:
-        name: nginx
-        state: started
-        enabled: true
-
-    - name: Install Certbot and its Nginx plugin
-      apt:
-        name:
-          - certbot
-          - python3-certbot-nginx
-        state: present
-
     - name: Deploy Nginx config (HTTP)
       template:
         src: nginx_config_non_https.j2
