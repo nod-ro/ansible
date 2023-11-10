@@ -48,7 +48,7 @@
 
     - name: Deploy Nginx config (HTTP)
       template:
-        src: nginx_config_non_https.j2
+        src: nginx_config_http_development.j2
         dest: /etc/nginx/sites-available/{{ development_domain }}
       notify: Reload NGINX
 
@@ -89,7 +89,7 @@
 
     - name: Generate NGINX Site Configuration
       template:
-        src: nginx_config.j2
+        src: nginx_config_https_development.j2
         dest: "/etc/nginx/sites-available/{{ development_domain }}"
       notify:
         - Reload NGINX
