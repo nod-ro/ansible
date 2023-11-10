@@ -23,10 +23,10 @@
       when: ssh_agent_output is defined and ssh_agent_output.stdout_lines is defined and ssh_agent_output.stdout_lines | length > 1
 
   tasks:
-#    - name: Update and Upgrade System
-#      apt:
-#        update_cache: yes
-#        upgrade: 'yes'
+    - name: Update and Upgrade System
+      apt:
+        update_cache: yes
+        upgrade: 'yes'
 
     - name: Install NGINX
       apt:
