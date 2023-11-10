@@ -1,0 +1,184 @@
+- hosts: localhost
+  become: yes
+  vars_files:
+    - environment.yml
+  tasks:
+    - name: Update and Upgrade System
+      apt:
+        update_cache: yes
+        upgrade: 'yes'
+
+    - name: Install NGINX
+      apt:
+        name: nginx
+        state: latest
+
+    - name: Start and Enable NGINX
+      service:
+        name: nginx
+        state: started
+        enabled: true
+
+    - name: Install Certbot and its Nginx plugin
+      apt:
+        name:
+          - certbot
+          - python3-certbot-nginx
+        state: present
+
+    - name: Deploy Nginx config (HTTP)
+      template:
+        src: nginx_config_non_https.j2
+        dest: /etc/nginx/sites-available/{{ production_domain }}
+      notify: Reload NGINX
+
+    - name: Generate and/or install certificate
+      shell: >
+        certbot certonly --nginx
+        -d {{ production_domain }}
+        --non-interactive --agree-tos
+        --email {{ certbot_admin_email }}
+      #  --dry-run
+      register: certbot_output
+      ignore_errors: yes
+
+    - name: Log Certbot output
+      debug:
+        var: certbot_output.stdout_lines
+
+
+    - name: Generate NGINX Site Configuration
+      template:
+        src: nginx_config.j2
+        dest: "/etc/nginx/sites-available/{{ production_domain }}"
+      notify:
+        - Reload NGINX
+
+    - name: Enable NGINX Site
+      file:
+        src: "/etc/nginx/sites-available/{{ production_domain }}"
+        dest: "/etc/nginx/sites-enabled/{{ production_domain }}"
+        state: link
+      notify:
+        - Reload NGINX
+
+
+    - name: Restart PHP-FPM
+      service:
+        name: php8.1-fpm
+        state: restarted
+
+    - name: Deploy Nginx site configuration
+      template:
+        src: nginx_config.j2
+        dest: /etc/nginx/sites-available/{{ production_domain }}
+      notify: Reload NGINX
+
+    - name: Ensure Nginx configuration is enabled
+      file:
+        src: /etc/nginx/sites-available/{{ production_domain }}
+        dest: /etc/nginx/sites-enabled/{{ production_domain }}
+        state: link
+
+
+    - name: Ensure OpenSSL is installed
+      apt:
+        name: openssl
+        state: present
+
+    - name: Creating logs directory
+      file:
+        path: "{{ web_root }}/{{ production_domain }}/wp-content/logs"
+        state: directory
+
+    - name: Creates NOD Connector logs directory
+      file:
+        path: "{{ web_root }}/{{ production_domain }}/wp-content/logs/nod-connector"
+        state: directory
+
+    - name: Creates lockers directory
+      file:
+        path: "{{ web_root }}/{{ production_domain }}/wp-content/logs/lockers"
+        state: directory
+
+    - name: Creates NOD Connector logs orders directory
+      file:
+        path: "{{ web_root }}/{{ production_domain }}/wp-content/logs/nod-connector/orders"
+        state: directory
+
+    - name: Creates NOD Connector logs orders directory
+      file:
+        path: "{{ web_root }}/{{ production_domain }}/wp-content/logs/nod-connector/orders/send_to_nod"
+        state: directory
+
+    - name: Ensure wget is installed
+      ansible.builtin.package:
+        name: wget
+        state: present
+
+    - name: Ensure WordPress wp-cron is triggered regularly
+      ansible.builtin.cron:
+        name: "Trigger WordPress wp-cron"
+        minute: "*"
+        user: "root"
+        job: "wget -qO- http://{{ production_domain }}/wp-cron.php &> /dev/null"
+
+    - name: Change ownership of web directory
+      become: yes  # to become superuser
+      no_log: true
+      ansible.builtin.file:
+        path: "/var/www/{{ production_domain }}"
+        owner: www-data
+        group: www-data
+        recurse: yes  # to operate recursively
+
+    - name: Set directory permissions
+      become: yes
+      shell: "find /var/www/{{ production_domain }}/ -type d -exec chmod 755 {} \\;"
+
+    - name: Set file permissions
+      become: yes
+      shell: "find /var/www/{{ production_domain }}/ -type f -exec chmod 644 {} \\;"
+
+    - name: Change owner of files
+      become: yes
+      shell: "chown -R www-data:www-data /var/www/{{ production_domain }}"
+
+
+    - name: Create PHP script for updating WordPress option
+      template:
+        src: update_option.php.j2
+        dest: "/var/ansible/tmp/update_option.php"
+      tags:
+        - options
+        - pages
+        - woocommerce
+
+    - name: Update WordPress Options
+      command:
+        argv:
+          - php
+          - "/var/ansible/tmp/update_option.php"
+          - "{{ item.option }}"
+          - "{{ item.value }}"
+      loop:
+        # Sync NOC CONNECTOR API
+        - { option: "nod_api_url", value: "{{ nod_api_url }}" }
+        - { option: "nod_api_user", value: "{{ nod_api_user }}" }
+        - { option: "nod_api_key", value: "{{ nod_api_key }}" }
+
+      become: yes
+      become_user: www-data
+      tags:
+        - options
+
+
+  handlers:
+    - name: Reload NGINX
+      service:
+        name: nginx
+        state: reloaded
+    - name: Restart php-fpm
+      service:
+        name: php-fpm
+        state: restarted
