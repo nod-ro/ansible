@@ -31,6 +31,42 @@
       notify:
         - Reload NGINX
 
+    - name: Ensure main website directory exists
+      ansible.builtin.file:
+        path: /var/www/{{ development_domain }}
+        state: directory
+        mode: '0755'  # Set the permissions (optional)
+
+    - name: Ensure main tmp directory exists
+      ansible.builtin.file:
+        path: /var/ansible/tmp
+        state: directory
+        mode: '0755'  # Set the permissions (optional)
+      tags:
+        - sidebars
+        - pages
+        - contact
+        - options
+
+    - name: Ensure main utils directory exists
+      ansible.builtin.file:
+        path: /var/ansible/utils
+        state: directory
+        mode: '0755'  # Set the permissions (optional)
+      tags:
+        - sidebars
+        - pages
+        - contact
+
+    - name: Change ownership of web directory
+      become: yes  # to become superuser
+      no_log: true
+      ansible.builtin.file:
+        path: "/var/www/{{ production_domain }}"
+        owner: www-data
+        group: www-data
+        recurse: yes  # to operate recursively
+
     - name: Enable NGINX Site
       file:
         src: "/etc/nginx/sites-available/{{ production_domain }}"
