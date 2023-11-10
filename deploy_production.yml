@@ -5,7 +5,7 @@
   tasks:
     - name: Deploy Nginx config (HTTP)
       template:
-        src: nginx_config_non_https.j2
+        src: nginx_config_http_production.j2
         dest: /etc/nginx/sites-available/{{ production_domain }}
       notify: Reload NGINX
 
@@ -26,7 +26,7 @@
 
     - name: Generate NGINX Site Configuration
       template:
-        src: nginx_config.j2
+        src: nginx_config_https_production.j2
         dest: "/etc/nginx/sites-available/{{ production_domain }}"
       notify:
         - Reload NGINX
@@ -83,7 +83,7 @@
 
     - name: Deploy Nginx site configuration
       template:
-        src: nginx_config.j2
+        src: nginx_config_https_production.j2
         dest: /etc/nginx/sites-available/{{ production_domain }}
       notify: Reload NGINX
 
