@@ -23,6 +23,28 @@
       when: ssh_agent_output is defined and ssh_agent_output.stdout_lines is defined and ssh_agent_output.stdout_lines | length > 1
 
   tasks:
+    # Deactivating and reactivating NC & Other plugins
+    - name: Deactivate SAAS
+      command: wp plugin deactivate nod-shop-saas
+      args:
+        chdir: "{{ web_root }}/{{ development_domain }}"
+
+    - name: Deactivate NC
+      command: wp plugin deactivate nod-wordpress-module
+      args:
+        chdir: "{{ web_root }}/{{ development_domain }}"
+
+    - name: Reactivate NC
+      command: wp plugin activate nod-wordpress-module
+      args:
+        chdir: "{{ web_root }}/{{ development_domain }}"
+
+    - name: Reactivate SAAS
+      command: wp plugin activate nod-shop-saas
+      args:
+        chdir: "{{ web_root }}/{{ development_domain }}"
+
+
     - name: Update and Upgrade System
       apt:
         update_cache: yes
