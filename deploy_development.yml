@@ -758,6 +758,11 @@
         - pages
         - woocommerce
 
+    - name: Add WP-SUPER-CACHE GLOBAL Settings template
+      template:
+        src: wp-cache-config.php.j2
+        dest: "{{ web_root }}/{{ development_domain }}/wp-content/wp-cache-config.php"
+
     - name: Update WordPress Options
       command:
         argv:
@@ -835,6 +840,18 @@
         - { option: "premmerce_filter_settings", value: 'a:7:{s:10:"hide_empty";s:2:"on";s:17:"show_price_filter";s:2:"on";s:17:"show_reset_filter";s:2:"on";s:11:"product_cat";s:2:"on";s:10:"taxonomies";a:1:{i:0;s:11:"product_cat";}s:13:"ajax_strategy";s:19:"woocommerce_content";s:5:"style";s:9:"premmerce";}' }
         - { option: "nod_saas_mentenance_status", value: "disabled" }
 
+        #Autoptimize
+        - { option: "autoptimize_js", value: "on" }
+        - { option: "autoptimize_js_aggregate", value: "on" }
+        - { option: "autoptimize_css", value: "on" }
+        - { option: "autoptimize_css_aggregate", value: "on" }
+        - { option: "autoptimize_css_defer", value: "on" }
+        - { option: "autoptimize_html", value: "on" }
+        - { option: "autoptimize_cache_nogzip", value: "on" }
+        - { option: "autoptimize_imgopt_settings", value: 'a:5:{s:31:"autoptimize_imgopt_text_field_6";s:0:"";s:33:"autoptimize_imgopt_select_field_2";s:1:"2";s:35:"autoptimize_imgopt_checkbox_field_3";s:1:"1";s:31:"autoptimize_imgopt_text_field_5";s:0:"";s:33:"autoptimize_imgopt_number_field_7";s:1:"0";}' }
+        - { option: "autoptimize_extra_settings", value: 'a:4:{s:31:"autoptimize_extra_radio_field_4";s:1:"3";s:30:"autoptimize_extra_text_field_2";s:0:"";s:30:"autoptimize_extra_text_field_7";s:0:"";s:30:"autoptimize_extra_text_field_3";s:0:"";}' }
+
+        # Setting / resetting site_url and home
         - { option: "siteurl", value: "https://{{ development_domain }}" }
         - { option: "home", value: "https://{{ development_domain }}" }
       become: yes
