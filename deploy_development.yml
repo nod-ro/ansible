@@ -499,14 +499,14 @@
       become: yes
       become_user: root
 
-    - name: Check if plugin directory exists and is empty
-      find:
-        paths: "/var/www/{{development_domain}}/wp-content/plugins/{{ item.slug }}"
-        file_type: directory
-      register: plugin_directory
-      with_items: "{{ external_plugins }}"
-      tags:
-        - plugins
+#    - name: Check if plugin directory exists and is empty
+#      find:
+#        paths: "/var/www/{{development_domain}}/wp-content/plugins/{{ item.slug }}"
+#        file_type: directory
+#      register: plugin_directory
+#      with_items: "{{ external_plugins }}"
+#      tags:
+#        - plugins
 
 #    - name: Debug plugin_directory variable
 #      debug:
