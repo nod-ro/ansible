@@ -274,6 +274,11 @@
         dest: "/var/www/{{ development_domain }}/wp-config.php"
       when: wp_is_installed.rc != 0
 
+    - name: Add WP-SUPER-CACHE GLOBAL Settings template
+      template:
+        src: wp-cache-config.php.j2
+        dest: "{{ web_root }}/{{ development_domain }}/wp-content/wp-cache-config.php"
+
     # Install WordPress core if not already installed
     - name: Install WordPress core
       command: wp core install --url={{ development_domain }} --title="{{ domain_title }}" --admin_user={{ wp_user }} --admin_password={{ wp_password }} --admin_email={{ wp_email }} --allow-root --path={{ web_root }}/{{ development_domain }}
@@ -757,11 +762,6 @@
         - options
         - pages
         - woocommerce
-
-    - name: Add WP-SUPER-CACHE GLOBAL Settings template
-      template:
-        src: wp-cache-config.php.j2
-        dest: "{{ web_root }}/{{ development_domain }}/wp-content/wp-cache-config.php"
 
     - name: Update WordPress Options
       command:
