@@ -5,12 +5,12 @@ WP-Cache Config Sample File
 See wp-cache.php for author details.
 */
 
-$cache_page_secret = 'cd5aeb03b7e69c62b41d11ab719b3354';
+$cache_page_secret = 'fc497fafc253601ee86da6c748127152';
 $wp_cache_home_path = '/';
 $wp_cache_slash_check = 1;
 $cache_time_interval = '60000';
 if ( ! defined('WPCACHEHOME') )
-        define( 'WPCACHEHOME', WP_CONTENT_DIR . "/plugins/wp-super-cache/" );
+	define( 'WPCACHEHOME', WP_CONTENT_DIR . "/plugins/wp-super-cache/" );
 
 $cache_compression = 1;
 $cache_enabled = true;
@@ -38,12 +38,12 @@ $wp_cache_mutex_disabled = 1;
 $sem_id = 1261194031;
 
 if ( '/' != substr($cache_path, -1)) {
-        $cache_path .= '/';
+	$cache_path .= '/';
 }
 
 $wp_cache_mobile = 0;
 $wp_cache_mobile_whitelist = 'Stand Alone/QNws';
-$wp_cache_mobile_browsers = 'Android, 2.0 MMP, 240x320, AvantGo, BlackBerry, Blazer, Cellphone, Danger, DoCoMo, Elaine/3.0, EudoraWeb, hiptop, IEMobile, iPhone, iPod, KYOCERA/WX310K, LG/U990, MIDP-2.0, MMEF20, >
+$wp_cache_mobile_browsers = 'Android, 2.0 MMP, 240x320, AvantGo, BlackBerry, Blazer, Cellphone, Danger, DoCoMo, Elaine/3.0, EudoraWeb, hiptop, IEMobile, iPhone, iPod, KYOCERA/WX310K, LG/U990, MIDP-2.0, MMEF20, MOT-V, NetFront, Newt, Nintendo Wii, Nitro, Nokia, Opera Mini, Palm, Playstation Portable, portalmmm, Proxinet, ProxiNet, SHARP-TQ-GX10, Small, SonyEricsson, Symbian OS, SymbianOS, TS21i-10, UP.Browser, UP.Link, Windows CE, WinWAP';
 
 // change to relocate the supercache plugins directory
 $wp_cache_plugins_dir = WPCACHEHOME . 'plugins';
