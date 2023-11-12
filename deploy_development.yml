@@ -508,12 +508,13 @@
       tags:
         - plugins
 
-    - name: Debug plugin_directory variable
-      debug:
-        var: plugin_directory
-      tags:
-        - plugins
+#    - name: Debug plugin_directory variable
+#      debug:
+#        var: plugin_directory
+#      tags:
+#        - plugins
 
+    # if facing errors here consider that wpbakery is installed under js_composer and take it from here to make it install under the plugin with the error
     - name: Install and activate external theme's plugins only if directory is empty
       command: "wp plugin install {{ item.url }} --version={{ item.version }} --activate --path=/var/www/{{development_domain}} --allow-root"
       loop: "{{ external_plugins }}"
