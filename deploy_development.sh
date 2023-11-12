@@ -69,6 +69,6 @@ ls -la /var/ansible
 #ansible-playbook /var/ansible/deploy_development.yml --tags sidebars
 #ansible-playbook /var/ansible/deploy_development.yml --tags contact
 #ansible-playbook /var/ansible/deploy_development.yml --tags options
-ansible-playbook /var/ansible/deploy_development.yml
+ansible-playbook /var/ansible/deploy_development.yml  --tags plugins
 
 EOF

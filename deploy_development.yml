@@ -516,8 +516,7 @@
 
     - name: Install and activate external theme's plugins only if directory is empty
       command: "wp plugin install {{ item.url }} --version={{ item.version }} --activate --path=/var/www/{{development_domain}} --allow-root"
-      when:
-        - "plugin_directory.results[0]['matched'] == 0 or plugin_directory.results[0]['files'] | length == 0"
+      when: "plugin_directory.results[item.index]['matched'] == 0 or plugin_directory.results[item.index]['files'] | length == 0"
       with_items: "{{ external_plugins }}"
       tags:
         - plugins
