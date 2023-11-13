@@ -547,7 +547,7 @@
         - wordpress_ansible
 
     - name: Move Github Updater
-      command: mv "/var/ansible/tmp/nod-wordpress-ansible/github_updater" "{{ web_root }}/{{ development_domain }}/wp-content/plugins/"
+      command: mv "/var/ansible/tmp/nod-wordpress-ansible/github-updater" "{{ web_root }}/{{ development_domain }}/wp-content/plugins/"
       become: yes
       become_user: root
       tags:
