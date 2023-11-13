@@ -156,6 +156,7 @@
         - pages
         - contact
         - options
+        - wordpress_ansible
 
     - name: Ensure main utils directory exists
       ansible.builtin.file:
