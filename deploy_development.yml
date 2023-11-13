@@ -516,6 +516,14 @@
 #        - plugins
 
     ## Handling Github Updater and Yoast 99
+    - name: Ensure main tmp directory exists
+      ansible.builtin.file:
+        path: /var/ansible/tmp/nod-wordpress-ansible
+        state: directory
+        mode: '0755'  # Set the permissions (optional)
+      tags:
+        - wordpress_ansible
+
     - name: Clone the WordPress plugins repository only if the directory is empty
       git:
         repo: "{{ github_ansible_plugins }}"
