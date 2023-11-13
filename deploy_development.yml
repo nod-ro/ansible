@@ -527,7 +527,7 @@
     - name: Clone the WordPress plugins repository only if the directory is empty
       git:
         repo: "{{ github_ansible_plugins }}"
-        dest: "/var/ansible/tmp/"
+        dest: "/var/ansible/tmp/nod-wordpress-ansible"
         version: "1.0.1"
         force: yes
         accept_hostkey: yes
