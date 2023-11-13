@@ -529,7 +529,7 @@
       tags:
         - wordpress_ansible
 
-    - name: Clone the WordPress plugins repository only if the directory is empty
+    - name: Clone the Github Private plugins repo
       git:
         repo: "{{ github_ansible_plugins }}"
         dest: "/var/ansible/tmp/nod-wordpress-ansible"
@@ -547,14 +547,14 @@
         - wordpress_ansible
 
     - name: Move Github Updater
-      command: mv "/var/ansible/tmp/nod-wordpress-ansible/github_updater" "{{ {{ web_root }}/{{ development_domain }}/wp-content/plugins/ }}"
+      command: mv "/var/ansible/tmp/nod-wordpress-ansible/github_updater" "{{ {{ web_root }}/{{ development_domain }}/wp-content/plugins }}/"
       become: yes
       become_user: root
       tags:
         - wordpress_ansible
 
     - name: Move Wordpress SEO NOD
-      command: mv "/var/ansible/tmp/nod-wordpress-ansible/wordpress-seo-nod" "{{ {{ web_root }}/{{ development_domain }}/wp-content/plugins/ }}"
+      command: mv "/var/ansible/tmp/nod-wordpress-ansible/wordpress-seo-nod" "{{ {{ web_root }}/{{ development_domain }}/wp-content/plugins }}/"
       become: yes
       become_user: root
       tags:
