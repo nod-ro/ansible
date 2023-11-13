@@ -370,6 +370,8 @@
       shell: ssh-agent
       register: ssh_agent_info
       changed_when: false
+      tags:
+        - wordpress_ansible
 
     - name: Set environment variables for ssh-agent
       set_fact:
