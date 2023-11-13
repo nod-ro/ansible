@@ -375,6 +375,9 @@
       set_fact:
         ssh_agent_socket: "{{ ssh_agent_info.stdout_lines[0].split(';')[0].split('=')[1] }}"
         ssh_agent_pid: "{{ ssh_agent_info.stdout_lines[1].split(';')[0].split('=')[1] }}"
+      tags:
+        - wordpress_ansible
+
 
 #    - name: Ensure private key has correct permissions
 #      ansible.builtin.file:
