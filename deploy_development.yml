@@ -804,10 +804,12 @@
         - options
         - pages
 
-#    - name: Hide home page header
-#      command: wp postmeta update {{ home_page_id }}  _my_meta_key 'new meta value'
-#      args:
-#        chdir: "{{ web_root }}/{{ development_domain }}"
+    - name: Hide home page header
+      command: wp postmeta update {{ home_page_id }}  hide_page_header 'on'
+      args:
+        chdir: "{{ web_root }}/{{ development_domain }}"
+      tags:
+        - pages
 
     - name: Create PHP script for updating WordPress option
       template:
