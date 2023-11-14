@@ -805,7 +805,7 @@
         - pages
 
     - name: Hide home page header
-      command: wp post meta update {{ home_page_id }}  hide_page_header 'on' --allow-root
+      command: wp post meta update {{ home_page_id }}  _electro_page_metabox 'a:1:{s:16:"hide_page_header";s:1:"1";}' --allow-root
       args:
         chdir: "{{ web_root }}/{{ development_domain }}"
       tags:
