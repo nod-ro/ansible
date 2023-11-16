@@ -1,13 +1,13 @@
 #!/bin/bash
 
 # Parse variables from the local environment.yml file
-REMOTE_HOST=$(yq read environment.yml 'vm_ip')
-REMOTE_USER=$(yq read environment.yml 'vm_user')
-REMOTE_PASSWORD=$(yq read environment.yml 'vm_password')
+REMOTE_HOST=$(yq eval '.vm_ip' environment.yml)
+REMOTE_USER=$(yq eval '.vm_user' environment.yml)
+REMOTE_PASSWORD=$(yq eval '.vm_password' environment.yml)
 
-LOCAL_SSH_PRIVATE_KEY_PATH=$(yq read environment.yml 'ssh_key_path')
-LOCAL_MYSQL_PRIVATE_KEY_PATH=$(yq read environment.yml 'local_mysql_cert_path')
-REMOTE_MYSQL_PRIVATE_KEY_PATH=$(yq read environment.yml 'remote_mysql_cert_path')
+LOCAL_SSH_PRIVATE_KEY_PATH=$(yq eval '.ssh_key_path' environment.yml)
+LOCAL_MYSQL_PRIVATE_KEY_PATH=$(yq eval '.local_mysql_cert_path' environment.yml)
+REMOTE_MYSQL_PRIVATE_KEY_PATH=$(yq eval '.remote_mysql_cert_path' environment.yml)
 
 SCRIPT_DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
 GIT_REPO_URL="https://github.com/nod-ro/ansible.git"
@@ -60,15 +60,13 @@ export LANG=en_US.UTF-8
 export LANGUAGE=en_US.UTF-8
 ls -la /var/ansible
 
-
-
 #ansible-playbook /var/ansible/deploy_development.yml --tags menus
-ansible-playbook /var/ansible/deploy_development.yml --tags pages
+#ansible-playbook /var/ansible/deploy_development.yml --tags pages
 #ansible-playbook /var/ansible/deploy_development.yml --tags shipping
 #ansible-playbook /var/ansible/deploy_development.yml --tags db
 #ansible-playbook /var/ansible/deploy_development.yml --tags sidebars
 #ansible-playbook /var/ansible/deploy_development.yml --tags contact
 #ansible-playbook /var/ansible/deploy_development.yml --tags options
-#ansible-playbook /var/ansible/deploy_development.yml
+ansible-playbook /var/ansible/deploy_development.yml
 
 EOF
