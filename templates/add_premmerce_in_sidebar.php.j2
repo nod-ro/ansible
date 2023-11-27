@@ -13,6 +13,11 @@ $widget_instance = array(
 
 // Get existing sidebar widgets
 $sidebars_widgets = get_option('sidebars_widgets');
+
+// Remove all existing widgets from the specified sidebar
+$sidebars_widgets[$sidebar_id] = array();
+
+// Get existing widget instances
 $existing_widgets = get_option('widget_' . $widget_id_base);
 
 // Function to find the next available widget number
@@ -30,31 +35,17 @@ function get_next_widget_number($id_base, $existing_widgets) {
 $widget_number = get_next_widget_number($widget_id_base, $existing_widgets);
 $widget_id = $widget_id_base . '-' . $widget_number;
 
-// Check if the widget is already in the sidebar
-$widget_exists = false;
-foreach ($sidebars_widgets[$sidebar_id] as $widget) {
-    if (strpos($widget, $widget_id_base) !== false) {
-        $widget_exists = true;
-        break;
-    }
-}
+// Add the new widget
+$existing_widgets[$widget_number] = $widget_instance;
 
-// If the widget isn't there, add it to the beginning
-if (!$widget_exists) {
-    // Add new widget instance
-    $existing_widgets[$widget_number] = $widget_instance;
+// Update widget option
+update_option('widget_' . $widget_id_base, $existing_widgets);
 
-    // Update widget option
-    update_option('widget_' . $widget_id_base, $existing_widgets);
+// Insert widget ID at the beginning of the sidebar array
+array_unshift($sidebars_widgets[$sidebar_id], $widget_id);
 
-    // Insert widget ID at the beginning of the sidebar array
-    array_unshift($sidebars_widgets[$sidebar_id], $widget_id);
+// Update sidebar widgets option
+update_option('sidebars_widgets', $sidebars_widgets);
 
-    // Update sidebar widgets option
-    update_option('sidebars_widgets', $sidebars_widgets);
-
-    echo "Widget added to the beginning of the sidebar.\n";
-} else {
-    echo "Widget already exists in the sidebar.\n";
-}
+echo "All existing widgets removed and new widget added to the beginning of the sidebar.\n";
 ?>
