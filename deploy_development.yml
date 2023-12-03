@@ -1314,14 +1314,14 @@
         - saas
 
     - name: Reactivate NC
-      command: wp plugin activate nod-wordpress-module --allow-root
+      command: wp plugin activate nod-wordpress-module --allow-root --debug
       args:
         chdir: "{{ web_root }}/{{ development_domain }}"
       tags:
         - saas
 
     - name: Reactivate SAAS
-      command: wp plugin activate nod-shop-saas --allow-root
+      command: wp plugin activate nod-shop-saas --allow-root --debug
       args:
         chdir: "{{ web_root }}/{{ development_domain }}"
       tags:
