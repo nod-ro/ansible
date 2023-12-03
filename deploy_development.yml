@@ -167,6 +167,7 @@
         - sidebars
         - pages
         - contact
+        - saas
 
     - name: Change ownership of web directory
       become: yes  # to become superuser
