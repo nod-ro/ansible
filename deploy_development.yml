@@ -1303,21 +1303,29 @@
       command: wp plugin deactivate nod-shop-saas --allow-root
       args:
         chdir: "{{ web_root }}/{{ development_domain }}"
+      tags:
+        - saas
 
     - name: Deactivate NC
       command: wp plugin deactivate nod-wordpress-module --allow-root
       args:
         chdir: "{{ web_root }}/{{ development_domain }}"
+      tags:
+        - saas
 
     - name: Reactivate NC
       command: wp plugin activate nod-wordpress-module --allow-root
       args:
         chdir: "{{ web_root }}/{{ development_domain }}"
+      tags:
+        - saas
 
     - name: Reactivate SAAS
       command: wp plugin activate nod-shop-saas --allow-root
       args:
         chdir: "{{ web_root }}/{{ development_domain }}"
+      tags:
+        - saas
 
     - name: Activate Github Updater [as it was installed by custom plugins]
       command: wp plugin activate github-updater --allow-root

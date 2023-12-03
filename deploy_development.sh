@@ -61,7 +61,8 @@ export LANGUAGE=en_US.UTF-8
 ls -la /var/ansible
 
 #ansible-playbook /var/ansible/deploy_development.yml --tags menus
-ansible-playbook /var/ansible/deploy_development.yml --tags pages
+#ansible-playbook /var/ansible/deploy_development.yml --tags pages
+ansible-playbook /var/ansible/deploy_development.yml --tags saas
 #ansible-playbook /var/ansible/deploy_development.yml --tags shipping
 #ansible-playbook /var/ansible/deploy_development.yml --tags db
 #ansible-playbook /var/ansible/deploy_development.yml --tags sidebars
