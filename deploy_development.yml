@@ -929,7 +929,6 @@
         - pages
         - woocommerce
         - taxes
-        - saas
 
     - name: Check if standard tax rate of 19% exists
       command: wp db query "SELECT COUNT(*) FROM wp_woocommerce_tax_rates WHERE tax_rate='19.0000' AND tax_rate_name='VAT';" --allow-root --path={{ web_root }}/{{ development_domain }} --skip-column-names
@@ -1318,19 +1317,24 @@
       tags:
         - saas
 
-    - name: Reactivate NC
-      command: wp plugin activate nod-wordpress-module --allow-root --debug
+    - name: Reactivate NC as web server user
+      command: wp plugin activate nod-wordpress-module --debug
       args:
         chdir: "{{ web_root }}/{{ development_domain }}"
+      become: yes
+      become_user: www-data  # Replace with your web server user if different
       tags:
         - saas
 
-    - name: Reactivate SAAS
-      command: wp plugin activate nod-shop-saas --allow-root --debug
+    - name: Reactivate SAAS as web server user
+      command: wp plugin activate nod-shop-saas --debug
       args:
         chdir: "{{ web_root }}/{{ development_domain }}"
+      become: yes
+      become_user: www-data  # Replace with your web server user if different
       tags:
         - saas
+
 
     ## Handling Electro options
     - name: Creating a custom PHP script for regenerating SAAS cities file
