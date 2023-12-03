@@ -1316,6 +1316,11 @@
       args:
         chdir: "{{ web_root }}/{{ development_domain }}"
 
+    - name: Activate Github Updater [as it was installed by custom plugins]
+      command: wp plugin activate github-updater --allow-root
+      args:
+        chdir: "{{ web_root }}/{{ development_domain }}"
+
 # Handling revolution sliders
     - name: Check if slider setup is needed
       command: wp db query "SELECT COUNT(*) FROM wp_revslider_sliders" --allow-root --skip-plugins --skip-themes
