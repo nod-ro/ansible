@@ -1327,6 +1327,21 @@
       tags:
         - saas
 
+    ## Handling Electro options
+    - name: Creating a custom PHP script for regenerating SAAS cities file
+      template:
+        src: saas_cities_regenerate.php.j2  # Modify this path if needed
+        dest: "/var/ansible/utils/saas_cities_regenerate.php"
+      tags:
+        - saas
+
+    - name: Executing SAAS cities regeneration function
+      command: php /var/ansible/utils/saas_cities_regenerate.php
+      args:
+        chdir: "{{ web_root }}/{{ development_domain }}"
+      tags:
+        - saas
+
     - name: Activate Github Updater [as it was installed by custom plugins]
       command: wp plugin activate github-updater --allow-root
       args:
