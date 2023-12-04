@@ -1387,6 +1387,44 @@
       template:
         src: wp-cache-config.php.j2
         dest: "{{ web_root }}/{{ development_domain }}/wp-content/wp-cache-config.php"
+      tags:
+        - sliders
+
+    - name: Create 4G swap file
+      command: dd if=/dev/zero of=/swapfile bs=1G count=4
+      args:
+        creates: /swapfile
+      tags:
+        - swap
+
+    - name: Set swap file permissions
+      file:
+        path: /swapfile
+        owner: root
+        group: root
+        mode: 0600
+      tags:
+        - swap
+
+    - name: Set up swap space
+      command: mkswap /swapfile
+      tags:
+        - swap
+
+    - name: Enable swap space
+      command: swapon /swapfile
+      tags:
+        - swap
+
+    - name: Add swap to fstab
+      blockinfile:
+        path: /etc/fstab
+        block: |
+          /swapfile none swap sw 0 0
+        marker: "# {mark} ANSIBLE MANAGED BLOCK"
+      tags:
+        - swap
+
 
   handlers:
     - name: Reload NGINX
