@@ -1390,10 +1390,18 @@
       tags:
         - sliders
 
+    - name: Check for existing swap space
+      shell: swapon --show
+      register: swapon_check
+      changed_when: False
+      tags:
+        - swap
+
     - name: Create 4G swap file
       command: dd if=/dev/zero of=/swapfile bs=1G count=4
       args:
         creates: /swapfile
+      when: swapon_check.stdout == ""
       tags:
         - swap
 
@@ -1403,16 +1411,19 @@
         owner: root
         group: root
         mode: 0600
+      when: swapon_check.stdout == ""
       tags:
         - swap
 
     - name: Set up swap space
       command: mkswap /swapfile
+      when: swapon_check.stdout == ""
       tags:
         - swap
 
     - name: Enable swap space
       command: swapon /swapfile
+      when: swapon_check.stdout == ""
       tags:
         - swap
 
@@ -1422,6 +1433,7 @@
         block: |
           /swapfile none swap sw 0 0
         marker: "# {mark} ANSIBLE MANAGED BLOCK"
+      when: swapon_check.stdout == ""
       tags:
         - swap
 
