@@ -245,7 +245,7 @@
         login_host: "{{ db_host }}"
         name: "{{ db_name }}"
         state: present
-        ssl_ca: /tmp/mysql_certificate.pem
+      #  ssl_ca: /tmp/mysql_certificate.pem
       #no_log: true
       tags:
         - db
