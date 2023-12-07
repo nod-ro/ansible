@@ -238,14 +238,8 @@
       tags:
         - db
 
-    - name: Create database as domain name
-      mysql_db:
-        login_user: "{{ db_user }}"
-        login_password: "{{ db_password }}"
-        login_host: "{{ db_host }}"
-        name: "{{ db_name }}"
-        state: present
-        ssl_ca: /tmp/mysql_certificate.pem
+    - name: Create database using command line
+      command: mysql -h {{ db_host }} -u {{ db_user }} -p'{{ db_password }}' -e "CREATE DATABASE IF NOT EXISTS {{ db_name }}"
       #no_log: true
       tags:
         - db
