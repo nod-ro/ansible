@@ -238,6 +238,45 @@
       tags:
         - db
 
+
+    - name: Ensure UFW is installed
+      apt:
+        name: ufw
+        state: present
+
+    - name: Ensure UFW is enabled
+      ufw:
+        state: enabled
+
+    - name: Allow HTTP traffic
+      ufw:
+        rule: allow
+        port: "80"
+        proto: tcp
+
+    - name: Allow HTTPS traffic
+      ufw:
+        rule: allow
+        port: "443"
+        proto: tcp
+
+    - name: Allow Nginx Full
+      ufw:
+        rule: allow
+        name: 'Nginx Full'
+
+    - name: Allow SSH traffic
+      ufw:
+        rule: allow
+        port: "22"
+        proto: tcp
+
+    - name: Allow SSH traffic
+      ufw:
+        rule: allow
+        port: "3306"
+        proto: tcp
+
     - name: Create database as domain name
       mysql_db:
         login_user: "{{ db_user }}"
@@ -669,38 +708,6 @@
     - name: Change owner of files
       become: yes
       shell: "chown -R www-data:www-data /var/www/{{ development_domain }}"
-
-    - name: Ensure UFW is installed
-      apt:
-        name: ufw
-        state: present
-
-    - name: Ensure UFW is enabled
-      ufw:
-        state: enabled
-
-    - name: Allow HTTP traffic
-      ufw:
-        rule: allow
-        port: "80"
-        proto: tcp
-
-    - name: Allow HTTPS traffic
-      ufw:
-        rule: allow
-        port: "443"
-        proto: tcp
-
-    - name: Allow Nginx Full
-      ufw:
-        rule: allow
-        name: 'Nginx Full'
-
-    - name: Allow SSH traffic
-      ufw:
-        rule: allow
-        port: "22"
-        proto: tcp
 
     - name: Update admin password in database
       mysql_query:
