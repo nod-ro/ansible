@@ -280,6 +280,7 @@
     - name: Create database using command line
       command: mysql -h {{ db_host }} -u {{ db_user }} -p'{{ db_password }}' -e "CREATE DATABASE IF NOT EXISTS {{ db_name }}"
       #no_log: true
+      ignore_errors: true
       tags:
         - db
 
