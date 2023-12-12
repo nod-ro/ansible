@@ -872,7 +872,6 @@
         - { option: "nod_order_sending_mode_cod", value: "manual" }
         - { option: "nod_order_sending_mode_netopiapayments", value: "manual" }
         - { option: "nod_settings_debug_level", value: "200" }
-        - { option: "emkp_settings_debug_level", value: "200" }
 
         # Woocommerce default settings
         - { option: "woocommerce_calc_taxes", value: "yes" }
@@ -926,6 +925,11 @@
         # Github Updater
         - { option: "github_updater", value: 'a:19:{s:10:"db_version";s:4:"8312";s:20:"nod-wordpress-module";s:40:"{{ github_updater_token }}";s:19:"github_access_token";s:40:"{{ github_updater_token }}";s:35:"current_branch_nod-wordpress-module";s:6:"master";s:30:"nod-wordpress-marketplace-emag";s:40:"{{ github_updater_token }}";s:45:"current_branch_nod-wordpress-marketplace-emag";s:6:"master";s:13:"branch_switch";s:1:"1";s:41:"current_branch_smartbill-wordpress-plugin";s:6:"master";s:38:"current_branch_nod-electro-theme-child";s:6:"master";s:32:"current_branch_nod-electro-theme";s:13:"release-3.0.1";s:14:"github-updater";s:40:"{{ github_updater_token }}";s:26:"smartbill-wordpress-plugin";s:40:"{{ github_updater_token }}";s:13:"nod-shop-saas";s:40:"{{ github_updater_token }}";s:28:"current_branch_nod-shop-saas";s:6:"master";s:17:"nod-connector-b2b";s:40:"{{ github_updater_token }}";s:32:"current_branch_nod-connector-b2b";s:6:"master";s:23:"nod-electro-theme-child";s:40:"{{ github_updater_token }}";s:7:"electro";s:40:"{{ github_updater_token }}";s:35:"current_branch_nod-chained-products";s:6:"master";}' }
         - { option: "github_updater_api_key", value: "{{ github_updater_api_key }}" }
+
+        # eMAG
+        - { option: "emkp_settings_debug_level", value: "200" }
+        - { option: "emkp_locale", value: "ro_RO" }
+        - { option: "emkp_currency", value: "RON" }
       become: yes
       become_user: www-data
       tags:
