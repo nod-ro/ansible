@@ -927,6 +927,9 @@
         - { option: "github_updater_api_key", value: "{{ github_updater_api_key }}" }
 
         # eMAG
+        - { option: "emkp_username", value: "{{ emkp_username }}" }
+        - { option: "emkp_password", value: "{{ emkp_password }}" }
+        - { option: "emkp_api_url", value: "https://marketplace.emag.ro/api-3" }
         - { option: "emkp_settings_debug_level", value: "200" }
         - { option: "emkp_locale", value: "ro_RO" }
         - { option: "emkp_currency", value: "RON" }
