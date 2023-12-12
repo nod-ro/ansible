@@ -872,6 +872,7 @@
         - { option: "nod_order_sending_mode_cod", value: "manual" }
         - { option: "nod_order_sending_mode_netopiapayments", value: "manual" }
         - { option: "nod_settings_debug_level", value: "200" }
+        - { option: "emkp_settings_debug_level", value: "200" }
 
         # Woocommerce default settings
         - { option: "woocommerce_calc_taxes", value: "yes" }
