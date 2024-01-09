@@ -918,6 +918,7 @@
         # Setting / resetting site_url and home
         - { option: "siteurl", value: "https://{{ development_domain }}" }
         - { option: "home", value: "https://{{ development_domain }}" }
+        - { option: "timezone_string", value: "Europe/Bucharest" }
 
         # Reset saas migrations for cities processing
         - { option: "nod_saas_migration_version", value: "0" }
