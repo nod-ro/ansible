@@ -42,7 +42,7 @@ if ($result) {
 } else {
     echo "Error retrieving option: " . $mysqli->error;
 }
-$active_plugins = maybe_serialize($row['option_value']);
+$active_plugins = maybe_unserialize($row['option_value']);
 
 // The value you want to remove
 $valueToRemove = 'nod-wordpress-marketplace-emag/emkp.php';
