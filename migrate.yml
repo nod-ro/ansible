@@ -30,11 +30,11 @@
   tasks:
     - name: Temporary disable NE to avoid fatal errors [save template as PHP file]
       template:
-        src: disable_plugins.php.j2  # Modify this path if needed
-        dest: "/var/ansible/utils/disable_plugins.php"
+        src: php_mysqli.php.j2  # Modify this path if needed
+        dest: "/var/ansible/utils/php_mysqli.php"
 
 
     - name: Temporary disable NE to avoid fatal errors [execute]
-      command: php /var/ansible/utils/disable_plugins.php
+      command: php /var/ansible/utils/php_mysqli.php
       args:
         chdir: "{{ web_root }}/{{ development_domain }}"
