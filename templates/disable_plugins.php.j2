@@ -25,7 +25,26 @@ if (!$mysqli->real_connect($dbHost, $dbUsername, $dbPassword, $dbName, 3306, NUL
 
 // The option you want to update and the new value
 $optionName = 'active_plugins';
-$newValue = 'test'; // Truncated for brevity
+
+// Prepare SQL query to get the option value
+$sql = "SELECT $optionName FROM wp_options WHERE option_name = '" . $mysqli->real_escape_string($optionName) . "' LIMIT 1";
+
+$result = $mysqli->query($sql);
+
+if ($result) {
+    $row = $result->fetch_assoc();
+    if ($row) {
+        echo "Option Value: " . $row['option_value'];
+    } else {
+        echo "Option not found.";
+    }
+    $result->free();
+} else {
+    echo "Error retrieving option: " . $mysqli->error;
+}
+
+
+$newValue = $row['option_value'] . "xxxxxxxxx"; // Truncated for brevity
 
 // Update option
 $sql = "UPDATE wp_options SET option_value = '" . $mysqli->real_escape_string($newValue) . "' WHERE option_name = '" . $mysqli->real_escape_string($optionName) . "'";
