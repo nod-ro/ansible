@@ -8,11 +8,7 @@
         path: /var/ansible/utils
         state: directory
         mode: '0755'  # Set the permissions (optional)
-      tags:
-        - sidebars
-        - pages
-        - contact
-        - saas
+
     - name: Ensure SSH key is added to SSH agent
       shell: |
         eval $(ssh-agent -s)
