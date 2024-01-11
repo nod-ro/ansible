@@ -27,7 +27,7 @@ if (!$mysqli->real_connect($dbHost, $dbUsername, $dbPassword, $dbName, 3306, NUL
 $optionName = 'active_plugins';
 
 // Prepare SQL query to get the option value
-$sql = "SELECT $optionName FROM wp_options WHERE option_name = '" . $mysqli->real_escape_string($optionName) . "' LIMIT 1";
+$sql = "SELECT option_value FROM wp_options WHERE option_name = 'active_plugins' LIMIT 1";
 
 $result = $mysqli->query($sql);
 
