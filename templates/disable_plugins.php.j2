@@ -42,12 +42,24 @@ if ($result) {
 } else {
     echo "Error retrieving option: " . $mysqli->error;
 }
+$active_plugins = maybe_serialize($row['option_value']);
 
+// The value you want to remove
+$valueToRemove = 'nod-wordpress-marketplace-emag/emkp.php';
 
-$newValue = $row['option_value'] . "xxxxxxxxx"; // Truncated for brevity
+// Find the key associated with the value
+$key = array_search($valueToRemove, $active_plugins);
+
+// If the key exists in the array, unset the value
+if ($key !== false) {
+    unset($active_plugins[$key]);
+}
+
+// Optional: Re-index array if necessary
+$active_plugins = serialize(array_values($active_plugins));
 
 // Update option
-$sql = "UPDATE wp_options SET option_value = '" . $mysqli->real_escape_string($newValue) . "' WHERE option_name = '" . $mysqli->real_escape_string($optionName) . "'";
+$sql = "UPDATE wp_options SET option_value = '" . $mysqli->real_escape_string($active_plugins) . "' WHERE option_name = '" . $mysqli->real_escape_string($optionName) . "'";
 
 if ($mysqli->query($sql) === TRUE) {
     echo "Option updated successfully";
