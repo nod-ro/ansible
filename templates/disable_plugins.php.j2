@@ -1,30 +1,41 @@
 <?php
 // Replace these values with your actual database credentials
-$dbHost = '{{db_name}}';
+$dbHost = '{{db_host}}'; // Typically, something like 'your-db-server.mysql.database.azure.com'
 $dbUsername = '{{db_user}}';
 $dbPassword = '{{db_password}}';
-$dbName = '{{db_host}}';
+$dbName = '{{db_name}}';
 
-// Create connection
-$conn = new mysqli($dbHost, $dbUsername, $dbPassword, $dbName);
+// Path to Azure's SSL certificate
+$sslCA = '/tmp/mysql_certificate.pem'; // Update with the path to the SSL certificate file
 
-// Check connection
-if ($conn->connect_error) {
-    die("Connection failed: " . $conn->connect_error);
+$mysqli = mysqli_init();
+if (!$mysqli) {
+    die('mysqli_init failed');
+}
+
+// Setting SSL options for the connection
+if (!mysqli_ssl_set($mysqli, NULL, NULL, $sslCA, NULL, NULL)) {
+    die('Failed to set SSL parameters');
+}
+
+// Establishing a connection with SSL
+if (!$mysqli->real_connect($dbHost, $dbUsername, $dbPassword, $dbName, 3306, NULL, MYSQLI_CLIENT_SSL)) {
+    die('Connect Error (' . mysqli_connect_errno() . ') ' . mysqli_connect_error());
 }
 
 // The option you want to update and the new value
 $optionName = 'active_plugins';
-$newValue = 'a:29:{i:0;s:57:"premmerce-woocommerce-product-filter/premmerce-filter.php";i:1;s:47:"advanced-cron-manager/advanced-cron-manager.php";i:2;s:61:"advanced-nocaptcha-recaptcha/advanced-nocaptcha-recaptcha.php";i:3;s:27:"autoptimize/autoptimize.php";i:4;s:41:"electro-extensions/electro-extensions.php";i:5;s:31:"envato-market/envato-market.php";i:6;s:33:"github-updater/github-updater.php";i:7;s:27:"js_composer/js_composer.php";i:8;s:29:"mainwp-child/mainwp-child.php";i:9;s:52:"netopia-payments-payment-gateway/netopiapayments.php";i:10;s:39:"nod-connector-b2b/nod-connector-b2b.php";i:11;s:31:"nod-shop-saas/nod-shop-saas.php";i:12;s:53:"nod-smartbill-2.2.6.2-shops/smartbill-woocommerce.php";i:13;s:39:"nod-wordpress-marketplace-emag/emkp.php";i:14;s:50:"nod-wordpress-module/woocommerce-nod-extension.php";i:15;s:47:"one-click-demo-import/one-click-demo-import.php";i:16;s:35:"redux-framework/redux-framework.php";i:17;s:47:"regenerate-thumbnails/regenerate-thumbnails.php";i:18;s:23:"revslider/revslider.php";i:19;s:37:"user-role-editor/user-role-editor.php";i:20;s:47:"windows-azure-storage/windows-azure-storage.php";i:21;s:27:"woocommerce/woocommerce.php";i:22;s:41:"wordpress-importer/wordpress-importer.php";i:23;s:35:"wp-mail-logging/wp-mail-logging.php";i:24;s:29:"wp-mail-smtp/wp_mail_smtp.php";i:25;s:27:"wp-super-cache/wp-cache.php";i:26;s:24:"wpforms-lite/wpforms.php";i:27;s:33:"yith-woocommerce-compare/init.php";i:28;s:34:"yith-woocommerce-wishlist/init.php";}';
+$newValue = 'test'; // Truncated for brevity
 
 // Update option
-$sql = "UPDATE wp_options SET option_value = '$newValue' WHERE option_name = '$optionName'";
+$sql = "UPDATE wp_options SET option_value = '" . $mysqli->real_escape_string($newValue) . "' WHERE option_name = '" . $mysqli->real_escape_string($optionName) . "'";
 
-if ($conn->query($sql) === TRUE) {
+if ($mysqli->query($sql) === TRUE) {
     echo "Option updated successfully";
 } else {
-    echo "Error updating option: " . $conn->error;
+    echo "Error updating option: " . $mysqli->error;
 }
 
-$conn->close();
+$mysqli->close();
 ?>
+
