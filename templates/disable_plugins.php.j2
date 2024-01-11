@@ -1,4 +1,26 @@
 <?php
+
+function maybe_unserialize($value) {
+    if (is_serialized($value)) {
+        return @unserialize($value);
+    }
+    return $value;
+}
+
+function is_serialized($value) {
+    if (!is_string($value)) {
+        return false;
+    }
+    if (trim($value) == "") {
+        return false;
+    }
+    if (preg_match('/^(i|s|a|o|d):(.*);/si', $value)) {
+        return true;
+    }
+    return false;
+}
+
+
 // Replace these values with your actual database credentials
 $dbHost = '{{db_host}}'; // Typically, something like 'your-db-server.mysql.database.azure.com'
 $dbUsername = '{{db_user}}';
