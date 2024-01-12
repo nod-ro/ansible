@@ -38,3 +38,12 @@
       command: php /var/ansible/utils/php_mysqli.php
       args:
         chdir: "{{ web_root }}/{{ development_domain }}"
+
+    - name: Upgrade and conditionally activate WooCommerce public plugins
+      command: wp plugin install {{ item.name }} --version={{ item.version }} --path={{ web_root }}/{{ development_domain }} --allow-root --force
+      with_items: "{{ public_plugins }}"
+
+    - name: Activate plugins where activate is true
+      command: wp plugin activate {{ item.name }} --path={{ web_root }}/{{ development_domain }} --allow-root
+      when: item.activate
+      with_items: "{{ public_plugins }}"
