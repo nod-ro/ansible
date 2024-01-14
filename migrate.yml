@@ -45,33 +45,20 @@
       loop: "{{ themes }}"
       register: theme_directory_checks
 
-    - name: Update the themes repositories
-      git:
-        repo: "{{ item.item.repo }}"
-        dest: "{{ web_root }}/{{ development_domain }}/wp-content/themes/{{ item.item.name }}"
-        version: "{{ item.item.version }}"
-        accept_hostkey: yes
-        force: yes
-      loop: "{{ theme_directory_checks.results }}"
-      when: item.stat.exists
-      become: yes
-      become_user: root
-      environment:
-        SSH_AUTH_SOCK: "{{ ssh_agent_socket }}"
-        SSH_AGENT_PID: "{{ ssh_agent_pid }}"
-      register: git_operation
-      ignore_errors: yes
-
-    - name: Fetch the latest changes and checkout to the specific version
-      command: >
-        git -C "{{ item.item.dest }}" fetch --all &&
-        git -C "{{ item.item.dest }}" checkout "{{ item.item.version }}"
-      loop: "{{ git_operation.results }}"
-      when: item.changed and item.stat.exists
-      become: yes
-      become_user: root
-      ignore_errors: yes
-
+    - name: Upgrade the themes
+      block:
+        - name: Ensure the theme repository exists and fetch updates
+          git:
+            repo: "{{ item.repo }}"
+            dest: "{{ web_root }}/{{ development_domain }}/wp-content/themes/{{ item.name }}"
+            version: "{{ item.version }}"
+            accept_hostkey: yes
+            force: yes
+            update: yes
+          loop: "{{ themes }}"
+          become: yes
+          become_user: root
+          ignore_errors: yes
 
 
     - name: Switch to 'nod-electro-theme-child' theme
