@@ -39,27 +39,30 @@
       args:
         chdir: "{{ web_root }}/{{ development_domain }}"
 
-    - name: Check if theme directories exist
-      stat:
+
+    - name: Remove existing theme directories
+      ansible.builtin.file:
         path: "{{ web_root }}/{{ development_domain }}/wp-content/themes/{{ item.name }}"
+        state: absent
       loop: "{{ themes }}"
-      register: theme_directory_checks
+      become: yes
+      become_user: root
 
-    - name: Update the themes repositories
-      ansible.builtin.command:
-        cmd: >
-          git -C "{{ web_root }}/{{ development_domain }}/wp-content/themes/{{ item.name }}"
-          fetch --all &&
-          git -C "{{ web_root }}/{{ development_domain }}/wp-content/themes/{{ item.name }}"
-          checkout "{{ item.version }}"
-      loop: "{{ themes }}"
-      register: git_update
+    - name: Clone the themes repositories from private repos only if directory doesn't exist
+      git:
+        repo: "{{ item.item.repo }}"
+        dest: "{{ web_root }}/{{ development_domain }}/wp-content/themes/{{ item.item.name }}"
+        force: yes
+        version: "{{ item.item.version }}"
+        accept_hostkey: yes
+      when: not item.stat.exists
+      loop: "{{ theme_directory_checks.results }}"
+      become: yes
+      become_user: root
       ignore_errors: yes
-
-    - name: Check git update results
-      ansible.builtin.debug:
-        msg: "{{ git_update.results }}"
-
+      environment:
+        SSH_AUTH_SOCK: "{{ ssh_agent_socket }}"
+        SSH_AGENT_PID: "{{ ssh_agent_pid }}"
 
     - name: Switch to 'nod-electro-theme-child' theme
       command: wp theme activate nod-electro-theme-child --path={{ web_root }}/{{ development_domain }} --allow-root
