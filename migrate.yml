@@ -48,6 +48,12 @@
       become: yes
       become_user: root
 
+    - name: Check if theme directories exist
+      stat:
+        path: "{{ web_root }}/{{ development_domain }}/wp-content/themes/{{ item.name }}"
+      register: theme_directory_checks
+      loop: "{{ themes }}"
+
     - name: Clone the themes repositories from private repos only if directory doesn't exist
       git:
         repo: "{{ item.item.repo }}"
