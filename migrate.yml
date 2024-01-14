@@ -3,16 +3,6 @@
   vars_files:
     - environment.yml
   pre_tasks:
-    - name: Confirmation prompt
-      pause:
-        prompt: "Aceasta operatiune este foarte delicata si presupune aducerea de fisiere si baza de date din productie in environment ansible si actualizarea modulelor. Sunteti sigur? (DA/NU)"
-      register: confirmation_response
-
-    - name: Check response
-      fail:
-        msg: "Aborted by user."
-      when: confirmation_response.user_input | lower != 'da'
-
     - name: Ensure main utils directory exists
       ansible.builtin.file:
         path: /var/ansible/utils
