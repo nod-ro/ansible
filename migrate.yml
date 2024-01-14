@@ -39,6 +39,33 @@
       args:
         chdir: "{{ web_root }}/{{ development_domain }}"
 
+    - name: Check if theme directories exist
+      stat:
+        path: "{{ web_root }}/{{ development_domain }}/wp-content/themes/{{ item.name }}"
+      loop: "{{ themes }}"
+      register: theme_directory_checks
+
+    - name: Update the themes repositories
+      git:
+        repo: "{{ item.item.repo }}"
+        dest: "{{ web_root }}/{{ development_domain }}/wp-content/themes/{{ item.item.name }}"
+        force: yes
+        version: "{{ item.item.version }}"
+        accept_hostkey: yes
+      loop: "{{ theme_directory_checks.results }}"
+      when: item.stat.exists
+      become: yes
+      become_user: root
+      ignore_errors: yes
+      environment:
+        SSH_AUTH_SOCK: "{{ ssh_agent_socket }}"
+        SSH_AGENT_PID: "{{ ssh_agent_pid }}"
+
+    - name: Switch to 'nod-electro-theme-child' theme
+      command: wp theme activate nod-electro-theme-child --path={{ web_root }}/{{ development_domain }} --allow-root
+      become: yes
+      become_user: root
+
     - name: Upgrade and conditionally activate WooCommerce public plugins
       command: wp plugin install {{ item.name }} --version={{ item.version }} --path={{ web_root }}/{{ development_domain }} --allow-root --force
       with_items: "{{ public_plugins }}"
