@@ -1,5 +1,15 @@
 #!/bin/bash
-
+confirm_action() {
+    while true; do
+        read -p "Do you wish to proceed with this action? (yes/no) " yn
+        case $yn in
+            [Yy]* ) break;; # If yes, exit the loop
+            [Nn]* ) echo "Operation aborted."; exit;; # If no, abort the operation
+            * ) echo "Please answer yes or no.";; # If any other input, ask again
+        esac
+    done
+}
+confirm_action
 # Parse variables from the local environment.yml file
 REMOTE_HOST=$(yq eval '.vm_ip' environment.yml)
 REMOTE_USER=$(yq eval '.vm_user' environment.yml)
