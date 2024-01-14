@@ -59,6 +59,9 @@
           become: yes
           become_user: root
           ignore_errors: yes
+          environment:
+            SSH_AUTH_SOCK: "{{ ssh_agent_socket }}"
+            SSH_AGENT_PID: "{{ ssh_agent_pid }}"
 
 
     - name: Switch to 'nod-electro-theme-child' theme
