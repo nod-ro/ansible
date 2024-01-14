@@ -45,23 +45,20 @@
       loop: "{{ themes }}"
       register: theme_directory_checks
 
-    - name: Upgrade the themes
-      block:
-        - name: Ensure the theme repository exists and fetch updates
-          git:
-            repo: "{{ item.repo }}"
-            dest: "{{ web_root }}/{{ development_domain }}/wp-content/themes/{{ item.name }}"
-            version: "{{ item.version }}"
-            accept_hostkey: yes
-            force: yes
-            update: yes
-          loop: "{{ themes }}"
-          become: yes
-          become_user: root
-          ignore_errors: yes
-          environment:
-            SSH_AUTH_SOCK: "{{ ssh_agent_socket }}"
-            SSH_AGENT_PID: "{{ ssh_agent_pid }}"
+    - name: Update the themes repositories
+      ansible.builtin.command:
+        cmd: >
+          git -C "{{ web_root }}/{{ development_domain }}/wp-content/themes/{{ item.name }}"
+          fetch --all &&
+          git -C "{{ web_root }}/{{ development_domain }}/wp-content/themes/{{ item.name }}"
+          checkout "{{ item.version }}"
+      loop: "{{ themes }}"
+      register: git_update
+      ignore_errors: yes
+
+    - name: Check git update results
+      ansible.builtin.debug:
+        msg: "{{ git_update.results }}"
 
 
     - name: Switch to 'nod-electro-theme-child' theme
