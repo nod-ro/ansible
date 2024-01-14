@@ -49,9 +49,10 @@
       git:
         repo: "{{ item.item.repo }}"
         dest: "{{ web_root }}/{{ development_domain }}/wp-content/themes/{{ item.item.name }}"
-        force: yes
         version: "{{ item.item.version }}"
         accept_hostkey: yes
+        update: yes
+        force: yes
       loop: "{{ theme_directory_checks.results }}"
       when: item.stat.exists
       become: yes
@@ -60,6 +61,7 @@
       environment:
         SSH_AUTH_SOCK: "{{ ssh_agent_socket }}"
         SSH_AGENT_PID: "{{ ssh_agent_pid }}"
+
 
     - name: Switch to 'nod-electro-theme-child' theme
       command: wp theme activate nod-electro-theme-child --path={{ web_root }}/{{ development_domain }} --allow-root
