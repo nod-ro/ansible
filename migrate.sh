@@ -1,11 +1,11 @@
 #!/bin/bash
 confirm_action() {
     while true; do
-        read -p "Do you wish to proceed with this action? (yes/no) " yn
+        read -p "Sigur doresti sa continui? Acest script va actualiza o masina deja existenta Ansible cu versiunine din environment.yml (da/nu) " yn
         case $yn in
-            [Yy]* ) break;; # If yes, exit the loop
+            [Dd]* ) break;; # If yes, exit the loop
             [Nn]* ) echo "Operation aborted."; exit;; # If no, abort the operation
-            * ) echo "Please answer yes or no.";; # If any other input, ask again
+            * ) echo "Raspunde cu da sau nu.";; # If any other input, ask again
         esac
     done
 }
