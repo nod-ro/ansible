@@ -28,7 +28,7 @@ $dbPassword = '{{db_password}}';
 $dbName = '{{db_name}}';
 
 // Path to Azure's SSL certificate
-$sslCA = '/tmp/mysql_certificate.pem'; // Update with the path to the SSL certificate file
+$sslCA = '/var/ansible/data/mysql_certificate.pem'; // Update with the path to the SSL certificate file
 
 $mysqli = mysqli_init();
 if (!$mysqli) {

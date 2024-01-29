@@ -34,7 +34,7 @@ customer_iban: "IBAN123456"
 # Defaults
 ssh_key_path: "/home/spanzuratorul/.ssh/ansible_remote_key"
 local_mysql_cert_path: "/home/spanzuratorul/ansible/certificate/DigiCertGlobalRootCA.crt.pem"
-remote_mysql_cert_path: "/tmp/mysql_certificate.pem"
+remote_mysql_cert_path: "/var/ansible/data/mysql_certificate.pem"
 wp_cli_path: "/usr/local/bin/wp"
 web_root: "/var/www"
 github_ansible_plugins: "git@github.com:nod-ro/nod-wordpress-ansible.git"

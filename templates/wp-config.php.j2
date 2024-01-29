@@ -77,7 +77,7 @@ define( 'WP_DEBUG_LOG', {{ wp_debug_log }} );
 define('FS_METHOD', 'direct');
 /** Configure SSL for database connection */
 define('MYSQL_CLIENT_FLAGS', MYSQLI_CLIENT_SSL);
-define('MYSQL_SSL_CA', '/tmp/mysql_certificate.pem');
+define('MYSQL_SSL_CA', '/var/ansible/data/mysql_certificate.pem');
 
 
 define('DISABLE_WP_CRON', true);
