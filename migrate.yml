@@ -52,7 +52,7 @@
       ansible.builtin.file:
         path: "{{ web_root }}/{{ development_domain }}/wp-content/plugins/{{ item.name }}"
         state: absent
-      loop: "{{ themes }}"
+      loop: "{{ plugins }}"
       become: yes
       become_user: root
 
