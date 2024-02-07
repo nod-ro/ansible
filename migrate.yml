@@ -48,6 +48,63 @@
       become: yes
       become_user: root
 
+    - name: Remove existing plugins directories
+      ansible.builtin.file:
+        path: "{{ web_root }}/{{ development_domain }}/wp-content/plugins/{{ item.name }}"
+        state: absent
+      loop: "{{ themes }}"
+      become: yes
+      become_user: root
+
+    - name: Ensure plugins directory exists with correct permissions
+      file:
+        path: "{{ web_root }}/{{ development_domain }}/wp-content/plugins/{{ item.name }}"
+        state: directory
+        owner: root  # Replace with your web user, possibly www-data
+        group: root  # Replace with your web group, possibly www-data
+        mode: '0755'
+      loop: "{{ plugins }}"
+      become: yes  # Use sudo to ensure permissions
+
+    - name: Install specific version of WooCommerce
+      command: wp plugin install woocommerce --version=5.5.1 --allow-root --activate
+      args:
+        chdir: "{{ web_root }}/{{ development_domain }}"
+
+    - name: Check if plugin directories are not empty
+      find:
+        paths: "{{ web_root }}/{{ development_domain }}/wp-content/plugins/{{ item.name }}"
+        file_type: any
+      register: plugin_directory_contents
+      loop: "{{ plugins }}"
+
+    - name: Clone the plugin repositories from private repos only if directory is empty
+      git:
+        repo: "{{ item.item.repo }}"
+        dest: "{{ web_root }}/{{ development_domain }}/wp-content/plugins/{{ item.item.name }}"
+        force: yes
+        version: "{{ item.item.version }}"
+        accept_hostkey: yes
+      when: item.files | length == 0
+      loop: "{{ plugin_directory_contents.results }}"
+      become: yes
+      become_user: root
+      ignore_errors: yes
+      environment:
+        SSH_AUTH_SOCK: "{{ ssh_agent_socket }}"
+        SSH_AGENT_PID: "{{ ssh_agent_pid }}"
+
+    - name: Activate plugins where "activate" property is true
+      command: wp plugin activate {{ item.name }} --allow-root
+      args:
+        chdir: "{{ web_root }}/{{ development_domain }}"
+      when: item.activate
+      loop: "{{ plugins }}"
+      become: yes
+      become_user: root
+
+
+
     - name: Check if theme directories exist
       stat:
         path: "{{ web_root }}/{{ development_domain }}/wp-content/themes/{{ item.name }}"
@@ -97,6 +154,7 @@
       environment:
         SSH_AUTH_SOCK: "{{ ssh_agent_socket }}"
         SSH_AGENT_PID: "{{ ssh_agent_pid }}"
+
 
     - name: Activate plugins where "activate" property is true
       command: wp plugin activate {{ item.name }} --allow-root
