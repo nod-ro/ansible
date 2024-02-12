@@ -48,6 +48,34 @@
       become: yes
       become_user: root
 
+    - name: Check if theme directories exist
+      stat:
+        path: "{{ web_root }}/{{ development_domain }}/wp-content/themes/{{ item.name }}"
+      register: theme_directory_checks
+      loop: "{{ themes }}"
+
+    - name: Clone the themes repositories from private repos only if directory doesn't exist
+      git:
+        repo: "{{ item.item.repo }}"
+        dest: "{{ web_root }}/{{ development_domain }}/wp-content/themes/{{ item.item.name }}"
+        force: yes
+        version: "{{ item.item.version }}"
+        accept_hostkey: yes
+      loop: "{{ theme_directory_checks.results }}"
+      become: yes
+      become_user: root
+      ignore_errors: yes
+      environment:
+        SSH_AUTH_SOCK: "{{ ssh_agent_socket }}"
+        SSH_AGENT_PID: "{{ ssh_agent_pid }}"
+
+    - name: Switch to 'nod-electro-theme-child' theme
+      command: wp theme activate nod-electro-theme-child --path={{ web_root }}/{{ development_domain }} --allow-root
+      become: yes
+      become_user: root
+
+
+
     - name: Remove existing plugins directories
       ansible.builtin.file:
         path: "{{ web_root }}/{{ development_domain }}/wp-content/plugins/{{ item.name }}"
@@ -103,33 +131,6 @@
       become: yes
       become_user: root
 
-
-
-    - name: Check if theme directories exist
-      stat:
-        path: "{{ web_root }}/{{ development_domain }}/wp-content/themes/{{ item.name }}"
-      register: theme_directory_checks
-      loop: "{{ themes }}"
-
-    - name: Clone the themes repositories from private repos only if directory doesn't exist
-      git:
-        repo: "{{ item.item.repo }}"
-        dest: "{{ web_root }}/{{ development_domain }}/wp-content/themes/{{ item.item.name }}"
-        force: yes
-        version: "{{ item.item.version }}"
-        accept_hostkey: yes
-      loop: "{{ theme_directory_checks.results }}"
-      become: yes
-      become_user: root
-      ignore_errors: yes
-      environment:
-        SSH_AUTH_SOCK: "{{ ssh_agent_socket }}"
-        SSH_AGENT_PID: "{{ ssh_agent_pid }}"
-
-    - name: Switch to 'nod-electro-theme-child' theme
-      command: wp theme activate nod-electro-theme-child --path={{ web_root }}/{{ development_domain }} --allow-root
-      become: yes
-      become_user: root
 
     - name: Upgrade and conditionally activate WooCommerce public plugins
       command: wp plugin install {{ item.name }} --version={{ item.version }} --path={{ web_root }}/{{ development_domain }} --allow-root --force
