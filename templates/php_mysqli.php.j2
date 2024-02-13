@@ -49,7 +49,7 @@ if (!$mysqli->real_connect($dbHost, $dbUsername, $dbPassword, $dbName, 3306, NUL
 $optionName = 'active_plugins';
 
 // Prepare SQL query to get the option value
-$sql = "SELECT option_value FROM options WHERE option_name = 'active_plugins' LIMIT 1";
+$sql = "SELECT option_value FROM wp_options WHERE option_name = 'active_plugins' LIMIT 1";
 
 $result = $mysqli->query($sql);
 
@@ -81,7 +81,7 @@ if ($key !== false) {
 $active_plugins = serialize(array_values($active_plugins));
 
 // Update option
-$sql = "UPDATE options SET option_value = '" . $mysqli->real_escape_string($active_plugins) . "' WHERE option_name = '" . $mysqli->real_escape_string($optionName) . "'";
+$sql = "UPDATE wp_options SET option_value = '" . $mysqli->real_escape_string($active_plugins) . "' WHERE option_name = '" . $mysqli->real_escape_string($optionName) . "'";
 
 if ($mysqli->query($sql) === TRUE) {
     echo "Option updated successfully";
