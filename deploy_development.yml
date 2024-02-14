@@ -679,9 +679,9 @@
     - name: Ensure WordPress wp-cron is triggered regularly
       ansible.builtin.cron:
         name: "Trigger WordPress wp-cron"
-        minute: "*"
+        minute: "*/1"
         user: "www-data"
-        job: "*/1 * * * * /usr/bin/php -d max_execution_time=-1 -d error_reporting=1 /var/www/{{ development_domain }}/wp-cron.php >> /dev/null 2>&1"
+        job: "/usr/bin/php -d max_execution_time=-1 -d error_reporting=1 /var/www/{{ development_domain }}/wp-cron.php >> /dev/null 2>&1"
 
     - name: Change ownership of web directory
       become: yes  # to become superuser
