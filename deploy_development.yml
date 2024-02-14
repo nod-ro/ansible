@@ -680,8 +680,8 @@
       ansible.builtin.cron:
         name: "Trigger WordPress wp-cron"
         minute: "*"
-        user: "root"
-        job: "wget -qO- http://{{ development_domain }}/wp-cron.php &> /dev/null"
+        user: "www-data"
+        job: "*/1 * * * * /usr/bin/php -d max_execution_time=-1 -d error_reporting=1 /var/www/{{ development_domain }}/wp-cron.php >> /dev/null 2>&1"
 
     - name: Change ownership of web directory
       become: yes  # to become superuser
