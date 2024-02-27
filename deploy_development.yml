@@ -465,7 +465,7 @@
       become: yes  # Use sudo to ensure permissions
 
     - name: Install specific version of WooCommerce
-      command: wp plugin install woocommerce --version=5.5.1 --allow-root --activate
+      command: wp plugin install woocommerce --version=5.5.4 --allow-root --activate
       args:
         chdir: "{{ web_root }}/{{ development_domain }}"
 
