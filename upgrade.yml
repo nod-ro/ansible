@@ -65,7 +65,7 @@
     - name: Check current WordPress version
         command: "{{ wp_cli_path }} core version"
         args:
-          chdir: "{{ web_root }}/{{ development_domain }}
+          chdir: "{{ web_root }}/{{ development_domain }}"
         register: wp_current_version
         changed_when: false
 
