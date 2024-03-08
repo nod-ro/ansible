@@ -72,7 +72,7 @@
       command: "{{ wp_cli_path }} core update --version={{ wp_version }} --force"
       args:
         chdir: "{{ web_root }}/{{ development_domain }}"
-      when: wp_current_version.stdout is version_compare(wp_version, '<')
+#      when: wp_current_version.stdout is version_compare(wp_version, '<')
       notify: flush_rewrite_rules
 
 
