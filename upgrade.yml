@@ -61,6 +61,20 @@
 #      command: wp theme activate nod-electro-theme-child --path={{ web_root }}/{{ development_domain }} --allow-root
 #      become: yes
 #      become_user: root
+-
+    - name: Check current WordPress version
+        command: "{{ wp_cli_path }} core version"
+        args:
+          chdir: "{{ web_root }}/{{ development_domain }}
+        register: wp_current_version
+        changed_when: false
+
+    - name: Upgrade WordPress to the specified version
+      command: "{{ wp_cli_path }} core update --version={{ wp_version }} --force"
+      args:
+        chdir: "{{ web_root }}/{{ development_domain }}"
+      when: wp_current_version.stdout is version_compare(wordpress_version, '<')
+      notify: flush_rewrite_rules
 
     - name: Remove existing plugins directories
       ansible.builtin.file:
@@ -163,3 +177,9 @@
         owner: www-data
         group: www-data
         recurse: yes  # to operate recursively
+
+  handlers:
+    - name: flush_rewrite_rules
+      command: "{{ wp_cli_path }} rewrite flush"
+      args:
+        chdir: "{{ web_root }}/{{ development_domain }}"
