@@ -62,11 +62,11 @@
 #      become: yes
 #      become_user: root
     - name: Check current WordPress version
-        command: "{{ wp_cli_path }} core version"
-        args:
-          chdir: "{{ web_root }}/{{ development_domain }}"
-        register: wp_current_version
-        changed_when: false
+      command: "{{ wp_cli_path }} core version"
+      args:
+        chdir: "{{ web_root }}/{{ development_domain }}"
+      register: wp_current_version
+      changed_when: false
 
     - name: Upgrade WordPress to the specified version
       command: "{{ wp_cli_path }} core update --version={{ wp_version }} --force"
