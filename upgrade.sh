@@ -34,7 +34,7 @@ sshpass -p "$REMOTE_PASSWORD" ssh -o StrictHostKeyChecking=no "$REMOTE_USER@$REM
 chmod 600 /tmp/private_key
 eval $(ssh-agent -s)
 ssh-add /tmp/private_key
-ssh -Tvvv git@github.com
+#ssh -Tvvv git@github.com
 sudo rm -rf /var/ansible
 sudo git clone $GIT_REPO_URL /var/ansible
 sudo chown -R $USER:$USER /var/ansible
@@ -45,7 +45,7 @@ EOF
 sshpass -p "$REMOTE_PASSWORD" ssh -o StrictHostKeyChecking=no "$REMOTE_USER@$REMOTE_HOST" bash -s << 'EOF'
 
 cd /var/ansible
-ls -la
+#ls -la
 sudo su -
 export LC_ALL=C
 export LANG=C
@@ -56,17 +56,10 @@ locale-gen en_US.UTF-8
 export LC_ALL=en_US.UTF-8
 export LANG=en_US.UTF-8
 export LANGUAGE=en_US.UTF-8
-ls -la /var/ansible
+#ls -la /var/ansible
 
 development_domain=${DEVELOPMENT_DOMAIN}
-public_plugins=$(yq eval '.websites[0].public_plugins' -o=json websites.yml)
-plugins=$(yq eval '.websites[0].plugins' -o=json websites.yml)
-themes=$(yq eval '.websites[0].themes' -o=json websites.yml)
-
-# Constructing the JSON string
-extra_vars="{\"development_domain\":\"${development_domain}\",\"public_plugins\":${public_plugins},\"plugins\":${plugins},\"themes\":${themes}}"
-
-ansible-playbook /var/ansible/upgrade.yml -e "${extra_vars}"
+ansible-playbook /var/ansible/upgrade.yml -e "development_domain=$DEVELOPMENT_DOMAIN"
 
 EOF
 done

@@ -1,7 +1,7 @@
 - hosts: localhost
   become: yes
   vars_files:
-    - websites.yml
+    - current_upgrade.yml
   pre_tasks:
     - name: Ensure main utils directory exists
       ansible.builtin.file:
@@ -110,17 +110,6 @@
       environment:
         SSH_AUTH_SOCK: "{{ ssh_agent_socket }}"
         SSH_AGENT_PID: "{{ ssh_agent_pid }}"
-
-    - name: Activate plugins where "activate" property is true
-      command: wp plugin activate {{ item.name }} --allow-root
-      args:
-        chdir: "{{ web_root }}/{{ development_domain }}"
-      when: item.activate
-      loop: "{{ plugins }}"
-      become: yes
-      become_user: root
-      ignore_errors: yes
-
 
     - name: Upgrade and conditionally activate WooCommerce public plugins
       command: wp plugin install {{ item.name }} --version={{ item.version }} --path={{ web_root }}/{{ development_domain }} --allow-root --force
