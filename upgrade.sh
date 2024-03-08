@@ -17,7 +17,7 @@ confirm_action
 WEBSITES_LENGTH=$(yq eval '.websites | length' websites.yml)
 
 for ((i = 0 ; i < $WEBSITES_LENGTH ; i++ )); do
-    DEVELOPMENT_DOMAIN=$(yq eval ".websites[$i].name" websites.yml)
+    export DEVELOPMENT_DOMAIN=$(yq eval ".websites[$i].name" websites.yml)
     REMOTE_HOST=$(yq eval ".websites[$i].vm_ip" websites.yml)
     REMOTE_USER=$(yq eval ".websites[$i].vm_user" websites.yml)
     REMOTE_PASSWORD=$(yq eval ".websites[$i].vm_password" websites.yml)
@@ -41,8 +41,9 @@ sudo chown -R $USER:$USER /var/ansible
 
 EOF
 
+sshpass -p "$REMOTE_PASSWORD" scp -o StrictHostKeyChecking=no "$SCRIPT_DIR/current_upgrade.yml" "$REMOTE_USER@$REMOTE_HOST:/var/ansible/"
 # Connect to the VM and run multiple commands
-sshpass -p "$REMOTE_PASSWORD" ssh -o StrictHostKeyChecking=no "$REMOTE_USER@$REMOTE_HOST" bash -s << 'EOF'
+sshpass -p "$REMOTE_PASSWORD" ssh -o StrictHostKeyChecking=no "$REMOTE_USER@$REMOTE_HOST" "DEVELOPMENT_DOMAIN='$DEVELOPMENT_DOMAIN' bash -s" <<EOF
 
 cd /var/ansible
 #ls -la
@@ -58,8 +59,7 @@ export LANG=en_US.UTF-8
 export LANGUAGE=en_US.UTF-8
 #ls -la /var/ansible
 
-development_domain=${DEVELOPMENT_DOMAIN}
-ansible-playbook /var/ansible/upgrade.yml -e "development_domain=$DEVELOPMENT_DOMAIN"
-
+echo "Development Domain: ${DEVELOPMENT_DOMAIN}"
+ansible-playbook /var/ansible/upgrade.yml -e "development_domain=${DEVELOPMENT_DOMAIN}"
 EOF
 done
