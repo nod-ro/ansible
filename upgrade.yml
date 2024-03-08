@@ -69,6 +69,7 @@
       loop: "{{ plugins }}"
       become: yes
       become_user: root
+      ignore_errors: yes
 
     - name: Ensure plugins directory exists with correct permissions
       file:
@@ -116,11 +117,13 @@
       loop: "{{ plugins }}"
       become: yes
       become_user: root
+      ignore_errors: yes
 
 
     - name: Upgrade and conditionally activate WooCommerce public plugins
       command: wp plugin install {{ item.name }} --version={{ item.version }} --path={{ web_root }}/{{ development_domain }} --allow-root --force
       with_items: "{{ public_plugins }}"
+
 
     - name: Activate plugins where activate is true
       command: wp plugin activate {{ item.name }} --path={{ web_root }}/{{ development_domain }} --allow-root

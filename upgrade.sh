@@ -15,7 +15,7 @@ confirm_action
 
 # Assuming environment.yml is in the current directory and yq is installed
 WEBSITES_LENGTH=$(yq eval '.websites | length' websites.yml)
-yq eval ".websites[$i] | {public_plugins, plugins, themes}" websites.yml > temp_vars.yml
+
 for ((i = 0 ; i < $WEBSITES_LENGTH ; i++ )); do
     DEVELOPMENT_DOMAIN=$(yq eval ".websites[$i].name" websites.yml)
     REMOTE_HOST=$(yq eval ".websites[$i].vm_ip" websites.yml)
@@ -58,9 +58,15 @@ export LANG=en_US.UTF-8
 export LANGUAGE=en_US.UTF-8
 ls -la /var/ansible
 
+development_domain=${DEVELOPMENT_DOMAIN}
+public_plugins=$(yq eval '.websites[0].public_plugins' -o=json websites.yml)
+plugins=$(yq eval '.websites[0].plugins' -o=json websites.yml)
+themes=$(yq eval '.websites[0].themes' -o=json websites.yml)
 
+# Constructing the JSON string
+extra_vars="{\"development_domain\":\"${development_domain}\",\"public_plugins\":${public_plugins},\"plugins\":${plugins},\"themes\":${themes}}"
 
-ansible-playbook /var/ansible/upgrade.yml -e "development_domain=${DEVELOPMENT_DOMAIN}" -e @temp_vars.yml
+ansible-playbook /var/ansible/upgrade.yml -e "${extra_vars}"
 
 EOF
 done
