@@ -28,18 +28,6 @@
       when: ssh_agent_output is defined and ssh_agent_output.stdout_lines is defined and ssh_agent_output.stdout_lines | length > 1
 
   tasks:
-    - name: Temporary disable NE to avoid fatal errors [save template as PHP file]
-      template:
-        src: php_mysqli.php.j2  # Modify this path if needed
-        dest: "/var/ansible/utils/php_mysqli.php"
-
-
-    - name: Temporary disable NE to avoid fatal errors [execute]
-      command: php /var/ansible/utils/php_mysqli.php
-      args:
-        chdir: "{{ web_root }}/{{ development_domain }}"
-
-
     - name: Remove existing theme directories
       ansible.builtin.file:
         path: "{{ web_root }}/{{ development_domain }}/wp-content/themes/{{ item.name }}"
@@ -73,8 +61,6 @@
       command: wp theme activate nod-electro-theme-child --path={{ web_root }}/{{ development_domain }} --allow-root
       become: yes
       become_user: root
-
-
 
     - name: Remove existing plugins directories
       ansible.builtin.file:
