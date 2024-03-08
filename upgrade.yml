@@ -80,6 +80,7 @@
         mode: '0755'
       loop: "{{ plugins }}"
       become: yes  # Use sudo to ensure permissions
+      ignore_errors: yes
 
     #    - name: Install specific version of WooCommerce
     #      command: wp plugin install woocommerce --version=5.5.1 --allow-root --activate
@@ -92,6 +93,7 @@
         file_type: any
       register: plugin_directory_contents
       loop: "{{ plugins }}"
+      ignore_errors: yes
 
     - name: Clone the plugin repositories from private repos only if directory is empty
       git:
@@ -123,12 +125,14 @@
     - name: Upgrade and conditionally activate WooCommerce public plugins
       command: wp plugin install {{ item.name }} --version={{ item.version }} --path={{ web_root }}/{{ development_domain }} --allow-root --force
       with_items: "{{ public_plugins }}"
+      ignore_errors: yes
 
 
     - name: Activate plugins where activate is true
       command: wp plugin activate {{ item.name }} --path={{ web_root }}/{{ development_domain }} --allow-root
       when: item.activate
       with_items: "{{ public_plugins }}"
+      ignore_errors: yes
 
     - name: Clone or update the plugin repositories from private repos
       git:
@@ -154,6 +158,7 @@
       loop: "{{ plugins }}"
       become: yes
       become_user: root
+      ignore_errors: yes
 
     - name: Change ownership of web directory
       become: yes  # to become superuser
