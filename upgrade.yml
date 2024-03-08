@@ -136,13 +136,6 @@
       with_items: "{{ public_plugins }}"
       ignore_errors: yes
 
-
-    - name: Activate plugins where activate is true
-      command: wp plugin activate {{ item.name }} --path={{ web_root }}/{{ development_domain }} --allow-root
-      when: item.activate
-      with_items: "{{ public_plugins }}"
-      ignore_errors: yes
-
     - name: Clone or update the plugin repositories from private repos
       git:
         repo: "{{ item.item.repo }}"
@@ -158,17 +151,6 @@
         SSH_AUTH_SOCK: "{{ ssh_agent_socket }}"
         SSH_AGENT_PID: "{{ ssh_agent_pid }}"
 
-
-    - name: Activate plugins where "activate" property is true
-      command: wp plugin activate {{ item.name }} --allow-root
-      args:
-        chdir: "{{ web_root }}/{{ development_domain }}"
-      when: item.activate
-      loop: "{{ plugins }}"
-      become: yes
-      become_user: root
-      ignore_errors: yes
-
     - name: Change ownership of web directory
       become: yes  # to become superuser
       no_log: true
@@ -180,6 +162,6 @@
 
   handlers:
     - name: flush_rewrite_rules
-      command: "{{ wp_cli_path }} rewrite flush"
+      command: "{{ wp_cli_path }} rewrite flush --allow-root"
       args:
         chdir: "{{ web_root }}/{{ development_domain }}"
