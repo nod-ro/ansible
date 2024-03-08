@@ -1,0 +1,176 @@
+- hosts: localhost
+  become: yes
+  vars_files:
+    - websites.yml
+  pre_tasks:
+    - name: Ensure main utils directory exists
+      ansible.builtin.file:
+        path: /var/ansible/utils
+        state: directory
+        mode: '0755'  # Set the permissions (optional)
+
+    - name: Ensure SSH key is added to SSH agent
+      shell: |
+        eval $(ssh-agent -s)
+        ssh-add /tmp/private_key
+        echo "SSH_AUTH_SOCK=$SSH_AUTH_SOCK"
+      register: ssh_agent_output
+      ignore_errors: yes
+
+    - name: Debug SSH agent output
+      debug:
+        var: ssh_agent_output.stdout_lines
+
+    - name: Set environment variables for SSH agent
+      set_fact:
+        ssh_agent_socket: "{{ ssh_agent_output.stdout_lines[1].split('=')[1] }}"
+        ssh_agent_pid: "{{ ssh_agent_output.stdout_lines[0].split(' ')[2] }}"
+      when: ssh_agent_output is defined and ssh_agent_output.stdout_lines is defined and ssh_agent_output.stdout_lines | length > 1
+
+  tasks:
+    - name: Temporary disable NE to avoid fatal errors [save template as PHP file]
+      template:
+        src: php_mysqli.php.j2  # Modify this path if needed
+        dest: "/var/ansible/utils/php_mysqli.php"
+
+
+    - name: Temporary disable NE to avoid fatal errors [execute]
+      command: php /var/ansible/utils/php_mysqli.php
+      args:
+        chdir: "{{ web_root }}/{{ development_domain }}"
+
+
+    - name: Remove existing theme directories
+      ansible.builtin.file:
+        path: "{{ web_root }}/{{ development_domain }}/wp-content/themes/{{ item.name }}"
+        state: absent
+      loop: "{{ themes }}"
+      become: yes
+      become_user: root
+
+    - name: Check if theme directories exist
+      stat:
+        path: "{{ web_root }}/{{ development_domain }}/wp-content/themes/{{ item.name }}"
+      register: theme_directory_checks
+      loop: "{{ themes }}"
+
+    - name: Clone the themes repositories from private repos only if directory doesn't exist
+      git:
+        repo: "{{ item.item.repo }}"
+        dest: "{{ web_root }}/{{ development_domain }}/wp-content/themes/{{ item.item.name }}"
+        force: yes
+        version: "{{ item.item.version }}"
+        accept_hostkey: yes
+      loop: "{{ theme_directory_checks.results }}"
+      become: yes
+      become_user: root
+      ignore_errors: yes
+      environment:
+        SSH_AUTH_SOCK: "{{ ssh_agent_socket }}"
+        SSH_AGENT_PID: "{{ ssh_agent_pid }}"
+
+    - name: Switch to 'nod-electro-theme-child' theme
+      command: wp theme activate nod-electro-theme-child --path={{ web_root }}/{{ development_domain }} --allow-root
+      become: yes
+      become_user: root
+
+
+
+    - name: Remove existing plugins directories
+      ansible.builtin.file:
+        path: "{{ web_root }}/{{ development_domain }}/wp-content/plugins/{{ item.name }}"
+        state: absent
+      loop: "{{ plugins }}"
+      become: yes
+      become_user: root
+
+    - name: Ensure plugins directory exists with correct permissions
+      file:
+        path: "{{ web_root }}/{{ development_domain }}/wp-content/plugins/{{ item.name }}"
+        state: directory
+        owner: root  # Replace with your web user, possibly www-data
+        group: root  # Replace with your web group, possibly www-data
+        mode: '0755'
+      loop: "{{ plugins }}"
+      become: yes  # Use sudo to ensure permissions
+
+    #    - name: Install specific version of WooCommerce
+    #      command: wp plugin install woocommerce --version=5.5.1 --allow-root --activate
+    #      args:
+    #        chdir: "{{ web_root }}/{{ development_domain }}"
+
+    - name: Check if plugin directories are not empty
+      find:
+        paths: "{{ web_root }}/{{ development_domain }}/wp-content/plugins/{{ item.name }}"
+        file_type: any
+      register: plugin_directory_contents
+      loop: "{{ plugins }}"
+
+    - name: Clone the plugin repositories from private repos only if directory is empty
+      git:
+        repo: "{{ item.item.repo }}"
+        dest: "{{ web_root }}/{{ development_domain }}/wp-content/plugins/{{ item.item.name }}"
+        force: yes
+        version: "{{ item.item.version }}"
+        accept_hostkey: yes
+      when: item.files | length == 0
+      loop: "{{ plugin_directory_contents.results }}"
+      become: yes
+      become_user: root
+      ignore_errors: yes
+      environment:
+        SSH_AUTH_SOCK: "{{ ssh_agent_socket }}"
+        SSH_AGENT_PID: "{{ ssh_agent_pid }}"
+
+    - name: Activate plugins where "activate" property is true
+      command: wp plugin activate {{ item.name }} --allow-root
+      args:
+        chdir: "{{ web_root }}/{{ development_domain }}"
+      when: item.activate
+      loop: "{{ plugins }}"
+      become: yes
+      become_user: root
+
+
+    - name: Upgrade and conditionally activate WooCommerce public plugins
+      command: wp plugin install {{ item.name }} --version={{ item.version }} --path={{ web_root }}/{{ development_domain }} --allow-root --force
+      with_items: "{{ public_plugins }}"
+
+    - name: Activate plugins where activate is true
+      command: wp plugin activate {{ item.name }} --path={{ web_root }}/{{ development_domain }} --allow-root
+      when: item.activate
+      with_items: "{{ public_plugins }}"
+
+    - name: Clone or update the plugin repositories from private repos
+      git:
+        repo: "{{ item.item.repo }}"
+        dest: "{{ web_root }}/{{ development_domain }}/wp-content/plugins/{{ item.item.name }}"
+        force: yes
+        version: "{{ item.item.version }}"
+        accept_hostkey: yes
+      loop: "{{ plugin_directory_contents.results }}"
+      become: yes
+      become_user: root
+      ignore_errors: yes
+      environment:
+        SSH_AUTH_SOCK: "{{ ssh_agent_socket }}"
+        SSH_AGENT_PID: "{{ ssh_agent_pid }}"
+
+
+    - name: Activate plugins where "activate" property is true
+      command: wp plugin activate {{ item.name }} --allow-root
+      args:
+        chdir: "{{ web_root }}/{{ development_domain }}"
+      when: item.activate
+      loop: "{{ plugins }}"
+      become: yes
+      become_user: root
+
+    - name: Change ownership of web directory
+      become: yes  # to become superuser
+      no_log: true
+      ansible.builtin.file:
+        path: "/var/www/{{ development_domain }}"
+        owner: www-data
+        group: www-data
+        recurse: yes  # to operate recursively
