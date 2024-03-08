@@ -82,10 +82,16 @@
       become: yes  # Use sudo to ensure permissions
       ignore_errors: yes
 
-    #    - name: Install specific version of WooCommerce
-    #      command: wp plugin install woocommerce --version=5.5.1 --allow-root --activate
-    #      args:
-    #        chdir: "{{ web_root }}/{{ development_domain }}"
+    - name: Install and configure WooCommerce in Romanian
+      become: yes
+      become_user: root
+      command:
+        cmd: "{{ item }}"
+        chdir: "{{ web_root }}/{{ development_domain }}"
+      loop:
+        - "wp plugin install woocommerce --version=8.6.1 --activate --allow-root --force"
+        - "wp language plugin install woocommerce ro_RO --allow-root"
+        - "wp language core install ro_RO --allow-root"
 
     - name: Check if plugin directories are not empty
       find:
