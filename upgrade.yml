@@ -28,6 +28,12 @@
       when: ssh_agent_output is defined and ssh_agent_output.stdout_lines is defined and ssh_agent_output.stdout_lines | length > 1
 
   tasks:
+    - name: Get list of currently active plugins
+      command: "{{ wp_cli_path }} plugin list --status=active --field=name --allow-root"
+      args:
+        chdir: "{{ web_root }}/{{ development_domain }}"
+      register: active_plugins_list
+      changed_when: false
 #    - name: Remove existing theme directories
 #      ansible.builtin.file:
 #        path: "{{ web_root }}/{{ development_domain }}/wp-content/themes/{{ item.name }}"
@@ -150,6 +156,13 @@
       environment:
         SSH_AUTH_SOCK: "{{ ssh_agent_socket }}"
         SSH_AGENT_PID: "{{ ssh_agent_pid }}"
+
+    - name: Reactivate previously active plugins
+      command: "{{ wp_cli_path }} plugin activate {{ item }} --allow-root"
+      args:
+        chdir: "{{ web_root }}/{{ development_domain }}"
+      loop: "{{ active_plugins_list.stdout_lines }}"
+      when: active_plugins_list.stdout_lines is defined
 
     - name: Change ownership of web directory
       become: yes  # to become superuser
