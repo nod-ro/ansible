@@ -61,7 +61,6 @@
 #      command: wp theme activate nod-electro-theme-child --path={{ web_root }}/{{ development_domain }} --allow-root
 #      become: yes
 #      become_user: root
--
     - name: Check current WordPress version
         command: "{{ wp_cli_path }} core version"
         args:
