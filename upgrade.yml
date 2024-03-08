@@ -69,7 +69,7 @@
       changed_when: false
 
     - name: Upgrade WordPress to the specified version
-      command: "{{ wp_cli_path }} core update --version={{ wp_version }} --force"
+      command: "{{ wp_cli_path }} core update --version={{ wp_version }} --allow-root --force"
       args:
         chdir: "{{ web_root }}/{{ development_domain }}"
 #      when: wp_current_version.stdout is version_compare(wp_version, '<')
