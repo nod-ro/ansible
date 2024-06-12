@@ -309,7 +309,7 @@
         cmd: "{{ item }}"
         chdir: "{{ web_root }}/{{ development_domain }}"
       loop:
-        - "wp plugin install woocommerce --version=8.7.0 --activate --allow-root --force"
+        - "wp plugin install woocommerce --version=8.2.1 --activate --allow-root --force"
         - "wp language plugin install woocommerce ro_RO --allow-root"
         - "wp language core install ro_RO --allow-root"
 
