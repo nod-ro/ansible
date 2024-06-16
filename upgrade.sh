@@ -22,6 +22,7 @@ for ((i = 0 ; i < $WEBSITES_LENGTH ; i++ )); do
     REMOTE_USER=$(yq eval ".websites[$i].vm_user" websites.yml)
     REMOTE_PASSWORD=$(yq eval ".websites[$i].vm_password" websites.yml)
     LOCAL_SSH_PRIVATE_KEY_PATH=$(yq eval '.ssh_key_path' websites.yml)
+    LOCAL_MYSQL_PRIVATE_KEY_PATH=$(yq eval '.local_mysql_cert_path' websites.yml)
     REMOTE_MYSQL_PRIVATE_KEY_PATH=$(yq eval '.remote_mysql_cert_path' websites.yml)
 
     SCRIPT_DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
@@ -29,6 +30,8 @@ for ((i = 0 ; i < $WEBSITES_LENGTH ; i++ )); do
 
     # Upload SSH private key for Git operations
     sshpass -p "$REMOTE_PASSWORD" scp -o StrictHostKeyChecking=no "$LOCAL_SSH_PRIVATE_KEY_PATH" "$REMOTE_USER@$REMOTE_HOST:/tmp/private_key"
+    sshpass -p  "$REMOTE_PASSWORD" scp -o StrictHostKeyChecking=no "$LOCAL_MYSQL_PRIVATE_KEY_PATH" "$REMOTE_USER@$REMOTE_HOST:/var/ansible/data/mysql_certificate.pem"
+
 # Install Ansible, Git, clone the repository, and clean up
 sshpass -p "$REMOTE_PASSWORD" ssh -o StrictHostKeyChecking=no "$REMOTE_USER@$REMOTE_HOST" GIT_REPO_URL="$GIT_REPO_URL" bash -s << 'EOF'
 chmod 600 /tmp/private_key
