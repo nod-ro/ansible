@@ -770,12 +770,18 @@
         - contact
         - pages
 
-    - name: Create a page in WordPress from rendered content
-      command: sudo -u www-data wp post create --post_type=page --post_status=publish --post_title='{{ item.title }}' --post_name='{{ item.slug }}' --path="{{ web_root }}/{{ development_domain }}" /tmp/{{ item.slug }}.txt
+    - name: Create or update a page in WordPress from rendered content
+      command: >
+        sudo -u www-data wp post {{ 'create' if item.slug not in existing_pages.stdout_lines else 'update' }}
+        --post_type=page
+        --post_status=publish
+        --post_title='{{ item.title }}'
+        --post_name='{{ item.slug }}'
+        --path="{{ web_root }}/{{ development_domain }}"
+        {{ '/tmp/' + item.slug + '.txt' if item.slug not in existing_pages.stdout_lines else '--post_content=/tmp/' + item.slug + '.txt' }}
       args:
         chdir: "{{ web_root }}/{{ development_domain }}"
       loop: "{{ pages }}"
-      when: "item.slug not in existing_pages.stdout_lines"
       tags:
         - contact
         - pages
