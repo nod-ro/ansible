@@ -23,6 +23,11 @@
 
   tasks:
     ### GENERATING STATIC PAGES BASED ON THE DEFINED "pages" variable
+    - name: Check if 'Contact Page Form' exists and get its ID
+      set_fact:
+        contact_form_id: "{{ (wpforms_list.stdout | from_json | json_query('[?post_title==`Contact Page Form`].ID') | first) | default('') }}"
+      tags:
+        - contact
     - name: Check if page with slug exists
       command: sudo -u www-data wp post list --post_type=page --field=post_name --path="{{ web_root }}/{{ development_domain }}"
       register: existing_pages
