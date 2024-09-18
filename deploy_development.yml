@@ -785,7 +785,7 @@
         - pages
 
 
-        - name: Cleanup temporary content file
+     - name: Cleanup temporary content file
       file:
         path: "/tmp/{{ item.slug }}.txt"
         state: absent
