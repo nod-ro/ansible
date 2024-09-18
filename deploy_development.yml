@@ -769,21 +769,47 @@
         - contact
         - pages
 
-    - name: Create or update a page in WordPress from rendered content
+    - name: Create a new page in WordPress from rendered content
       command: >
-        sudo -u www-data wp post {{ 'create' if item.slug not in existing_pages.stdout_lines else 'update $(wp post list --post_type=page --name=' + item.slug + ' --format=ids --path=' + web_root + '/' + development_domain + ')' }}
+        sudo -u www-data wp post create
         --post_type=page
         --post_status=publish
         --post_title='{{ item.title }}'
         --post_name='{{ item.slug }}'
         --path="{{ web_root }}/{{ development_domain }}"
-        {{ '/tmp/' + item.slug + '.txt' if item.slug not in existing_pages.stdout_lines else '--post_content=/tmp/' + item.slug + '.txt' }}
+        /tmp/{{ item.slug }}.txt
       args:
         chdir: "{{ web_root }}/{{ development_domain }}"
       loop: "{{ pages }}"
+      when: "item.slug not in existing_pages.stdout_lines"
       tags:
         - contact
         - pages
+
+    - name: Get the post ID of the existing page
+      command: sudo -u www-data wp post list --post_type=page --name={{ item.slug }} --format=ids --path="{{ web_root }}/{{ development_domain }}"
+      register: page_id
+      changed_when: false
+      loop: "{{ pages }}"
+      when: "item.slug in existing_pages.stdout_lines"
+      tags:
+        - contact
+        - pages
+
+    - name: Update the existing page in WordPress with new content
+      command: >
+        sudo -u www-data wp post update {{ page_id.stdout }}
+        --post_title='{{ item.title }}'
+        --post_content=/tmp/{{ item.slug }}.txt
+        --path="{{ web_root }}/{{ development_domain }}"
+      args:
+        chdir: "{{ web_root }}/{{ development_domain }}"
+      loop: "{{ pages }}"
+      when: "item.slug in existing_pages.stdout_lines"
+      tags:
+        - contact
+        - pages
+
 
     - name: Cleanup temporary content file
       file:
