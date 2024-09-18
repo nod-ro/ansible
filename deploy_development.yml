@@ -22,6 +22,72 @@
       when: ssh_agent_output is defined and ssh_agent_output.stdout_lines is defined and ssh_agent_output.stdout_lines | length > 1
 
   tasks:
+    ### GENERATING STATIC PAGES BASED ON THE DEFINED "pages" variable
+    - name: Check if page with slug exists
+      command: sudo -u www-data wp post list --post_type=page --field=post_name --path="{{ web_root }}/{{ development_domain }}"
+      register: existing_pages
+      changed_when: false  # This command just checks for existing pages, it doesn't change anything
+      tags:
+        - contact
+        - pages
+
+    - name: Render page content from template
+      template:
+        src: "pages/{{ item.slug }}.j2"
+        dest: "/tmp/{{ item.slug }}.txt"
+      become: yes
+      become_method: sudo
+      become_user: www-data
+      loop: "{{ pages }}"
+      tags:
+        - contact
+        - pages
+
+    # Get the post ID for each page by slug
+    - name: Get post ID for each page
+      command: sudo -u www-data wp post list --post_type=page --name={{ item.slug }} --format=ids --path="{{ web_root }}/{{ development_domain }}"
+      register: page_id_result
+      changed_when: false
+      ignore_errors: true
+      loop: "{{ pages }}"
+      loop_control:
+        loop_var: item
+        index_var: idx
+      tags:
+        - contact
+        - pages
+
+    # Update the page if it exists
+    - name: Update existing page in WordPress
+      command: sudo -u www-data wp post update {{ page_id_result.results[idx].stdout }} --post_title="{{ item.title }}" --post_content="/tmp/{{ item.slug }}.txt" --path="{{ web_root }}/{{ development_domain }}"
+      when: page_id_result.results[idx].stdout is defined and page_id_result.results[idx].stdout != ''
+      args:
+        chdir: "{{ web_root }}/{{ development_domain }}"
+      loop: "{{ pages }}"
+      loop_control:
+        loop_var: item
+        index_var: idx
+      tags:
+        - contact
+        - pages
+
+    # Create a new page if it doesn't exist
+    - name: Create new page in WordPress
+      command: sudo -u www-data wp post create --post_type=page --post_status=publish --post_title="{{ item.title }}" --post_name="{{ item.slug }}" --path="{{ web_root }}/{{ development_domain }}" /tmp/{{ item.slug }}.txt
+      when: page_id_result.results[idx].stdout is not defined or page_id_result.results[idx].stdout == ''
+      args:
+        chdir: "{{ web_root }}/{{ development_domain }}"
+      loop: "{{ pages }}"
+      loop_control:
+        loop_var: item
+        index_var: idx
+      tags:
+        - contact
+        - pages
+
+
+
+
     - name: Update and Upgrade System
       apt:
         update_cache: yes
