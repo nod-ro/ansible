@@ -749,7 +749,6 @@
         - contact
 
     ### GENERATING STATIC PAGES BASED ON THE DEFINED "pages" variable
-
     - name: Check if page with slug exists
       command: sudo -u www-data wp post list --post_type=page --field=post_name --path="{{ web_root }}/{{ development_domain }}"
       register: existing_pages
@@ -770,45 +769,35 @@
         - contact
         - pages
 
-    # If page exists, update its content
-    - name: Get the post ID of the existing page
+    # Get the post ID of the existing page (if it exists)
+    - name: Get post ID of existing page by slug
       command: sudo -u www-data wp post list --post_type=page --name={{ item.slug }} --format=ids --path="{{ web_root }}/{{ development_domain }}"
       register: page_id
       changed_when: false
+      ignore_errors: true
       loop: "{{ pages }}"
-      when: "item.slug in existing_pages.stdout_lines"
       tags:
         - contact
         - pages
 
-    - name: Update the existing page in WordPress with new content
-      command: >
-        sudo -u www-data wp post update {{ page_id.stdout }}
-        --post_title='{{ item.title }}'
-        --post_content=/tmp/{{ item.slug }}.txt
-        --path="{{ web_root }}/{{ development_domain }}"
+    # Update the page if it exists
+    - name: Update existing page in WordPress
+      command: sudo -u www-data wp post update {{ page_id.stdout }} --post_title='{{ item.title }}' --post_content='/tmp/{{ item.slug }}.txt' --path="{{ web_root }}/{{ development_domain }}"
+      when: page_id.stdout != ''
       args:
         chdir: "{{ web_root }}/{{ development_domain }}"
       loop: "{{ pages }}"
-      when: "item.slug in existing_pages.stdout_lines"
       tags:
         - contact
         - pages
 
-    # If page does not exist, create it
-    - name: Create a new page in WordPress from rendered content
-      command: >
-        sudo -u www-data wp post create
-        --post_type=page
-        --post_status=publish
-        --post_title='{{ item.title }}'
-        --post_name='{{ item.slug }}'
-        --path="{{ web_root }}/{{ development_domain }}"
-        /tmp/{{ item.slug }}.txt
+    # Create the page if it does not exist
+    - name: Create new page in WordPress
+      command: sudo -u www-data wp post create --post_type=page --post_status=publish --post_title='{{ item.title }}' --post_name='{{ item.slug }}' --path="{{ web_root }}/{{ development_domain }}" /tmp/{{ item.slug }}.txt
+      when: page_id.stdout == ''
       args:
         chdir: "{{ web_root }}/{{ development_domain }}"
       loop: "{{ pages }}"
-      when: "item.slug not in existing_pages.stdout_lines"
       tags:
         - contact
         - pages
