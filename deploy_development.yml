@@ -765,14 +765,13 @@
       become_method: sudo
       become_user: www-data
       loop: "{{ pages }}"
-      when: "item.slug not in existing_pages.stdout_lines"
       tags:
         - contact
         - pages
 
     - name: Create or update a page in WordPress from rendered content
       command: >
-        sudo -u www-data wp post {{ 'create' if item.slug not in existing_pages.stdout_lines else 'update' }}
+        sudo -u www-data wp post {{ 'create' if item.slug not in existing_pages.stdout_lines else 'update $(wp post list --post_type=page --name=' + item.slug + ' --format=ids --path=' + web_root + '/' + development_domain + ')' }}
         --post_type=page
         --post_status=publish
         --post_title='{{ item.title }}'
