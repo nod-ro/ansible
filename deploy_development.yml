@@ -747,7 +747,6 @@
         - post_creation_output.stdout is defined and post_creation_output.stdout != ""
       tags:
         - contact
-
     ### GENERATING STATIC PAGES BASED ON THE DEFINED "pages" variable
 
     - name: Check if page with slug exists
@@ -770,8 +769,8 @@
         - contact
         - pages
 
-    # Slurp the content of the rendered template file (reads in base64)
-    - name: Read the content of the rendered template
+    # Read the content of the rendered template
+    - name: Read page content from template file
       slurp:
         src: "/tmp/{{ item.slug }}.txt"
       register: page_content
@@ -798,7 +797,7 @@
 
     # Update the page if it exists
     - name: Update existing page in WordPress
-      command: sudo -u www-data wp post update {{ page_id_result.results[idx].stdout }} --post_title="{{ item.title }}" --post_content="{{ page_content.results[idx].content | b64decode }}" --path="{{ web_root }}/{{ development_domain }}"
+      command: sudo -u www-data wp post update {{ page_id_result.results[idx].stdout }} --post_title="{{ item.title }}" --post_content="{{ page_content.results[idx].content | b64decode | to_json }}" --path="{{ web_root }}/{{ development_domain }}"
       when: page_id_result.results[idx].stdout is defined and page_id_result.results[idx].stdout != ''
       args:
         chdir: "{{ web_root }}/{{ development_domain }}"
@@ -812,7 +811,7 @@
 
     # Create a new page if it doesn't exist
     - name: Create new page in WordPress
-      command: sudo -u www-data wp post create --post_type=page --post_status=publish --post_title="{{ item.title }}" --post_name="{{ item.slug }}" --post_content="{{ page_content.results[idx].content | b64decode }}" --path="{{ web_root }}/{{ development_domain }}"
+      command: sudo -u www-data wp post create --post_type=page --post_status=publish --post_title="{{ item.title }}" --post_name="{{ item.slug }}" --post_content="{{ page_content.results[idx].content | b64decode | to_json }}" --path="{{ web_root }}/{{ development_domain }}"
       when: page_id_result.results[idx].stdout is not defined or page_id_result.results[idx].stdout == ''
       args:
         chdir: "{{ web_root }}/{{ development_domain }}"
