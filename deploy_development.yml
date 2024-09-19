@@ -753,7 +753,7 @@
     - name: Check if page with slug exists
       command: sudo -u www-data wp post list --post_type=page --field=post_name --path="{{ web_root }}/{{ development_domain }}"
       register: existing_pages
-      changed_when: false
+      changed_when: false  # This command just checks for existing pages, it doesn't change anything
       tags:
         - contact
         - pages
@@ -770,49 +770,43 @@
         - contact
         - pages
 
-    # Get the post ID for each page by slug
-    - name: Get post ID for each page
+    - name: Get post ID for each page by slug (if it exists)
       command: sudo -u www-data wp post list --post_type=page --name={{ item.slug }} --format=ids --path="{{ web_root }}/{{ development_domain }}"
-      register: page_id_result
+      register: page_id
       changed_when: false
       ignore_errors: true
       loop: "{{ pages }}"
       loop_control:
         loop_var: item
-        index_var: idx
       tags:
         - contact
         - pages
 
     # Update the page if it exists
     - name: Update existing page in WordPress
-      command: sudo -u www-data wp post update {{ page_id_result.results[idx].stdout }} --post_title="{{ item.title }}" --post_content="/tmp/{{ item.slug }}.txt" --path="{{ web_root }}/{{ development_domain }}"
-      when: page_id_result.results[idx].stdout is defined and page_id_result.results[idx].stdout != ''
+      command: sudo -u www-data wp post update {{ page_id.stdout }} --post_title="{{ item.title }}" --post_content="/tmp/{{ item.slug }}.txt" --path="{{ web_root }}/{{ development_domain }}"
+      when: page_id.stdout != ''
       args:
         chdir: "{{ web_root }}/{{ development_domain }}"
       loop: "{{ pages }}"
       loop_control:
         loop_var: item
-        index_var: idx
       tags:
         - contact
         - pages
 
-    # Create the page if it doesn't exist
+    # Create the page if it does not exist
     - name: Create new page in WordPress
-      command: sudo -u www-data wp post create --post_type=page --post_status=publish --post_title="{{ item.title }}" --post_name="{{ item.slug }}" --post_content="/tmp/{{ item.slug }}.txt" --path="{{ web_root }}/{{ development_domain }}"
-      when: page_id_result.results[idx].stdout is not defined or page_id_result.results[idx].stdout == ''
+      command: sudo -u www-data wp post create --post_type=page --post_status=publish --post_title="{{ item.title }}" --post_name="{{ item.slug }}" --path="{{ web_root }}/{{ development_domain }}" /tmp/{{ item.slug }}.txt
+      when: page_id.stdout == ''
       args:
         chdir: "{{ web_root }}/{{ development_domain }}"
       loop: "{{ pages }}"
       loop_control:
         loop_var: item
-        index_var: idx
       tags:
         - contact
         - pages
-
-
 
 
     - name: Cleanup temporary content file
