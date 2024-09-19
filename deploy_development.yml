@@ -798,7 +798,7 @@
         - contact
         - pages
 
-    # Create a new page if it doesn't exist
+    # Create the page if it doesn't exist
     - name: Create new page in WordPress
       command: sudo -u www-data wp post create --post_type=page --post_status=publish --post_title="{{ item.title }}" --post_name="{{ item.slug }}" --post_content="{{ lookup('file', '/tmp/' + item.slug + '.txt') }}" --path="{{ web_root }}/{{ development_domain }}"
       when: page_id_result.results[idx].stdout is not defined or page_id_result.results[idx].stdout == ''
