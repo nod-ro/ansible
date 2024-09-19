@@ -714,6 +714,45 @@
         ssl_ca: /var/ansible/data/mysql_certificate.pem
     #      no_log: true
 
+    # Deleting the page with the slug "cart"
+    - name: Get the post ID for the "cart" page
+      command: sudo -u www-data wp post list --post_type=page --name=cart --format=ids --path="{{ web_root }}/{{ development_domain }}"
+      register: cart_page_id
+      changed_when: false
+      ignore_errors: true
+      tags:
+        - delete
+        - pages
+
+    - name: Delete the "cart" page if it exists
+      command: sudo -u www-data wp post delete {{ cart_page_id.stdout }} --force --path="{{ web_root }}/{{ development_domain }}"
+      when: cart_page_id.stdout is defined and cart_page_id.stdout != ''
+      args:
+        chdir: "{{ web_root }}/{{ development_domain }}"
+      tags:
+        - delete
+        - pages
+
+    # Deleting the page with the slug "checkout"
+    - name: Get the post ID for the "checkout" page
+      command: sudo -u www-data wp post list --post_type=page --name=checkout --format=ids --path="{{ web_root }}/{{ development_domain }}"
+      register: checkout_page_id
+      changed_when: false
+      ignore_errors: true
+      tags:
+        - delete
+        - pages
+
+    - name: Delete the "checkout" page if it exists
+      command: sudo -u www-data wp post delete {{ checkout_page_id.stdout }} --force --path="{{ web_root }}/{{ development_domain }}"
+      when: checkout_page_id.stdout is defined and checkout_page_id.stdout != ''
+      args:
+        chdir: "{{ web_root }}/{{ development_domain }}"
+      tags:
+        - delete
+        - pages
+
+
     - name: Retrieve 'Contact Page Form' posts
       command: wp post list --post_type=wpforms --fields=ID,post_title --format=json --allow-root --path={{ web_root }}/{{ development_domain }}
       register: wpforms_list
@@ -768,44 +807,6 @@
       when: "item.slug not in existing_pages.stdout_lines"
       tags:
         - contact
-        - pages
-
-    # Deleting the page with the slug "cart"
-    - name: Get the post ID for the "cart" page
-      command: sudo -u www-data wp post list --post_type=page --name=cart --format=ids --path="{{ web_root }}/{{ development_domain }}"
-      register: cart_page_id
-      changed_when: false
-      ignore_errors: true
-      tags:
-        - delete
-        - pages
-
-    - name: Delete the "cart" page if it exists
-      command: sudo -u www-data wp post delete {{ cart_page_id.stdout }} --force --path="{{ web_root }}/{{ development_domain }}"
-      when: cart_page_id.stdout is defined and cart_page_id.stdout != ''
-      args:
-        chdir: "{{ web_root }}/{{ development_domain }}"
-      tags:
-        - delete
-        - pages
-
-    # Deleting the page with the slug "checkout"
-    - name: Get the post ID for the "checkout" page
-      command: sudo -u www-data wp post list --post_type=page --name=checkout --format=ids --path="{{ web_root }}/{{ development_domain }}"
-      register: checkout_page_id
-      changed_when: false
-      ignore_errors: true
-      tags:
-        - delete
-        - pages
-
-    - name: Delete the "checkout" page if it exists
-      command: sudo -u www-data wp post delete {{ checkout_page_id.stdout }} --force --path="{{ web_root }}/{{ development_domain }}"
-      when: checkout_page_id.stdout is defined and checkout_page_id.stdout != ''
-      args:
-        chdir: "{{ web_root }}/{{ development_domain }}"
-      tags:
-        - delete
         - pages
 
     - name: Create a page in WordPress from rendered content
