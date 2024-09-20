@@ -568,7 +568,7 @@
       git:
         repo: "{{ github_ansible_plugins }}"
         dest: "/var/ansible/tmp/nod-wordpress-ansible"
-        version: "1.0.1"
+        version: "1.0.2"
         force: yes
         accept_hostkey: yes
       when: lookup('fileglob', '/var/ansible/tmp/nod-wordpress-ansible/*', wantlist=True) | length == 0
