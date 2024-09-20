@@ -581,18 +581,38 @@
       tags:
         - wordpress_ansible
 
-    - name: Find all directories in the source path
-      find:
-        paths: "/var/ansible/tmp/nod-wordpress-ansible"
-        recurse: yes
-        file_type: directory
-      register: found_dirs
-
-    - name: Move all directories to the destination
-      command: mv "{{ item.path }}" "{{ web_root }}/{{ development_domain }}/wp-content/plugins/"
+    - name: Move Github Updater
+      command: mv "/var/ansible/tmp/nod-wordpress-ansible/github-updater" "{{ web_root }}/{{ development_domain }}/wp-content/plugins/"
       become: yes
       become_user: root
-      loop: "{{ found_dirs.files }}"
+      tags:
+        - wordpress_ansible
+
+    - name: Move Wordpress SEO NOD
+      command: mv "/var/ansible/tmp/nod-wordpress-ansible/wordpress-seo-nod" "{{ web_root }}/{{ development_domain }}/wp-content/plugins/"
+      become: yes
+      become_user: root
+      tags:
+        - wordpress_ansible
+
+    - name: Move euplatesc
+      command: mv "/var/ansible/tmp/nod-wordpress-ansible/wc_euplatesc" "{{ web_root }}/{{ development_domain }}/wp-content/plugins/"
+      become: yes
+      become_user: root
+      tags:
+        - wordpress_ansible
+
+    - name: Move ipay
+      command: mv "/var/ansible/tmp/nod-wordpress-ansible/wc-ipay" "{{ web_root }}/{{ development_domain }}/wp-content/plugins/"
+      become: yes
+      become_user: root
+      tags:
+        - wordpress_ansible
+
+    - name: Move Netopia
+      command: mv "/var/ansible/tmp/nod-wordpress-ansible/netopia-payments-payment-gateway" "{{ web_root }}/{{ development_domain }}/wp-content/plugins/"
+      become: yes
+      become_user: root
       tags:
         - wordpress_ansible
 
