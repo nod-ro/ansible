@@ -609,12 +609,12 @@
       tags:
         - wordpress_ansible
 
-    - name: Move Netopia
-      command: mv "/var/ansible/tmp/nod-wordpress-ansible/netopia-payments-payment-gateway" "{{ web_root }}/{{ development_domain }}/wp-content/plugins/"
-      become: yes
-      become_user: root
-      tags:
-        - wordpress_ansible
+#    - name: Move Netopia
+#      command: mv "/var/ansible/tmp/nod-wordpress-ansible/netopia-payments-payment-gateway" "{{ web_root }}/{{ development_domain }}/wp-content/plugins/"
+#      become: yes
+#      become_user: root
+#      tags:
+#        - wordpress_ansible
 
     - name: Remove cloned repository directory
       file:
