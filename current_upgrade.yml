@@ -17,9 +17,6 @@ plugins:
   - name: nod-smartbill
     repo: "git@github.com:nod-ro/nod-smartbill.git"
     version: 2.2.6.3-shops
-  - name: nod-wordpress-ansible
-    repo: "git@github.com:nod-ro/nod-wordpress-ansible.git"
-    version: 1.0.4
 #  - name: nod-chained-products
 #    repo: "git@github.com:nod-ro/nod-chained-products.git"
 #    version: master
