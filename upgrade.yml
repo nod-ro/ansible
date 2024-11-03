@@ -175,6 +175,10 @@
       tags:
         - wordpress_ansible
 
+    - name: Remove existing github-updater directory
+      file:
+        path: "{{ web_root }}/{{ development_domain }}/wp-content/plugins/wordpress-seo-nod"
+        state: absent
     - name: Move Wordpress SEO NOD
       command: mv "/var/ansible/tmp/nod-wordpress-ansible/wordpress-seo-nod" "{{ web_root }}/{{ development_domain }}/wp-content/plugins/"
       become: yes
@@ -182,6 +186,10 @@
       tags:
         - wordpress_ansible
 
+    - name: Remove existing github-updater directory
+      file:
+        path: "{{ web_root }}/{{ development_domain }}/wp-content/plugins/wc_euplatesc"
+        state: absent
     - name: Move euplatesc
       command: mv "/var/ansible/tmp/nod-wordpress-ansible/wc_euplatesc" "{{ web_root }}/{{ development_domain }}/wp-content/plugins/"
       become: yes
@@ -189,6 +197,10 @@
       tags:
         - wordpress_ansible
 
+    - name: Remove existing github-updater directory
+      file:
+        path: "{{ web_root }}/{{ development_domain }}/wp-content/plugins/wc-ipay"
+        state: absent
     - name: Move ipay
       command: mv "/var/ansible/tmp/nod-wordpress-ansible/wc-ipay" "{{ web_root }}/{{ development_domain }}/wp-content/plugins/"
       become: yes
