@@ -1,19 +1,19 @@
-wp_version: 6.4.3
-woocommerce_version: 8.2.1
+wp_version: 6.6.2
+woocommerce_version: 8.7.0
 
 plugins:
   - name: nod-wordpress-module
     repo: "git@github.com:nod-ro/nod-wordpress-module.git"
-    version: 1.5.8.3
+    version: 1.5.9
   - name: nod-wordpress-marketplace-emag
     repo: "git@github.com:nod-ro/nod-wordpress-marketplace-emag.git"
-    version: 2.0.5.1
+    version: 2.0.6
 #  - name: nod-connector-b2b
 #    repo: "git@github.com:nod-ro/nod-connector-b2b.git"
 #    version: 1.0.5
   - name: nod-shop-saas
     repo: "git@github.com:nod-ro/nod-shop-saas.git"
-    version: 1.0.8.1
+    version: 1.0.9
 #  - name: nod-smartbill
 #    repo: "git@github.com:nod-ro/nod-smartbill.git"
 #    version: 2.2.6.2-shops
@@ -110,9 +110,9 @@ themes:
 #  - name: nod-electro-theme
 #    repo: "git@github.com:nod-ro/nod-electro-theme.git"
 #    version: 3.0.1
-#  - name: nod-electro-theme-child
-#    repo: "git@github.com:nod-ro/nod-electro-theme-child.git"
-#    version: 1.0.7
+  - name: nod-electro-theme-child
+    repo: "git@github.com:nod-ro/nod-electro-theme-child.git"
+    version: 1.0.8
 
 
 # Defaults
@@ -120,4 +120,4 @@ remote_mysql_cert_path: "/var/ansible/data/mysql_certificate.pem"
 wp_cli_path: "/usr/local/bin/wp"
 web_root: "/var/www"
 github_ansible_plugins: "git@github.com:nod-ro/nod-wordpress-ansible.git"
-ssh_key_path: "/home/spanzuratorul/.ssh/ansible_remote_key"
+ssh_key_path: "/home/spanzuratorul/.ssh/cheie_pc"
