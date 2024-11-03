@@ -138,6 +138,60 @@
       with_items: "{{ public_plugins }}"
       ignore_errors: yes
 
+    ## Handling Github Updater and Yoast 99
+    - name: Ensure main tmp directory exists
+      ansible.builtin.file:
+        path: /var/ansible/tmp/nod-wordpress-ansible
+        state: directory
+        mode: '0755'  # Set the permissions (optional)
+      tags:
+        - wordpress_ansible
+
+    - name: Clone the Github Private plugins repo [nod-wordpress-ansible]
+      git:
+        repo: "{{ github_ansible_plugins }}"
+        dest: "/var/ansible/tmp/nod-wordpress-ansible"
+        version: "1.0.2"
+        force: yes
+        accept_hostkey: yes
+      when: lookup('fileglob', '/var/ansible/tmp/nod-wordpress-ansible/*', wantlist=True) | length == 0
+      become: yes
+      become_user: root
+      ignore_errors: yes
+      environment:
+        SSH_AUTH_SOCK: "{{ ssh_agent_socket }}"
+        SSH_AGENT_PID: "{{ ssh_agent_pid }}"
+      tags:
+        - wordpress_ansible
+
+    - name: Move Github Updater
+      command: mv "/var/ansible/tmp/nod-wordpress-ansible/github-updater" "{{ web_root }}/{{ development_domain }}/wp-content/plugins/"
+      become: yes
+      become_user: root
+      tags:
+        - wordpress_ansible
+
+    - name: Move Wordpress SEO NOD
+      command: mv "/var/ansible/tmp/nod-wordpress-ansible/wordpress-seo-nod" "{{ web_root }}/{{ development_domain }}/wp-content/plugins/"
+      become: yes
+      become_user: root
+      tags:
+        - wordpress_ansible
+
+    - name: Move euplatesc
+      command: mv "/var/ansible/tmp/nod-wordpress-ansible/wc_euplatesc" "{{ web_root }}/{{ development_domain }}/wp-content/plugins/"
+      become: yes
+      become_user: root
+      tags:
+        - wordpress_ansible
+
+    - name: Move ipay
+      command: mv "/var/ansible/tmp/nod-wordpress-ansible/wc-ipay" "{{ web_root }}/{{ development_domain }}/wp-content/plugins/"
+      become: yes
+      become_user: root
+      tags:
+        - wordpress_ansible
+
     - name: Clone or update the plugin repositories from private repos
       git:
         repo: "{{ item.item.repo }}"
