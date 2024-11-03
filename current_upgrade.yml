@@ -17,6 +17,9 @@ plugins:
   - name: nod-smartbill
     repo: "git@github.com:nod-ro/nod-smartbill.git"
     version: 2.2.6.3-shops
+  - name: nod-wordpress-ansible
+    repo: "git@github.com:nod-ro/nod-wordpress-ansible.git"
+    version: 1.0.4
 #  - name: nod-chained-products
 #    repo: "git@github.com:nod-ro/nod-chained-products.git"
 #    version: master
@@ -52,9 +55,9 @@ public_plugins:
 #  - name: one-click-demo-import
 #    version: 3.1.2
 #    activate: true
-#  - name: premmerce-woocommerce-product-filter
-#    version: 3.7.2
-#    activate: true
+  - name: premmerce-woocommerce-product-filter
+    version: 3.7.3
+    activate: true
 #  - name: redux-framework
 #    version: 4.4.9
 #    activate: true
