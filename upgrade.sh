@@ -30,7 +30,6 @@ for ((i = 0 ; i < $WEBSITES_LENGTH ; i++ )); do
 
     # Upload SSH private key for Git operations
     sshpass -p "$REMOTE_PASSWORD" scp -o StrictHostKeyChecking=no "$LOCAL_SSH_PRIVATE_KEY_PATH" "$REMOTE_USER@$REMOTE_HOST:/tmp/private_key"
-    sshpass -p  "$REMOTE_PASSWORD" scp -o StrictHostKeyChecking=no "$LOCAL_MYSQL_PRIVATE_KEY_PATH" "$REMOTE_USER@$REMOTE_HOST:/var/ansible/data/mysql_certificate.pem"
 # Install Ansible, Git, clone the repository, and clean up
 sshpass -p "$REMOTE_PASSWORD" ssh -o StrictHostKeyChecking=no "$REMOTE_USER@$REMOTE_HOST" GIT_REPO_URL="$GIT_REPO_URL" bash -s << 'EOF'
 chmod 600 /tmp/private_key
@@ -43,6 +42,7 @@ sudo chown -R $USER:$USER /var/ansible
 EOF
 
 sshpass -p "$REMOTE_PASSWORD" scp -o StrictHostKeyChecking=no "$SCRIPT_DIR/current_upgrade.yml" "$REMOTE_USER@$REMOTE_HOST:/var/ansible/"
+sshpass -p "$REMOTE_PASSWORD" ssh -o StrictHostKeyChecking=no "$REMOTE_USER@$REMOTE_HOST" "mkdir -p /var/ansible/data/"
 sshpass -p  "$REMOTE_PASSWORD" scp -o StrictHostKeyChecking=no "$LOCAL_MYSQL_PRIVATE_KEY_PATH" "$REMOTE_USER@$REMOTE_HOST:/var/ansible/data/mysql_certificate.pem"
 
 # Connect to the VM and run multiple commands
