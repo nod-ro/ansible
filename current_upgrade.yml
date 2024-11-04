@@ -1,5 +1,5 @@
 wp_version: 6.6.2
-woocommerce_version: 8.7.0
+woocommerce_version: 8.7.1
 
 plugins:
   - name: nod-wordpress-module
